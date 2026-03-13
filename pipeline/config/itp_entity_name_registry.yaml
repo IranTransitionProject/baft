@@ -1,0 +1,187 @@
+# ITP Entity Name Registry
+# Version: 1.0 STUB
+# Date: 2026-03-13
+# Used by: SP (entity tagging in source extraction), XV (ID validation)
+#
+# GENERATION: This file should be regenerated from framework/data/ whenever
+#   entity IDs are added. Run:
+#     python pipeline/scripts/generate_entity_registry.py
+#
+# Manual entries below cover the most critical named entities for SP tagging.
+# Generated section (entity IDs) follows — populated by the script.
+
+version: "1.0"
+generated: "2026-03-13"
+status: stub   # Change to "generated" after running generate_entity_registry.py
+
+# ── Module code registry ──────────────────────────────────────────────────
+# All valid module codes — XV validates against this list
+
+module_codes:
+  itb:
+    - ITB-A1    # Regime Architecture
+    - ITB-A2    # IRGC Parallel Society
+    - ITB-A3    # Succession Mechanisms
+    - ITB-A4    # Economic Binding Agents (A9 Hollowness home)
+    - ITB-A5    # Factional Dynamics
+    - ITB-A6    # Proxy Network Architecture
+    - ITB-A7    # External Patron Dependencies
+    - ITB-A8    # Legitimacy Architecture (A8.8 Taqiyyah)
+    - ITB-A9    # Nuclear Program Architecture
+    - ITB-A10   # Negotiation Architecture (A11 Pinochet, A12 Coercive-Endurance)
+    - ITB-A11   # Historical Analogies
+    - ITB-A12   # Predictive Framework
+    - ITB-A13   # Population and Compliance Architecture
+  isa:
+    - ISA-S1    # Pre-war scenario matrix (S1–S5)
+    - ISA-S2    # Wartime scenario matrix (W1–W5)
+    - ISA-S3    # Stress indicators
+    - ISA-S4    # Transition pathway models
+    - ISA-S5    # External actor positioning
+
+# ── Named entity transliterations ─────────────────────────────────────────
+# For SP: maps common name variants to canonical form + entity ID if known
+
+named_entities:
+
+  people:
+    - canonical: "Ali Khamenei"
+      aliases: ["Khamenei", "خامنه‌ای", "Ali Hosseini Khamenei", "Supreme Leader (deceased)"]
+      status: deceased  # Killed Feb 28 2026
+      entity_id: null   # Add from variables.yaml when entity exists
+
+    - canonical: "Mojtaba Khamenei"
+      aliases: ["Mojtaba", "مجتبی خامنه‌ای", "مجتبی", "new Supreme Leader"]
+      status: active
+      role: "Announced Supreme Leader (March 8 2026)"
+      entity_id: null
+
+    - canonical: "Ali Larijani"
+      aliases: ["Larijani", "لاریجانی", "علی لاریجانی"]
+      status: active
+      role: "SNSC operational authority"
+      entity_id: null
+
+    - canonical: "Masoud Pezeshkian"
+      aliases: ["Pezeshkian", "پزشکیان", "President Pezeshkian"]
+      status: active
+      role: "President (nominal executive)"
+      entity_id: null
+
+    - canonical: "Gholam-Hossein Mohseni-Ejei"
+      aliases: ["Mohseni-Ejei", "محسنی اژه‌ای", "Chief Justice"]
+      status: active
+      role: "Chief Justice / Interim Trio"
+      entity_id: null
+
+    - canonical: "Ahmad Vahidi"
+      aliases: ["Vahidi", "وحیدی"]
+      status: active
+      role: "IRGC Commander (appointed post-decapitation)"
+      entity_id: null
+
+    - canonical: "Mohammad Mokhber"
+      aliases: ["Mokhber", "مخبر"]
+      status: active
+      entity_id: null
+
+    - canonical: "Saeed Jalili"
+      aliases: ["Jalili", "جلیلی", "سعید جلیلی"]
+      status: active
+      role: "NSC Secretary / documented saboteur"
+      entity_id: null
+
+    - canonical: "Mohammad-Baqer Ghalibaf"
+      aliases: ["Ghalibaf", "قالیباف", "Ghalib af", "Speaker Ghalibaf"]
+      status: active
+      role: "Parliamentary Speaker"
+      entity_id: null
+
+    - canonical: "Mojtaba Zolnour"
+      aliases: ["Zolnour", "ذوالنور"]
+      status: active
+      entity_id: null
+
+    - canonical: "Kamal Kharrazi"
+      aliases: ["Kharrazi", "خرازی"]
+      status: active
+      entity_id: null
+
+  organizations:
+    - canonical: "IRGC"
+      aliases: ["Islamic Revolutionary Guard Corps", "سپاه پاسداران", "Sepah", "Pasdaran", "Revolutionary Guards"]
+      entity_id: null
+
+    - canonical: "Basij"
+      aliases: ["Basij Resistance Force", "بسیج", "Basiji"]
+      entity_id: null
+
+    - canonical: "SNSC"
+      aliases: ["Supreme National Security Council", "شورای عالی امنیت ملی"]
+      entity_id: null
+
+    - canonical: "Quds Force"
+      aliases: ["IRGC Quds Force", "نیروی قدس", "Quds", "Jerusalem Force"]
+      entity_id: null
+
+    - canonical: "IAEA"
+      aliases: ["International Atomic Energy Agency", "آژانس بین‌المللی انرژی اتمی"]
+      entity_id: null
+
+    - canonical: "Hezbollah"
+      aliases: ["حزب‌الله", "Hizballah", "Hizbullah", "Lebanese Hezbollah"]
+      entity_id: null
+
+    - canonical: "Hamas"
+      aliases: ["حماس", "Islamic Resistance Movement"]
+      entity_id: null
+
+    - canonical: "Houthis"
+      aliases: ["Ansar Allah", "أنصار الله", "حوثیون", "Houthi"]
+      entity_id: null
+
+    - canonical: "PJAK"
+      aliases: ["Party of Free Life of Kurdistan", "حزب حیات آزاد کردستان"]
+      entity_id: null
+
+  locations:
+    - canonical: "Strait of Hormuz"
+      aliases: ["تنگه هرمز", "Hormuz", "Hormuz Strait"]
+      entity_id: null
+
+    - canonical: "Natanz"
+      aliases: ["نطنز", "Natanz nuclear facility"]
+      entity_id: null
+
+    - canonical: "Fordow"
+      aliases: ["فردو", "Fordow Fuel Enrichment Plant"]
+      entity_id: null
+
+  concepts:
+    - canonical: "velayat-e-faqih"
+      aliases: ["ولایت فقیه", "guardianship of the jurist", "Islamic governance doctrine"]
+      entity_id: null
+
+    - canonical: "Hojjatiyeh"
+      aliases: ["حجتیه", "Hojjatieh"]
+      notes: "Original was anti-velayat-e-faqih quietist; current Mirbagheri faction has inverted it"
+      entity_id: null
+
+# ── Entity ID list (generated) ────────────────────────────────────────────
+# Populated by: python pipeline/scripts/generate_entity_registry.py
+# Format: all valid entity IDs for XV cross-reference validation
+
+entity_ids:
+  variables:   []   # V-01 through V-XX — run script to populate
+  observations: []  # Obs 001 through Obs NNN — run script to populate
+  scenarios:   []   # S-1 through S-5, W-1 through W-5
+  traps:       []   # Trap 1 through Trap N
+  gaps:        []   # G-XX-NN format
+  briefs:      []   # B-01 through B-NN
+  sessions:    []   # Session 1 through Session N
+
+# Placeholder scenario IDs (wartime matrix — confirmed active)
+known_scenario_ids:
+  pre_war:  [S-1, S-2, S-3, S-4, S-5]
+  wartime:  [W-1, W-2, W-3, W-4, W-5]
+  active_baseline: W-2

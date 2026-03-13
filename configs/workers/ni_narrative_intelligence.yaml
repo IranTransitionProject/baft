@@ -1,0 +1,116 @@
+# NI — Narrative Intelligence
+# Role: Corpus-level pattern detection across Telegram channel clusters.
+#   Detects: coordinated framing, silence patterns, factional divergence,
+#   velocity shifts, tone shifts, amplification chains. Feeds AP with
+#   narrative-layer intelligence that single-source analysis misses.
+#   Runs at 07:00 UTC on prior 24hr corpus from TelegramIngestor exports.
+#
+# Tier: standard (Sonnet)
+# Silo: channel_registry (faction tags, source tiers), baseline statistics
+
+name: ni_narrative_intelligence
+description: >
+  Corpus-level narrative pattern detection across Telegram channel clusters.
+  Detects coordination, silence, divergence, velocity shifts, tone shifts,
+  and amplification chains. Runs on daily corpus exports. Feeds AP.
+
+default_tier: standard
+
+system_prompt: |
+  You are the ITP Narrative Intelligence analyst (NI). You analyze patterns
+  across a corpus of Telegram channel messages — not individual messages.
+  Your unit of analysis is the collective behavior of channel clusters,
+  not individual claims.
+
+  ## What you detect
+
+  COORDINATION. Multiple channels from the same faction adopt identical or
+  near-identical framing of an event within a short window (< 4 hours).
+  Significance: coordinated narrative suggests top-down messaging discipline.
+  Distinguish from: natural convergence when an event is genuinely unambiguous.
+
+  SILENCE PATTERN. A topic that was present in a channel cluster disappears
+  abruptly. Especially significant when the topic is still being covered by
+  opposing-faction channels.
+  Significance: may indicate editorial order, censorship, or narrative pivot.
+
+  FACTIONAL DIVERGENCE. Channels within the same faction take contradictory
+  positions on the same event. Rare — when it happens, it's significant.
+  Significance: may indicate internal factional fracture.
+
+  VELOCITY SHIFT. Unusual spike or drop in posting rate for a channel or
+  cluster. Baseline: use 7-day rolling average if available.
+  Significance: spikes may indicate crisis mobilization; drops may indicate
+  platform disruption or strategic silence.
+
+  TONE SHIFT. Rhetorical escalation or de-escalation across a faction cluster.
+  Look for: shift from neutral to martyrdom language, from confrontational to
+  conciliatory, from domestic focus to external threat emphasis.
+
+  AMPLIFICATION CHAIN. Trace the origin of a specific narrative: which channel
+  published it first, how did it spread, which factions amplified it?
+  Significance: identifies narrative architects vs. amplifiers.
+
+  ## What you do NOT do
+  - Do not assess whether individual claims are true
+  - Do not make geopolitical conclusions — surface patterns for IA to interpret
+  - Do not access ITP framework content
+
+  ## Output
+  ni_findings array. Each finding: type, channels_involved, time_range,
+  description, significance, recommended_routing (session_direct | WT | IA | deferred).
+  YAML only.
+
+knowledge_sources:
+  - path: "pipeline/config/itp_telegram_channels.yaml"
+    inject_as: "channel_registry"
+  - path: "pipeline/ni_findings/ni_findings_log.yaml"
+    inject_as: "prior_findings"
+
+input_schema:
+  type: object
+  properties:
+    ni_request:
+      type: object
+      properties:
+        corpus_path:    { type: string }
+        time_range:     { type: string }
+        analysis_modes:
+          type: array
+          items:
+            type: string
+            enum: [coordination, silence, divergence, velocity, tone, amplification]
+          default: [coordination, silence, divergence, velocity, tone]
+      required: [corpus_path, time_range]
+  required: [ni_request]
+
+output_schema:
+  type: object
+  properties:
+    ni_output:
+      type: object
+      properties:
+        analyzed_at:     { type: string }
+        time_range:      { type: string }
+        messages_analyzed: { type: integer }
+        channels_covered: { type: integer }
+        findings:
+          type: array
+          items:
+            type: object
+            properties:
+              finding_id:         { type: string }
+              finding_type:       { type: string }
+              channels_involved:  { type: array }
+              time_range:         { type: string }
+              description:        { type: string }
+              significance:       { type: string, enum: [low, medium-low, medium, medium-high, high] }
+              recommended_routing:{ type: string }
+            required: [finding_id, finding_type, channels_involved, description, significance]
+        no_significant_findings: { type: boolean }
+      required: [analyzed_at, findings]
+  required: [ni_output]
+
+output_constraints:
+  format: yaml_only
+  max_tokens: 3000

@@ -1,0 +1,475 @@
+# ITP Telegram Channel Registry
+# Version: 1.0 DRAFT
+# Date: 2026-03-07
+# Purpose: Curated list of Telegram channels for ITP intelligence collection
+# Maintained by: Principal analyst (channel selection is an analytical decision)
+#
+# Source tier mapping:
+#   1 = Official regime primary sources (KHAMENEI.IR-level)
+#   2 = Semi-official / regime-affiliated media with editorial function
+#   3 = Independent media, diaspora outlets with transparent sourcing
+#   4 = Single-source, unverified, or agenda-driven
+#   5 = Social media noise, requires heavy verification
+#
+# IMPORTANT: Channel handles may change. Verify handles before subscribing.
+# Use Grok (SC-X) to cross-check current handles via X/Twitter crossposts.
+# Use TGStat (ir.tgstat.com) to verify channel existence and subscriber counts.
+#
+# OPSEC NOTE: Subscribing to IRGC and regime channels from a personal Telegram
+# account creates a digital footprint. Consider using a dedicated research account.
+
+categories:
+
+  # ══════════════════════════════════════════════════════════════════
+  # CATEGORY 1: OFFICIAL REGIME / STATE MEDIA
+  # Highest signal for regime narrative, official positions, policy signals
+  # These channels continued operating during Jan 2026 internet shutdown
+  # ══════════════════════════════════════════════════════════════════
+
+  - name: "Official State News Agencies"
+    faction: regime_official
+    source_tier: 1
+    monitoring_priority: high
+    rationale: "Primary regime news output. IRNA is oldest/most official. IRIB is state broadcaster under direct Supreme Leader authority."
+    channels:
+      - handle: "@iraborsaw"
+        name_en: "IRNA (Farsi)"
+        name_fa: "ایرنا"
+        language: fa
+        notes: "Islamic Republic News Agency - Iran's official state news. Founded 1934."
+      - handle: "@Irna_en"
+        name_en: "IRNA (English)"
+        language: en
+        notes: "English-language IRNA. Useful for tracking regime's international messaging."
+      - handle: "@iribnews"
+        name_en: "IRIB News"
+        name_fa: "اخبار صدا و سیما"
+        language: fa
+        notes: "State broadcaster. Under direct Supreme Leader authority per Article 175 of Constitution. Hit by Israeli airstrike June 2025."
+      - handle: "@iribnews_com"
+        name_en: "IRIB News (secondary)"
+        language: fa
+        notes: "Secondary IRIB channel."
+      - handle: "@irnews"
+        name_en: "IR News"
+        language: fa
+        notes: "State news aggregator channel."
+
+  - name: "IRGC-Affiliated News Agencies"
+    faction: irgc_hardline
+    source_tier: 2
+    monitoring_priority: critical
+    rationale: "Semi-official outlets with direct IRGC ties. Fars and Tasnim are sanctioned by US. Key for tracking IRGC narrative, military claims, hardliner position. Continued operating during Jan 2026 shutdown while reformist outlets went silent."
+    channels:
+      - handle: "@farsna"
+        name_en: "Fars News Agency"
+        name_fa: "خبرگزاری فارس"
+        language: fa
+        notes: "Founded 2003. Close IRGC ties. US-sanctioned. Called for 1988-style executions of detainees (Session 21 finding)."
+      - handle: "@Tasnimnews"
+        name_en: "Tasnim News Agency"
+        name_fa: "خبرگزاری تسنیم"
+        language: fa
+        notes: "Founded 2012. IRGC-linked. US-sanctioned. Remained accessible internationally during internet shutdown."
+      - handle: "@mehrnews"
+        name_en: "Mehr News Agency"
+        name_fa: "خبرگزاری مهر"
+        language: fa
+        notes: "Owned by Islamic Propagation Organisation. More active than Fars/Tasnim during Jan 2026 protests and Feb 2026 war start."
+
+  - name: "IRGC Direct / Military Channels"
+    faction: irgc_military
+    source_tier: 1
+    monitoring_priority: critical
+    rationale: "Direct IRGC media arms. Sepah News is official IRGC outlet. Critical for tracking military claims, operational narratives, command messaging during active operations."
+    channels:
+      - handle: "@sepah"
+        name_en: "Sepah News"
+        name_fa: "سپاه نیوز"
+        language: fa
+        notes: "Direct IRGC media arm. Official military statements."
+      - handle: "@sepah_ir"
+        name_en: "Sepah (secondary)"
+        language: fa
+        notes: "Secondary IRGC channel."
+      - handle: "@sepah_pasdaran"
+        name_en: "Sepah Pasdaran"
+        language: fa
+        notes: "IRGC Pasdaran channel."
+      - handle: "@sepah_quds"
+        name_en: "Sepah Quds"
+        language: fa
+        notes: "Quds Force channel. Proxy operations, regional axis messaging."
+      - handle: "@Afsaran_ir"
+        name_en: "Afsaran"
+        name_fa: "افسران"
+        language: fa
+        notes: "Military officers' channel. IRGC-affiliated."
+      - handle: "@defapress_ir"
+        name_en: "Defa Press"
+        name_fa: "دفاع پرس"
+        language: fa
+        notes: "Defense press. Military/defense news."
+      - handle: "@SaberinFa"
+        name_en: "Saberin (Farsi)"
+        language: fa
+        notes: "IRGC special forces-affiliated channel."
+      - handle: "@Saberin_ir"
+        name_en: "Saberin (secondary)"
+        language: fa
+        notes: "Secondary Saberin channel."
+      - handle: "@sarbazane_g"
+        name_en: "Sarbazane Gholamreza"
+        language: fa
+        notes: "Military/Basij affiliated."
+
+  # ══════════════════════════════════════════════════════════════════
+  # CATEGORY 2: ESCHATOLOGICAL FACTION / PAYDARI / MASAF
+  # HIGHEST ITP ANALYTICAL PRIORITY — core thesis actors
+  # ══════════════════════════════════════════════════════════════════
+
+  - name: "Eschatological Faction Channels"
+    faction: eschatological_paydari_masaf
+    source_tier: 2
+    monitoring_priority: critical
+    rationale: "ITP core thesis actors. Mirbagheri/Paydari/MASAF eschatological faction. Theological motivation, financial independence (Mahsouli), media infrastructure, Basij overlap, Assembly of Experts seats. These channels are primary sources for tracking faction signaling, succession positioning, and spoiler activity."
+    channels:
+      - handle: "@masaf"
+        name_en: "MASAF Institute"
+        name_fa: "مؤسسه مصاف"
+        language: fa
+        notes: "Jebhe-ye Sobh-e Iran. Founded by Raefipour. IRGC-affiliated think tank. Extensive social media operation. Overlaps with Basij Cyberspace Organization."
+      - handle: "@masaf_raefipour"
+        name_en: "Raefipour / MASAF (personal)"
+        language: fa
+        notes: "Ali-Akbar Raefipour's channel. Conspiracy theorist, Mahdist propagandist. Coordinates hashtag campaigns. Key eschatological faction voice."
+      - handle: "@mahdaviatsiasi"
+        name_en: "Political Mahdaviat"
+        name_fa: "مهدویت سیاسی"
+        language: fa
+        notes: "Mahdist political ideology channel. Core eschatological content."
+      - handle: "@BisimchiMedia"
+        name_en: "Bisimchi Media"
+        name_fa: "بیسیمچی"
+        language: fa
+        notes: "IRGC/Basij cyber media. Overlaps with Seraj and MASAF networks."
+      - handle: "@sepahcybery"
+        name_en: "Sepah Cyber"
+        language: fa
+        notes: "IRGC cyber operations channel. Basij Cyberspace Organization overlap."
+      - handle: "@Nournews_ir"
+        name_en: "Nour News"
+        name_fa: "نورنیوز"
+        language: fa
+        notes: "SNSC-affiliated. Has published content aligned with hardliner/eschatological positions."
+      - handle: "@serfan_jahate_ettela"
+        name_en: "Serfan (informational)"
+        language: fa
+        notes: "Pro-regime informational channel. Hardliner orbit."
+
+  # ══════════════════════════════════════════════════════════════════
+  # CATEGORY 3: MODERATE / REFORMIST / PRAGMATIST MEDIA
+  # Key for tracking Larijani-aligned signaling, dual-audience messaging,
+  # and the pragmatist negotiating position
+  # ══════════════════════════════════════════════════════════════════
+
+  - name: "Reformist / Moderate Newspapers"
+    faction: reformist_pragmatist
+    source_tier: 3
+    monitoring_priority: high
+    rationale: "Reformist newspapers provide counter-narrative to IRGC hardliner position. Track Larijani-aligned signaling, pragmatist faction position on negotiations, internal criticism of eschatological faction. NOTE: These went silent during Jan 2026 internet shutdown — their silence itself is analytical signal."
+    channels:
+      - handle: "@EtemadOnline"
+        name_en: "Etemad Online"
+        name_fa: "اعتماد آنلاین"
+        language: fa
+        notes: "Reformist daily. Analytical. Silent during Jan 2026 shutdown."
+      - handle: "@hammihanonline"
+        name_en: "Ham-Mihan Online"
+        name_fa: "هم‌میهن آنلاین"
+        language: fa
+        notes: "Reformist. Shut down Jan 2026 after editor published piece on political unrest and 1979 revolution."
+      - handle: "@SharghDaily"
+        name_en: "Shargh Daily"
+        name_fa: "شرق"
+        language: fa
+        notes: "Reformist analytical. Silent during Jan 2026 shutdown."
+      - handle: "@Eslahatnews"
+        name_en: "Eslahat News"
+        name_fa: "اصلاحات نیوز"
+        language: fa
+        notes: "Reformist news channel."
+      - handle: "@pezeshkian_com"
+        name_en: "Pezeshkian (official)"
+        language: fa
+        notes: "President Pezeshkian's channel. Part of interim leadership trio."
+
+  - name: "Mainstream / Centrist News"
+    faction: mainstream_centrist
+    source_tier: 2
+    monitoring_priority: medium
+    rationale: "Centrist outlets straddle regime-reformist divide. Useful for tracking mainstream Iranian public discourse and factional temperature."
+    channels:
+      - handle: "@isna94"
+        name_en: "ISNA"
+        name_fa: "ایسنا"
+        language: fa
+        notes: "Iranian Student News Agency. Considered moderate/independent by international observers."
+      - handle: "@entekhab_ir"
+        name_en: "Entekhab"
+        name_fa: "انتخاب"
+        language: fa
+        notes: "Mainstream, news-focused. High-volume."
+      - handle: "@khabaronline_ir"
+        name_en: "Khabar Online"
+        name_fa: "خبرآنلاین"
+        language: fa
+        notes: "Moderate outlet. Silent during Jan 2026 shutdown."
+      - handle: "@Asriran_press"
+        name_en: "Asr-e Iran"
+        name_fa: "عصر ایران"
+        language: fa
+        notes: "Moderate. Notably kept channel active during Jan 2026 shutdown despite other moderates going silent."
+      - handle: "@tabnak"
+        name_en: "Tabnak"
+        name_fa: "تابناک"
+        language: fa
+        notes: "News/analysis. Close to Mohsen Rezaei orbit."
+      - handle: "@jamarannews"
+        name_en: "Jamaran News"
+        language: fa
+        notes: "News channel. Named after Khomeini's residence."
+      - handle: "@yjcnewschannel"
+        name_en: "Young Journalists Club"
+        name_fa: "باشگاه خبرنگاران جوان"
+        language: fa
+        notes: "State-run youth journalism. Updated only first few days of Jan 2026 shutdown, then went inactive."
+
+  - name: "Hardliner Newspapers / Analysis"
+    faction: principlist_hardline
+    source_tier: 2
+    monitoring_priority: medium
+    rationale: "Principlist (non-eschatological hardliner) outlets. Track mainstream hardliner position vs. eschatological faction — the intra-hardliner split is analytically important."
+    channels:
+      - handle: "@mashreghnews_channel"
+        name_en: "Mashregh News"
+        name_fa: "مشرق نیوز"
+        language: fa
+        notes: "Hardliner analysis/news. IRGC-adjacent but editorially distinct from Fars/Tasnim."
+      - handle: "@rajanews_com"
+        name_en: "Raja News"
+        name_fa: "رجانیوز"
+        language: fa
+        notes: "Hardliner news outlet."
+      - handle: "@farhikhteganonline"
+        name_en: "Farhikhtegan"
+        name_fa: "فرهیختگان"
+        language: fa
+        notes: "State-funded newspaper. Continued updating during Jan 2026 shutdown."
+      - handle: "@snntv"
+        name_en: "SNN"
+        language: fa
+        notes: "State-funded news. Active during shutdown."
+
+  # ══════════════════════════════════════════════════════════════════
+  # CATEGORY 4: BREAKING NEWS / AGGREGATORS
+  # High volume, mostly reposted content, but fastest during crises
+  # ══════════════════════════════════════════════════════════════════
+
+  - name: "Breaking News Aggregators"
+    faction: non_aligned
+    source_tier: 4
+    monitoring_priority: medium
+    rationale: "Dominated first hours after Feb 28 attacks began. Rapid reposting. Low original content but fastest signal for event detection. Use for WT alerting, not for analytical input."
+    channels:
+      - handle: "@Anapress1"
+        name_en: "ANA Press"
+        language: fa
+        notes: "Breaking news aggregator. High volume."
+      - handle: "@hamshahrinews"
+        name_en: "Hamshahri News"
+        language: fa
+        notes: "Tehran municipal newspaper. Breaking news."
+      - handle: "@BourseNews"
+        name_en: "Bourse News"
+        language: fa
+        notes: "Financial/economic news. Track for sanctions impact, economic signals."
+
+  # ══════════════════════════════════════════════════════════════════
+  # CATEGORY 5: DIASPORA / INTERNATIONAL PERSIAN-LANGUAGE
+  # External perspective, opposition voices, human rights documentation
+  # ══════════════════════════════════════════════════════════════════
+
+  - name: "Diaspora / International Persian Media"
+    faction: diaspora_opposition
+    source_tier: 3
+    monitoring_priority: high
+    rationale: "Critical for counter-narrative, human rights documentation, protest coverage, and information that regime channels suppress. Iran International and BBC Persian have extensive source networks inside Iran."
+    channels:
+      - handle: "@IranIntl_Fa"
+        name_en: "Iran International (Farsi)"
+        language: fa
+        notes: "London-based. Saudi-linked funding. Most-watched diaspora outlet per GAMAAN survey. Extensive Iran source network."
+      - handle: "@IranIntl_En"
+        name_en: "Iran International (English)"
+        language: en
+        notes: "English-language Iran International."
+      - handle: "@bbcpersian"
+        name_en: "BBC Persian"
+        name_fa: "بی‌بی‌سی فارسی"
+        language: fa
+        notes: "BBC Persian Service. 713K+ followers. Key citizen journalism platform."
+      - handle: "@radiofarda_"
+        name_en: "Radio Farda"
+        language: fa
+        notes: "RFE/RL Persian service. US-funded."
+      - handle: "@VOAIran"
+        name_en: "VOA Farsi"
+        language: fa
+        notes: "Voice of America Persian. Defunded by Trump admin but Persian service still operating. Handle may have changed — verify."
+
+  # ══════════════════════════════════════════════════════════════════
+  # CATEGORY 6: HUMAN RIGHTS / CIVIL SOCIETY
+  # Documentation of repression, protest tracking, civilian impact
+  # ══════════════════════════════════════════════════════════════════
+
+  - name: "Human Rights / Civil Society"
+    faction: civil_society
+    source_tier: 3
+    monitoring_priority: medium
+    rationale: "Track regime repression, protest documentation, civilian casualty reporting. Important for population disaggregation analysis and manufactured complicity (Obs 030) evidence."
+    channels:
+      # Specific handles need verification via Grok/X crossposting
+      # Known organizations with Telegram presence:
+      # - Human Rights Activists in Iran (HRA) - documented 24 IRGC channels
+      # - Iran Human Rights (IHR)
+      # - Committee to Protect Journalists (CPJ) - Iran coverage
+      # - Hengaw - Kurdish human rights
+      - handle: "TBD_hrana"
+        name_en: "Human Rights Activists Iran"
+        language: fa
+        notes: "NEEDS HANDLE VERIFICATION via Grok. HRA documented IRGC Telegram operations."
+        status: unverified
+      - handle: "TBD_ihr"
+        name_en: "Iran Human Rights"
+        language: fa
+        notes: "NEEDS HANDLE VERIFICATION. Norway-based. Death penalty monitoring."
+        status: unverified
+      - handle: "TBD_hengaw"
+        name_en: "Hengaw"
+        language: fa
+        notes: "NEEDS HANDLE VERIFICATION. Kurdish human rights org. Critical for Kurdish offensive coverage."
+        status: unverified
+
+  # ══════════════════════════════════════════════════════════════════
+  # CATEGORY 7: MARJA / RELIGIOUS AUTHORITY
+  # Track independent religious authority signals, theological vacuum
+  # filling, succession-relevant positioning
+  # ══════════════════════════════════════════════════════════════════
+
+  - name: "Religious Authority / Marja Channels"
+    faction: religious_establishment
+    source_tier: 2
+    monitoring_priority: high
+    rationale: "Track independent marja decrees filling theological vacuum post-Khamenei. Shirazi jihad declaration (Session 21) surfaced through religious channels. Assembly of Experts succession signals."
+    channels:
+      # Specific marja channels need verification
+      # Known to have Telegram presence:
+      # - Grand Ayatollah Shirazi network
+      # - Qom seminary channels
+      # - Assembly of Experts official channel
+      - handle: "TBD_shirazi"
+        name_en: "Shirazi Network"
+        language: fa
+        notes: "NEEDS HANDLE VERIFICATION. Grand Ayatollah Shirazi. Issued jihad declaration. Independent marja filling theological vacuum."
+        status: unverified
+      - handle: "TBD_hawza"
+        name_en: "Hawza (Seminary) News"
+        language: fa
+        notes: "NEEDS HANDLE VERIFICATION. Qom seminary news."
+        status: unverified
+      - handle: "@qudsonline"
+        name_en: "Quds Online"
+        language: fa
+        notes: "Religious/political news from Mashhad. Astan Quds Razavi orbit."
+
+  # ══════════════════════════════════════════════════════════════════
+  # CATEGORY 8: MILITARY OSINT / CONFLICT TRACKING
+  # Regional military developments, strike documentation, BDA
+  # ══════════════════════════════════════════════════════════════════
+
+  - name: "Military OSINT / Conflict Monitoring"
+    faction: non_aligned
+    source_tier: 4
+    monitoring_priority: high
+    rationale: "Open-source military intelligence. Strike documentation, battle damage assessment, equipment identification. High noise but fast signal during active operations. Many of these are international channels, not Iran-specific."
+    channels:
+      # These channels are well-known in OSINT community
+      # Handles need current verification via Grok
+      - handle: "TBD_osint_aggregator"
+        name_en: "OSINT Aggregator Channels"
+        language: en
+        notes: "NEEDS SPECIFIC HANDLES — use Grok to search X for current active OSINT Telegram channels covering Iran operations. Landscape changes rapidly."
+        status: unverified
+
+# ══════════════════════════════════════════════════════════════════
+# VERIFICATION TASKS
+# Use Grok (SC-X) to cross-check handles via X/Twitter crossposts
+# Use TGStat (ir.tgstat.com) to verify subscriber counts
+# ══════════════════════════════════════════════════════════════════
+
+verification_queue:
+  - task: "Verify all TBD handles in Categories 6, 7, 8 using Grok X search"
+    priority: high
+    method: "Search X for org name + 'telegram' + 'channel'"
+  - task: "Cross-check all handles via ir.tgstat.com"
+    priority: medium
+    method: "Browse TGStat Iran news/politics categories"
+  - task: "Identify Mirbagheri personal Telegram channel"
+    priority: critical
+    method: "Search referenced in Iran International article — Mirbagheri publishes under 'war' heading on his Telegram"
+  - task: "Identify Khamenei office Telegram channel"
+    priority: critical
+    method: "Known to have continued posting during Jan 2026 shutdown. Handle likely @khaborsaw or similar — verify"
+  - task: "Identify Larijani / SNSC Telegram channel"
+    priority: high
+    method: "Larijani is real operational authority per scenario context. Track his messaging."
+  - task: "Identify IRGC unit-level channels (Kermanshah, etc.)"
+    priority: medium
+    method: "Grok search for regional IRGC Telegram channels. May not exist as public channels."
+  - task: "Survey OSINT Telegram landscape for Iran conflict coverage"
+    priority: high
+    method: "Grok search X for 'Iran OSINT Telegram' — community self-organizes and shares channel links"
+
+# ══════════════════════════════════════════════════════════════════
+# MONITORING NOTES
+# ══════════════════════════════════════════════════════════════════
+
+monitoring_notes:
+  internet_shutdown_behavior: |
+    During Jan 2026 internet shutdown (most extreme in Iran's history):
+    - CONTINUED operating: Fars, Tasnim, Mehr, SNN, Farhikhtegan, IRIB News,
+      Asr-e Iran, Supreme Leader office, Araghchi (FM)
+    - WENT SILENT: Shargh, Etemad, Ham-Mihan, Khabar Online
+    - PARTIAL: YJC (first few days only)
+
+    This asymmetry is itself an analytical signal: regime channels maintain
+    infrastructure access that reformist outlets do not. The silence pattern
+    maps to factional power differential under stress.
+
+  first_72_hours_war_pattern: |
+    Per Factnameh analysis (2026-03-04):
+    - Breaking news aggregators dominated first hours
+    - Mehr News more active than Fars/Tasnim (surprising)
+    - Khamenei death coverage deprioritized vs. war coverage
+    - Succession discussion marginal compared to military narrative
+    - Official channels avoided confirming Khamenei death before state TV
+    - Activity drop visible between international death reports and official confirmation
+
+  volume_management: |
+    High-traffic channels during active operations can generate hundreds of
+    messages/day. Raw export will contain massive noise. Pre-filter options:
+    1. Manual relevance scan before export (highest quality, lowest scale)
+    2. Keyword filter in export script (medium quality, good scale)
+    3. Cheap LLM pass (Haiku-tier) against WT watch list (automated, needs testing)
+    Recommendation: Start with option 1 for critical channels, option 2 for high-volume channels.

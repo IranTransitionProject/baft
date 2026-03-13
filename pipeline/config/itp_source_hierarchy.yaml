@@ -1,0 +1,141 @@
+# ITP Source Hierarchy
+# Version: 1.0
+# Date: 2026-03-13
+# Used by: SP (source tagging), WT (channel evaluation)
+#
+# Epistemic tag assignment rules per tier are below.
+# Wikipedia is excluded as primary/corroborating source for Iran content.
+
+version: "1.0"
+date: "2026-03-13"
+
+tiers:
+
+  - tier: 1
+    label: "Official regime primary sources"
+    description: >
+      Direct state output. Official government agencies, Supreme Leader's
+      office, state broadcaster. Highest signal for regime narrative and
+      official positions. These sources continued operating during the
+      Jan 2026 internet shutdown — treat sustained presence as indicator
+      of regime stability.
+    examples:
+      - "KHAMENEI.IR (official Supreme Leader office)"
+      - "IRNA (Islamic Republic News Agency, founded 1934)"
+      - "IRIB (state broadcaster, under direct Supreme Leader authority)"
+      - "Press TV (English-language state outlet)"
+      - "Seratnews (judiciary-affiliated)"
+      - "Rasanews (IRIB official)"
+      - "SNSC official statements"
+      - "Ministry of Foreign Affairs statements"
+    epistemic_defaults:
+      single_source: "[Uncertain]"
+      corroborated_tier1: "[Fact]"
+    notes:
+      - "What Tier 1 sources DON'T say is often as significant as what they do"
+      - "Silence on a topic = potentially significant"
+      - "Regime primary sources contain more analytical value than diaspora synthesis"
+
+  - tier: 2
+    label: "Semi-official / regime-affiliated media"
+    description: >
+      Regime-affiliated with editorial function. Higher-than-primary
+      source volatility — can be used to test narratives before official
+      adoption. IRGC-affiliated news carries factional signal.
+    examples:
+      - "Fars News Agency (IRGC-affiliated)"
+      - "Tasnim News Agency (IRGC-affiliated)"
+      - "ISNA (Iranian Students News Agency)"
+      - "Mehr News Agency (state-linked)"
+      - "Sepah News (IRGC official)"
+      - "Basij News"
+      - "MASAF (affiliated conservative religious)"
+    epistemic_defaults:
+      single_source: "[Uncertain]"
+      corroborated_tier1: "[Fact]"
+      corroborated_tier2: "[Inference]"
+    notes:
+      - "Factional affiliation (IRGC, Judiciary, etc.) is an analytical signal"
+      - "Divergence between Tier 1 and Tier 2 on same event = factional signal"
+
+  - tier: 3
+    label: "Independent media and diaspora outlets"
+    description: >
+      Outlets with transparent sourcing, editorial independence, and
+      track record. Diaspora investigative outlets included here if
+      they have demonstrable sourcing discipline.
+    examples:
+      - "Iran International (London-based, Farsi/English)"
+      - "IranWire"
+      - "Radio Farda (RFE/RL)"
+      - "BBC Persian"
+      - "Manoto (satellite, diaspora)"
+      - "Hengaw (Kurdish human rights monitoring, inside Iran)"
+      - "HRANA (Human Rights Activists News Agency)"
+    epistemic_defaults:
+      single_source: "[Uncertain]"
+      corroborated_tier3: "[Uncertain]"
+      corroborated_tier1_or_2: "[Inference]"
+    notes:
+      - "Diaspora media can amplify regime narrative — assess directionality"
+      - "Hengaw is exceptional: field-sourced from inside Iran (Kurdish provinces)"
+
+  - tier: 4
+    label: "Single-source, unverified, agenda-driven"
+    description: >
+      Single-source claims, channels with known agenda without editorial
+      discipline, unverified social media accounts.
+    examples:
+      - "Anonymous Telegram channels"
+      - "Unverified Twitter/X accounts"
+      - "MEK/NCRI affiliated outlets (strong agenda)"
+      - "Unnamed official cited in Western press"
+    epistemic_defaults:
+      single_source: "[Speculation]"
+      corroborated_tier3: "[Uncertain]"
+    notes:
+      - "Tier 4 sources can still be analytically significant — they may be the only source for specific information"
+      - "MEK/NCRI: historically high false-positive rate on IRGC internal claims"
+
+  - tier: 5
+    label: "Social media noise"
+    description: >
+      Unverified social media posts, viral clips, anonymous crowd-sourced
+      content. Requires heavy verification before any use.
+    examples:
+      - "Anonymous TikTok/Instagram reels"
+      - "Viral clips without provenance"
+      - "Unverified eyewitness claims"
+    epistemic_defaults:
+      all: "[Speculation]"
+    notes:
+      - "AI-generated content contamination risk is highest here"
+      - "Verify viral clips — check for AI generation artifacts before integrating"
+
+# Cross-source calibration framework
+# (Session 22 methodology — apply to single-source findings)
+calibration_levels:
+  - level: "Reported"
+    description: "Appears in one Tier 1–4 source. No corroboration."
+    epistemic_ceiling: "[Uncertain]"
+
+  - level: "Structurally Consistent"
+    description: "Single source but claim is consistent with structural patterns in framework"
+    epistemic_ceiling: "[Inference]"
+
+  - level: "Corroborated"
+    description: "Two or more independent sources at Tier 1–3"
+    epistemic_ceiling: "[Fact]"
+
+  - level: "Assessed as Systematic"
+    description: "Pattern confirmed across multiple source types and time periods"
+    epistemic_ceiling: "[Fact]"
+
+# Excluded sources
+excluded:
+  - source: "Wikipedia (Iran content)"
+    reason: "Documented state-affiliated manipulation of Iran-related articles"
+    permitted_use: "Navigation layer only — to locate primary sources"
+  - source: "AI-generated summaries (Gemini, ChatGPT)"
+    reason: "AI contamination risk — content may synthesize inaccurately"
+    permitted_use: "Never as intelligence — verify underlying sources directly"

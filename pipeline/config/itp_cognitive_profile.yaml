@@ -1,0 +1,172 @@
+# ITP Analyst Cognitive Profile
+# Version: 1.0
+# Date: 2026-03-13
+# Used by: SA (Session Advisor) — NOT visible to IA or any analytical node
+#
+# Purpose: Enable SA to detect session quality degradation specific to this
+#   analyst's known patterns. Generic fatigue heuristics are less reliable
+#   than pattern-specific ones calibrated to the actual operator.
+#
+# Source: Self-reported (Hooman Mehr) + observed patterns across Sessions 1–23
+# Update protocol: Hooman reviews and amends after any session where SA
+#   generates a false positive or misses a real degradation signal.
+
+version: "1.0"
+date: "2026-03-13"
+analyst_id: "hooman_mehr"
+
+# ── Cognitive baseline ────────────────────────────────────────────────────
+
+baseline:
+  diagnosis:
+    - "ASD (high-functioning, recently diagnosed)"
+    - "ADHD"
+  relevant_strengths:
+    - "Deep pattern recognition — sees structural connections across long time horizons"
+    - "High tolerance for complexity and ambiguity in analytical material"
+    - "Strong systematic/architectural thinking (CAD/CAM, IT, DIY background)"
+    - "Persistent focus when engaged on a problem that activates interest"
+    - "Low need for social validation in analytical conclusions"
+  relevant_challenges:
+    - "Executive function: session time management, switching tasks when hyperfocused"
+    - "EQ / social signal reading: may miss when a collaborative partner (human or AI) is flagging concern"
+    - "Task initiation: sometimes requires significant warm-up before analytical momentum builds"
+    - "Context switching: shifting from one analytical thread to another has higher cognitive cost than average"
+  self_reported_notes:
+    - "Describes self as 'jack of all trades' — may underestimate depth in any single domain"
+    - "Comfortable with uncertainty; may need prompting to specify confidence levels explicitly"
+
+# ── Session duration thresholds ───────────────────────────────────────────
+
+session_duration:
+  yellow_flag_minutes: 90
+  yellow_flag_action: "SA notes internally — do not flag unless other indicators present"
+  orange_flag_minutes: 150
+  orange_flag_action: "Flag to HI-R: recommend analyst take a physical break before continuing"
+  red_flag_minutes: 240
+  red_flag_action: "Flag to HI-R: recommend session close and resume fresh — quality degradation near-certain"
+  notes:
+    - "ASD hyperfocus can mask fatigue; clock time is more reliable than perceived fatigue level"
+    - "Sessions exceeding 3 hours show measurable quality degradation in epistemic tagging discipline"
+
+# ── Hyperfocus indicators ─────────────────────────────────────────────────
+
+hyperfocus:
+  definition: >
+    Sustained engagement on a single sub-topic for 20+ minutes without
+    connecting back to broader session objectives. Positive when topic
+    is session priority; negative when it displaces higher-priority work.
+  triggers:
+    - "New factional dynamic or power structure detail"
+    - "Architectural/structural analytical problems (pipeline design, schema design)"
+    - "Technical implementation challenges in EXECUTOR mode"
+    - "Unexplained data point that doesn't fit existing framework"
+  positive_hyperfocus_indicators:
+    - "Topic IS the session objective"
+    - "Depth produced is high-quality and directly integrated"
+  negative_hyperfocus_indicators:
+    - "Topic is secondary to session objective"
+    - "Analyst has not referenced session objective in 20+ minutes"
+    - "Output is detailed but not integrated into any deliverable"
+  flag_threshold: "20+ minutes on off-priority topic"
+
+# ── Fatigue markers ───────────────────────────────────────────────────────
+
+fatigue:
+  markers:
+    - id: FM-1
+      signal: "Response length shortening over successive exchanges"
+      baseline: "Normal responses are substantive (3+ sentences)"
+      threshold: "3 consecutive responses < 2 sentences"
+    - id: FM-2
+      signal: "'Good enough' language"
+      examples: ["close enough", "that'll do", "fine", "whatever works", "doesn't matter"]
+      threshold: "2+ occurrences in 5 exchanges"
+    - id: FM-3
+      signal: "Epistemic tag omission"
+      baseline: "Epistemic tags applied consistently in analytical output"
+      threshold: "2+ consecutive outputs missing tags on claims that require them"
+    - id: FM-4
+      signal: "Scope compression"
+      description: "Analyst reduces scope of an analytical task without reasoning"
+      threshold: "Task scope reduced without explanation"
+    - id: FM-5
+      signal: "Shortened acknowledgments"
+      description: "Substantive engagement replaced by 'ok', 'yes', 'got it'"
+      threshold: "3+ consecutive minimal acknowledgments"
+  composite_threshold: "Any 2 of FM-1 through FM-5 → flag FATIGUE"
+
+# ── Confirmation bias patterns ────────────────────────────────────────────
+
+confirmation_bias:
+  known_thesis_attachments:
+    - thesis: "Deal Cannot Hold"
+      risk: "High attachment — early-session anchoring. May accept corroborating sources too quickly."
+    - thesis: "A9 Hollowness"
+      risk: "Medium attachment. Watch for dismissal of IRGC resilience data."
+    - thesis: "Puppet Problem"
+      risk: "Medium. Watch for over-reading Mojtaba power consolidation signals."
+  detection_signals:
+    - "Tier 3–4 source accepted without source tier notation when it corroborates a thesis"
+    - "Contradicting Tier 1–2 source flagged as 'noise' without reasoning"
+    - "RT challenge dismissed with 'I've considered this' without new counter-evidence"
+  threshold: "3 consecutive uncritical acceptances of corroborating Tier 3–4 claims → flag CONFIRMATION_BIAS"
+
+# ── Quality gate bypass patterns ──────────────────────────────────────────
+
+quality_gates:
+  gates:
+    - gate: "XV cross-validation before DE write"
+      bypass_signal: "DE write requested without XV step"
+      severity: critical
+      action: "Flag immediately — do not wait for next SA cycle"
+    - gate: "Epistemic tag on new observations"
+      bypass_signal: "New observation drafted without epistemic tag"
+      severity: high
+      action: "Flag immediately"
+    - gate: "Tier 3 audit before publication"
+      bypass_signal: "Substack/LinkedIn publication mentioned without audit_report reference"
+      severity: critical
+      action: "Flag immediately"
+    - gate: "Source tier notation on new claims"
+      bypass_signal: "Claim integrated without source or tier notation"
+      severity: medium
+      action: "Flag at next SA cycle"
+
+# ── Priority drift definition ─────────────────────────────────────────────
+
+priority_drift:
+  definition: >
+    Session objective was stated at session start. Current engagement is on
+    a topic not connected to that objective and not explicitly re-prioritized.
+  detection:
+    - "Extract session objective from first 3 exchanges"
+    - "Track topic continuity across exchanges"
+    - "Flag if topic has drifted for 20+ minutes without analyst re-prioritization"
+  common_drift_patterns:
+    - "From analytical work to EXECUTOR/code debugging"
+    - "From primary brief work to secondary architecture design"
+    - "From high-priority gap fill to background knowledge exploration"
+
+# ── Emotional escalation markers ──────────────────────────────────────────
+
+emotional_escalation:
+  markers:
+    - "Urgency language exceeding analytical situation"
+    - "Frustration with tool behavior bleeding into analytical framing"
+    - "Personal investment language ('I need this to work', 'this has to be right')"
+    - "Dismissiveness toward standard quality checks ('just skip that')"
+  threshold: "2+ markers in 3 exchanges → flag EMOTIONAL_ESCALATION"
+  notes:
+    - "ASD pattern: emotional signals may appear as behavioral changes rather than explicit expression"
+    - "Watch for behavioral signals: unusual persistence on a blocked path, repetition without variation"
+
+# ── SA operating constraints ──────────────────────────────────────────────
+
+sa_constraints:
+  - "SA does NOT speak to the analyst directly under any circumstance"
+  - "SA reports flags to HI-R only via sa_advisory output"
+  - "SA does NOT evaluate analytical content — only interaction patterns"
+  - "SA fires only when flag threshold is crossed — silent otherwise"
+  - "SA output is internal — not shown in the chat interface unless HI-R routes it"
+  - "A false positive (SA flags when analyst is fine) is preferable to a false negative (SA misses degradation)"

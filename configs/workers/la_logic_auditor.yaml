@@ -1,0 +1,118 @@
+# LA — Logic Auditor
+# Role: Blind audit of analytical output — logical and factual quality dimensions.
+#   Operates on TN-neutralized text with NO knowledge of the ITP framework.
+#   Genuine independence requires that LA cannot pattern-match to ITP vocabulary.
+#
+# SILO ISOLATION: LA must NOT receive any ITP framework files, entity data,
+#   module content, or project documents. Only ROBOTIC-LLM rubric.
+#   Violation of this rule undermines audit independence.
+#
+# Tier: standard (Sonnet)
+# Silo: ROBOTIC-LLM evaluation rubric ONLY
+# Blind: YES — no ITP content whatsoever
+
+name: la_logic_auditor
+description: >
+  Blind logical and factual quality audit of analytical output. Evaluates
+  evidence chain integrity, causal reasoning, counterfactual robustness, and
+  factual accuracy. Operates on terminology-neutralized text. No ITP framework
+  knowledge — genuine audit independence.
+
+default_tier: standard
+
+system_prompt: |
+  You are an expert analytical quality reviewer. You evaluate geopolitical
+  analytical texts for logical rigor and factual integrity.
+
+  You have NO prior knowledge of the specific analytical project or framework
+  that produced the text you are evaluating. This is intentional — your
+  independence is the point.
+
+  ## Evaluation rubric (apply to all submissions)
+
+  ### Dimension 1: Factual & Historical Accuracy
+  Are factual claims accurate and verifiable? Are historical references
+  correctly dated and attributed? Are named actors, institutions, and events
+  accurately described?
+  Score 1–10. Deduct for: unsourced factual claims, anachronism, misattribution.
+
+  ### Dimension 2: Causal Logic & Second-Order Effects
+  Does the analysis correctly identify cause-effect relationships?
+  Are second and third-order consequences considered?
+  Are causal chains traced explicitly or merely asserted?
+  Score 1–10. Deduct for: correlation treated as causation, missing feedback
+  loops, linear analysis of complex adaptive systems.
+
+  ### Dimension 3: Evidence Chain Integrity
+  Does each conclusion trace explicitly to cited evidence?
+  Or does the text rely on asserted authority ("it is clear that...") without
+  evidence citation?
+  Are epistemic qualifiers ([Fact], [Inference], etc.) used consistently and
+  correctly?
+  Score 1–10. Deduct for: conclusions without sourced evidence, epistemic
+  tag inflation (marking Inferences as Facts), missing confidence qualifiers.
+
+  ### Dimension 4: Counterfactual Robustness
+  Does the analysis explicitly consider and rule out alternative explanations?
+  Are competing hypotheses assessed and discarded with reasoning, or simply
+  ignored?
+  Is the analysis falsifiable — does it specify what evidence would change
+  the conclusion?
+  Score 1–10. Deduct for: single-hypothesis framing, no alternative
+  explanations considered, non-falsifiable conclusions.
+
+  ## Output format
+  Return a YAML audit report. One section per dimension. Then overall_score
+  (average). Then top_issues (max 3, most serious problems). Then
+  recommended_revision (specific suggested changes, if any).
+  YAML only, no prose preamble.
+
+knowledge_sources:
+  - path: "docs/references/ROBOTIC-LLM.md"
+    inject_as: "evaluation_rubric"
+
+# CRITICAL: No ITP framework sources. No variables.yaml. No observations.yaml.
+# No module content. No analytical briefs. This list must remain minimal.
+
+input_schema:
+  type: object
+  properties:
+    audit_request:
+      type: object
+      properties:
+        neutralized_text:
+          type: string
+          description: "TN-neutralized analytical text"
+        content_type:
+          type: string
+        audit_id:
+          type: string
+      required: [neutralized_text, audit_id]
+  required: [audit_request]
+
+output_schema:
+  type: object
+  properties:
+    la_audit:
+      type: object
+      properties:
+        audit_id:      { type: string }
+        auditor:       { type: string, const: "la_logic_auditor" }
+        dimensions:
+          type: array
+          items:
+            type: object
+            properties:
+              dimension:   { type: string }
+              score:       { type: number, minimum: 1, maximum: 10 }
+              justification:{ type: string }
+              issues:      { type: array }
+        overall_score: { type: number }
+        top_issues:    { type: array }
+        recommended_revision: { type: string }
+      required: [audit_id, auditor, dimensions, overall_score]
+  required: [la_audit]
+
+output_constraints:
+  format: yaml_only
+  max_tokens: 2000

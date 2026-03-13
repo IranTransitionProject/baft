@@ -1,0 +1,83 @@
+# XV — Cross-Validator
+# Role: Validate entity cross-references before any database commit.
+#   Checks that all entity IDs, module codes, and cross-ref fields cited
+#   in a proposed integration_spec actually exist in the entity registry.
+#   Lightweight — no analytical reasoning required.
+#
+# Tier: local (Haiku)
+# Silo: entity ID registry ONLY — the minimal lookup table
+# Blind: N/A — sees IDs but not analytical content
+
+name: xv_cross_validator
+description: >
+  Validate cross-references between entities before database commit. Checks
+  that cited entity IDs exist, module codes are valid, and inter-entity
+  relationships are consistent. Run before any DE commit.
+
+default_tier: local
+
+system_prompt: |
+  You are the ITP Cross-Validator (XV). You perform one task: validate
+  that all entity IDs and cross-references in a proposed integration_spec
+  exist in the current entity registry.
+
+  ## Validation checks
+
+  1. ENTITY ID EXISTS. Every entity_id referenced anywhere in the spec
+     must exist in the entity registry. Format must match:
+     V-XX, Obs NNN, S-N, W-N, Trap N, G-NN, B-NN, ITB-AX, ISA-SX.
+
+  2. MODULE CODE FORMAT. Module codes (ITB-A1 through ITB-A13, ISA sections)
+     must match the registry. Report malformed codes.
+
+  3. SELF-REFERENCE CHECK. An entity cannot cross-reference itself.
+
+  4. STATUS CONSISTENCY. References to entities with status "superseded"
+     or "archived" should be flagged as warnings (not failures).
+
+  ## Output
+  Return YAML only. For each referenced entity: FOUND, NOT_FOUND, or WARNING.
+  If any NOT_FOUND: overall status is FAIL. If warnings only: PASS_WITH_WARNINGS.
+  If all found: PASS.
+
+knowledge_sources:
+  - silo: entity_id_registry
+
+input_schema:
+  type: object
+  properties:
+    validation_request:
+      type: object
+      properties:
+        integration_spec:
+          type: object
+        entity_refs:
+          type: array
+          items: { type: string }
+          description: "Flat list of entity IDs to validate"
+  required: [validation_request]
+
+output_schema:
+  type: object
+  properties:
+    validation_result:
+      type: object
+      properties:
+        overall_status:   { type: string, enum: [PASS, PASS_WITH_WARNINGS, FAIL] }
+        checked_count:    { type: integer }
+        failed_count:     { type: integer }
+        warning_count:    { type: integer }
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              entity_id:  { type: string }
+              status:     { type: string, enum: [FOUND, NOT_FOUND, WARNING] }
+              note:       { type: string }
+      required: [overall_status, checked_count, failed_count, details]
+  required: [validation_result]
+
+output_constraints:
+  format: yaml_only
+  max_tokens: 1000

@@ -1,0 +1,103 @@
+# ITP Epistemic Rules
+# Version: 1.0
+# Date: 2026-03-13
+# Used by: SP (initial tagging), IA (analytical tagging), DE (validation)
+#
+# These rules are binding. IA may not upgrade an epistemic tag without
+# explicitly stating the reasoning chain that justifies the upgrade.
+
+version: "1.0"
+date: "2026-03-13"
+
+tags:
+
+  - tag: "[Fact]"
+    definition: >
+      Directly stated in a Tier 1–2 source AND independently corroborated
+      by at least one additional source at Tier 1–3. Both sources must be
+      independent (not cross-citing each other).
+    requirements:
+      - minimum_tier: 2
+      - minimum_sources: 2
+      - independence_required: true
+    upgrade_path: "[Inference] → [Fact] requires: new corroborating source at Tier 1–3"
+    downgrade_triggers:
+      - "Corroborating source is withdrawn or retracted"
+      - "Evidence of source coordination (not independent)"
+      - "New contradicting Tier 1 source emerges"
+
+  - tag: "[Inference]"
+    definition: >
+      Logically derived from one or more [Fact]-tagged claims via a
+      stated, explicit reasoning chain. The inference must be the
+      most parsimonious explanation of the Facts. Competing
+      explanations must be considered and explicitly ruled out.
+    requirements:
+      - basis: "minimum one [Fact]-tagged claim"
+      - reasoning_chain: "must be explicit in the output"
+      - alternatives_considered: true
+    upgrade_path: "[Uncertain] → [Inference] requires: explicit Facts as basis"
+    downgrade_triggers:
+      - "Basis Facts are downgraded to [Uncertain]"
+      - "A competing explanation is found that is not ruled out"
+
+  - tag: "[Uncertain]"
+    definition: >
+      Plausible claim from a Tier 3–4 source, OR a claim from Tier 1–2
+      that has not yet been independently corroborated, OR a claim where
+      two or more competing explanations remain viable and unresolved.
+    requirements:
+      - minimum_tier: 4   # Can be used even for Tier 4 if plausible
+      - no_independent_corroboration_required: true
+    upgrade_path: "[Uncertain] → [Inference] requires explicit Facts basis"
+    downgrade_triggers:
+      - "Source is found to be Tier 5 or fabricated"
+      - "Direct contradiction from Tier 1 source"
+
+  - tag: "[Speculation]"
+    definition: >
+      Analytical hypothesis with insufficient evidentiary basis.
+      Includes: predictions without structural grounding, Tier 5 claims,
+      unverified viral content, AI-generated synthesis.
+    requirements:
+      - no_source_required: true
+      - must_be_labeled_as_hypothesis: true
+    upgrade_path: "[Speculation] → [Uncertain] requires: Tier 4+ sourcing"
+    note: "Speculation is not a failure mode — it is an explicit analytical tool for hypothesis generation"
+
+confidence_bands:
+  - band: "High"
+    description: "Assessment is well-grounded, unlikely to change absent major new evidence"
+    applicable_tags: ["[Fact]", "[Inference]"]
+
+  - band: "Medium"
+    description: "Assessment is grounded but vulnerable to new information"
+    applicable_tags: ["[Inference]", "[Uncertain]"]
+
+  - band: "Low"
+    description: "Assessment is tentative; new evidence likely to shift it"
+    applicable_tags: ["[Uncertain]", "[Speculation]"]
+
+  - band: "Marginal"
+    description: "Assessment is barely above speculation threshold"
+    applicable_tags: ["[Uncertain]", "[Speculation]"]
+
+combination_rules:
+  - rule: "Fact + Fact → Fact"
+    note: "Combined Facts retain [Fact] tag if both are independently sourced"
+  - rule: "Fact + Inference → Inference"
+    note: "Output of a Facts-derived chain is still [Inference]"
+  - rule: "Fact + Uncertain → Uncertain"
+    note: "Weakest link applies to combined claims"
+  - rule: "Any + Speculation → Speculation"
+    note: "Speculative basis contaminates the output"
+  - rule: "Inference chain length > 3 → downgrade by one level"
+    note: "Long inference chains accumulate uncertainty; flag explicitly"
+
+validation_rules:
+  - "Every new observation entry must carry one of the four tags"
+  - "Every new variable assessment must carry one of the four tags"
+  - "Inference tag requires explicit reasoning_chain field in the output"
+  - "Fact tag requires corroboration_note field citing both sources"
+  - "Speculation tag requires hypothesis_basis field"
+  - "IA may not silently upgrade a tag from SP's extraction — must state justification"

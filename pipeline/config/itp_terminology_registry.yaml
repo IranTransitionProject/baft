@@ -1,0 +1,239 @@
+# ITP Terminology Registry
+# Version: 1.0
+# Date: 2026-03-13
+# Purpose: Vocabulary for TN (Terminology Neutralizer) node.
+#   Replace ITP-specific terms with generic equivalents before blind audit handoff.
+#   Prevents audit nodes from pattern-matching to published ITP content.
+#
+# Maintenance:
+#   EP (Editor-Publisher) flags new terms during publication review.
+#   DE adds them here.
+#   GA verifies completeness weekly.
+#   OQ #14 resolution: this file is the canonical registry.
+#
+# Format:
+#   itp_term: exact string as it appears in analytical output (case-sensitive)
+#   neutral_equivalent: replacement that preserves analytical meaning without project fingerprint
+#   context: brief note on when/why this term appears
+#   first_session: when this term entered ITP vocabulary
+#   published: true if this term has appeared in Substack (higher dedup risk)
+
+version: "1.0"
+date: "2026-03-13"
+
+entries:
+
+  # === Core thesis terms ===
+
+  - itp_term: "Deal Cannot Hold"
+    neutral_equivalent: "Agreement Stability Assessment: Low"
+    context: "Central thesis on nuclear/normalization deal viability"
+    first_session: 1
+    published: true
+
+  - itp_term: "convergent spoiler"
+    neutral_equivalent: "multi-actor veto mechanism"
+    context: "China upgraded from passive to active spoiler; multiple actors with aligned spoiler incentives"
+    first_session: 12
+    published: true
+
+  - itp_term: "puppet problem"
+    neutral_equivalent: "succession authority gap"
+    context: "Successor selected as puppet by competing factions; constitutional powers make arrangement unstable"
+    first_session: 8
+    published: true
+
+  - itp_term: "velocity gap"
+    neutral_equivalent: "pace asymmetry between concurrent processes"
+    context: "Sabotage mechanisms operate faster than deal implementation timelines"
+    first_session: 10
+    published: true
+
+  - itp_term: "hollowness thesis"
+    neutral_equivalent: "institutional fragility hypothesis"
+    context: "A9: Economic dependency (not ideology) is primary IRGC binding agent; system more fragile than it appears"
+    first_session: 4
+    published: true
+
+  - itp_term: "wrong interlocutor"
+    neutral_equivalent: "negotiating counterpart mismatch"
+    context: "Washington negotiates with pragmatists; deal survival depends on actors not at the table"
+    first_session: 6
+    published: true
+
+  - itp_term: "A9 Hollowness"
+    neutral_equivalent: "Institutional Fragility Hypothesis A9"
+    context: "Shorthand reference to the hollowness thesis observation"
+    first_session: 4
+    published: true
+
+  # === Structural/architectural terms ===
+
+  - itp_term: "Puppet Problem"
+    neutral_equivalent: "Succession Authority Gap"
+    context: "Capitalized form — used as named observation"
+    first_session: 8
+    published: true
+
+  - itp_term: "Two Clocks framework"
+    neutral_equivalent: "dual timeline collision model"
+    context: "Succession Clock vs. Washington Patience Clock — independent timelines creating structural collision"
+    first_session: 11
+    published: true
+
+  - itp_term: "command-delivery gap"
+    neutral_equivalent: "authorization-execution disconnect"
+    context: "Authorization chain broken; orders issued but not reliably executed"
+    first_session: 14
+    published: false
+
+  - itp_term: "Proxy Lab trap"
+    neutral_equivalent: "munitions depletion externality risk"
+    context: "Trap 13: Iran-Taiwan munitions equation — China benefits from US munitions depletion"
+    first_session: 13
+    published: true
+
+  - itp_term: "Convergent Spoiler"
+    neutral_equivalent: "Multi-Actor Veto Mechanism"
+    context: "Capitalized form — named observation"
+    first_session: 12
+    published: true
+
+  - itp_term: "interceptor arithmetic"
+    neutral_equivalent: "defensive munitions depletion calculus"
+    context: "THAAD/Patriot interceptor stock depletion creates hard operational deadline"
+    first_session: 22
+    published: false
+
+  - itp_term: "dual depletion race"
+    neutral_equivalent: "symmetric attrition dynamic"
+    context: "Iran losing offensive capacity (launchers); coalition losing defensive capacity (interceptors)"
+    first_session: 22
+    published: false
+
+  # === Analytical methodology terms ===
+
+  - itp_term: "taqiyyah verification problem"
+    neutral_equivalent: "compliance verification deficit"
+    context: "A8.8: Institutional operationalization of survival doctrine makes deal verification structurally weak"
+    first_session: 5
+    published: true
+
+  - itp_term: "sophisticated actor default"
+    neutral_equivalent: "rational actor baseline assumption"
+    context: "Standing analytical rule: regime actions analyzed as strategic rather than irrational"
+    first_session: 1
+    published: false
+
+  - itp_term: "coercive-endurance model"
+    neutral_equivalent: "escalation-as-negotiating-signal model"
+    context: "A12: Regime treats escalation as prerequisite for genuine negotiation"
+    first_session: 15
+    published: true
+
+  - itp_term: "ITB"
+    neutral_equivalent: "ITP Analytical Framework Core"
+    context: "Iran Transition Baseline — the foundational analytical framework document set"
+    first_session: 1
+    published: false
+
+  - itp_term: "ISA"
+    neutral_equivalent: "ITP Stress Architecture"
+    context: "Iran Stress Architecture — the stress/scenario component of the framework"
+    first_session: 1
+    published: false
+
+  # === Named actors / groupings (when used analytically) ===
+
+  - itp_term: "eschatological faction"
+    neutral_equivalent: "millenarian hardliner bloc"
+    context: "Mirbagheri-Mesbah Yazdi theological lineage; believes in active role in end-times scenario"
+    first_session: 9
+    published: true
+
+  - itp_term: "Throne"
+    neutral_equivalent: "Supreme Leader successor position"
+    context: "Mojtaba's role in six-node power map"
+    first_session: 21
+    published: false
+
+  - itp_term: "Sword"
+    neutral_equivalent: "IRGC commander position"
+    context: "Vahidi's role in six-node power map"
+    first_session: 21
+    published: false
+
+  - itp_term: "Operator"
+    neutral_equivalent: "SNSC coordination role"
+    context: "Larijani's role in six-node power map"
+    first_session: 21
+    published: false
+
+  - itp_term: "Kingmaker"
+    neutral_equivalent: "theological legitimation broker"
+    context: "Mirbagheri's role in six-node power map"
+    first_session: 21
+    published: false
+
+  - itp_term: "Shell"
+    neutral_equivalent: "nominal executive position"
+    context: "Pezeshkian's role in six-node power map"
+    first_session: 21
+    published: false
+
+  # === Operation-specific terms (wartime context) ===
+
+  - itp_term: "Operation Epic Fury"
+    neutral_equivalent: "US-Israeli strike campaign initiated February 2026"
+    context: "Current operational context — specific operation name"
+    first_session: 22
+    published: false
+
+  - itp_term: "four-front war structure"
+    neutral_equivalent: "multi-axis military pressure model"
+    context: "West (Kurdish/Iraq), South (Gulf/Hormuz), North (Azerbaijan), East (Balochistan)"
+    first_session: 23
+    published: false
+
+  - itp_term: "W1"
+    neutral_equivalent: "Wartime Scenario 1"
+    context: "Wartime scenario matrix codes W1–W5"
+    first_session: 22
+    published: false
+
+  - itp_term: "W2"
+    neutral_equivalent: "Wartime Scenario 2"
+    context: "Active baseline scenario as of session 22"
+    first_session: 22
+    published: false
+
+  - itp_term: "W3"
+    neutral_equivalent: "Wartime Scenario 3"
+    context: "Wartime scenario matrix"
+    first_session: 22
+    published: false
+
+  - itp_term: "W4"
+    neutral_equivalent: "Wartime Scenario 4"
+    context: "Wartime scenario matrix"
+    first_session: 22
+    published: false
+
+  - itp_term: "W5"
+    neutral_equivalent: "Wartime Scenario 5"
+    context: "Wartime scenario matrix"
+    first_session: 22
+    published: false
+
+  # === Dugin-Mirbagheri bridge ===
+  - itp_term: "Dugin-Mirbagheri ideological bridge"
+    neutral_equivalent: "far-right Eurasianist–Iranian millenarian ideological convergence"
+    context: "2016 Qom meeting, Springer peer-reviewed Dec 2025. Poisons Russia-as-mediator scenarios."
+    first_session: 18
+    published: true
+
+# Pending — EP to add on next publication review:
+# - "Jalili sabotage record" (19 years documented)
+# - "war selects for invisibility" thesis
+# - "BOM decomposition" (methodology term)
+pending_additions: []

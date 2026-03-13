@@ -1,0 +1,58 @@
+# itp_standard.yaml — Tier 2 standard analytical pipeline
+# Use: new source integration, variable updates, gap fills
+# Nodes: SP → IA → XV → DE
+# Cost: ~5–7 API calls
+
+name: itp_standard
+description: "Tier 2: Source processing → intelligence analysis → cross-validation → database write."
+
+stages:
+  - id: source_process
+    worker: sp_source_processor
+    input_mapping:
+      source_bundle: "{{input.source_bundle}}"
+
+  - id: analyze
+    worker: ia_intelligence_analyst
+    depends_on: [source_process]
+    input_mapping:
+      analytical_input:
+        session_id:       "{{input.session_id}}"
+        extracted_claims: "{{stages.source_process.output.extracted_claims}}"
+        analyst_note:     "{{input.analyst_note}}"
+        priority_gaps:    "{{input.priority_gaps}}"
+
+  - id: cross_validate
+    worker: xv_cross_validator
+    depends_on: [analyze]
+    input_mapping:
+      validation_request:
+        integration_spec: "{{stages.analyze.output.analytical_output.integration_spec}}"
+        entity_refs: "{{stages.analyze.output.analytical_output.integration_spec.entity_refs}}"
+
+  - id: db_write
+    worker: de_database_engineer
+    depends_on: [cross_validate]
+    condition: "stages.cross_validate.output.validation_result.overall_status != 'FAIL'"
+    input_mapping:
+      integration_request: "{{stages.analyze.output.analytical_output.integration_spec}}"
+    on_failure:
+      action: return_for_review
+      message: "XV cross-validation failed — integration_spec returned for analyst review"
+
+pipeline_output:
+  analytical_output: "{{stages.analyze.output.analytical_output}}"
+  validation_result: "{{stages.cross_validate.output.validation_result}}"
+  integration_result: "{{stages.db_write.output.integration_result}}"
+  publication_flagged: "{{stages.analyze.output.analytical_output.publication_flag}}"
+
+escalation:
+  - condition: "stages.analyze.output.analytical_output.publication_flag == true"
+    escalate_to: itp_audit
+    message: "IA flagged publication_ready — route to Tier 3 audit before publishing"
+
+error_handling:
+  sp_fail: halt
+  analyze_fail: halt
+  cross_validate_fail: return_for_review
+  db_write_fail: report

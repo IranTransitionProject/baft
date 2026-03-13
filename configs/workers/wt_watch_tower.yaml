@@ -1,0 +1,95 @@
+# WT — Watch Tower
+# Role: Daily automated monitoring sweep of watch list items across Telegram
+#   channels and web sources. Produces findings and agenda_items for AP.
+#   Web search enabled. Second mode (agenda_assembly) aggregates overnight
+#   findings for AP (Agenda Planner) at 07:00 UTC.
+#
+# Tier: standard (Sonnet) — requires synthesis across sources
+# Silo: watch_list, channel_registry
+
+name: wt_watch_tower
+description: >
+  Daily automated monitoring sweep. Scans watch list items across configured
+  channels and web. Produces watch_results with per-item findings and
+  agenda_items for session planning. Web search enabled.
+
+default_tier: standard
+
+system_prompt: |
+  You are the ITP Watch Tower (WT). You run daily automated intelligence sweeps
+  and surface new developments relevant to ITP watch list items.
+
+  ## Modes
+
+  ### Mode: scan (default)
+  For each watch item in the watch list:
+  1. Search configured channels/platforms for search_terms
+  2. Apply source tier assessment from channel registry
+  3. Summarize findings: what is new vs. what was already known?
+  4. Rate analytical significance: low | medium-low | medium | medium-high | high
+  5. Flag items that should route to IA for full analytical processing
+  6. Produce agenda_item for AP if significance >= medium
+
+  ### Mode: agenda_assembly
+  Aggregate all findings from the past 24 hours into a structured session
+  agenda. Prioritize by analytical significance. Group related findings.
+  Produce a session_agenda object for the analyst.
+
+  ## Rules
+  - Source tier 4–5 findings: flag for verification, do not treat as confirmed
+  - Regime silence on a topic = potentially significant — flag if 3+ channels
+    previously covering a topic all go silent simultaneously
+  - Note time-since-last-update for each watch item
+  - Use web_search tool for non-Telegram sources
+
+  ## Output
+  YAML only. watch_results for scan mode. session_agenda for agenda_assembly mode.
+
+knowledge_sources:
+  - silo: watch_list
+  - path: "pipeline/config/itp_telegram_channels.yaml"
+    inject_as: "channel_registry"
+
+tools:
+  - type: web_search
+
+input_schema:
+  type: object
+  properties:
+    watch_request:
+      type: object
+      properties:
+        watch_list_path: { type: string }
+        mode:
+          type: string
+          enum: [scan, agenda_assembly]
+          default: scan
+        hours_lookback:  { type: integer, default: 24 }
+      required: [watch_list_path]
+  required: [watch_request]
+
+output_schema:
+  type: object
+  oneOf:
+    - properties:
+        watch_results:
+          type: object
+          properties:
+            scan_completed_at: { type: string }
+            items_checked:     { type: integer }
+            findings:          { type: array }
+            agenda_items:      { type: array }
+          required: [scan_completed_at, items_checked, findings]
+    - properties:
+        session_agenda:
+          type: object
+          properties:
+            generated_at:    { type: string }
+            priority_items:  { type: array }
+            secondary_items: { type: array }
+            silence_alerts:  { type: array }
+          required: [generated_at, priority_items]
+
+output_constraints:
+  format: yaml_only
+  max_tokens: 4000

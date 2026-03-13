@@ -1,0 +1,81 @@
+# itp_audit.yaml — Tier 3 publication audit pipeline
+# Use: new briefs, major thesis revisions, publication-bound analysis
+# Nodes: TN → [LA + PA + RT in parallel] → AS → (optional: XV → DE patch)
+# Cost: ~12–14 API calls
+#
+# AUDIT INDEPENDENCE NOTE: LA, PA, RT receive only TN-neutralized text.
+#   They have no access to ITP framework content. This is enforced by
+#   their knowledge_sources configs (empty or rubric-only).
+#   The orchestrator must NOT pass un-neutralized content to LA/PA/RT.
+
+name: itp_audit
+description: "Tier 3: TN neutralize → LA+PA+RT parallel audit → AS synthesize → optional patch."
+
+stages:
+  - id: neutralize
+    worker: tn_terminology_neutralizer
+    input_mapping:
+      neutralization_request:
+        analytical_text: "{{input.analytical_text}}"
+        content_type: "{{input.content_type}}"
+
+  # LA, PA, RT run in parallel — all receive neutralized text, none see original
+  - id: logic_audit
+    worker: la_logic_auditor
+    depends_on: [neutralize]
+    parallel_group: audit_panel
+    input_mapping:
+      audit_request:
+        neutralized_text: "{{stages.neutralize.output.neutralization_result.neutralized_text}}"
+        content_type: "{{input.content_type}}"
+        audit_id: "{{input.audit_id}}"
+
+  - id: perspective_audit
+    worker: pa_perspective_auditor
+    depends_on: [neutralize]
+    parallel_group: audit_panel
+    input_mapping:
+      audit_request:
+        neutralized_text: "{{stages.neutralize.output.neutralization_result.neutralized_text}}"
+        content_type: "{{input.content_type}}"
+        audit_id: "{{input.audit_id}}"
+
+  - id: red_team
+    worker: rt_red_teamer
+    depends_on: [neutralize]
+    parallel_group: audit_panel
+    input_mapping:
+      audit_request:
+        neutralized_text: "{{stages.neutralize.output.neutralization_result.neutralized_text}}"
+        content_type: "{{input.content_type}}"
+        audit_id: "{{input.audit_id}}"
+
+  - id: synthesize
+    worker: as_audit_synthesizer
+    depends_on: [logic_audit, perspective_audit, red_team]
+    input_mapping:
+      synthesis_request:
+        audit_id: "{{input.audit_id}}"
+        la_audit: "{{stages.logic_audit.output.la_audit}}"
+        pa_audit: "{{stages.perspective_audit.output.pa_audit}}"
+        rt_audit: "{{stages.red_team.output.rt_audit}}"
+        reverse_map: "{{stages.neutralize.output.neutralization_result.reverse_map}}"
+        original_ia_output_summary: "{{input.analytical_text_summary}}"
+
+pipeline_output:
+  audit_report: "{{stages.synthesize.output.audit_report}}"
+  escalation_required: "{{stages.synthesize.output.audit_report.escalation_required}}"
+  escalation_trigger: "{{stages.synthesize.output.audit_report.escalation_trigger}}"
+  integration_patch: "{{stages.synthesize.output.audit_report.integration_patch}}"
+
+escalation:
+  - condition: "stages.synthesize.output.audit_report.escalation_required == true"
+    escalate_to: tier_4_manual
+    message: "RT challenge >= 8 on core claim — requires Tier 4 adversarial review with alternate LLM provider"
+
+error_handling:
+  neutralize_fail: halt  # Cannot proceed with un-neutralized text
+  logic_audit_fail: continue_partial  # Continue if PA + RT available
+  perspective_audit_fail: continue_partial
+  red_team_fail: continue_partial
+  synthesize_fail: halt  # No synthesis = no audit result

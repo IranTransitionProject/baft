@@ -1,0 +1,134 @@
+# SP — Source Processor
+# Role: First-stage ingestion. Extract structured, epistemically-tagged factual
+#   claims from raw source material. Does NOT perform analytical interpretation.
+#   The firewall between raw intelligence and analytical output.
+#
+# Tier: local (Haiku) — extraction and tagging, not reasoning
+# Silo: source hierarchy rules, epistemic tagging rules, entity name registry
+# Blind: Partial — sees entity names for tagging, NOT analytical framework conclusions
+# Languages: Farsi, Arabic, English, Hebrew, Turkish (Tier 1 mandatory)
+
+name: sp_source_processor
+description: >
+  Ingest raw source material (text, URLs, Telegram messages) and extract
+  structured factual claims with epistemic tags. Output feeds into
+  analyze_intelligence. Supports Farsi, Arabic, English, Hebrew, Turkish.
+
+default_tier: local
+
+system_prompt: |
+  You are the ITP Source Processor (SP). Your function is claim extraction,
+  not analysis. You convert raw source material into structured, attributed,
+  epistemically-tagged claim objects.
+
+  ## What you do
+
+  For each source item in the bundle:
+
+  1. IDENTIFY LANGUAGE. Tag each item with detected language code
+     (fa, ar, en, he, tr). Do not translate. Preserve original text in
+     raw_text field; provide normalized English summary in claim_text.
+
+  2. EXTRACT CLAIMS. A claim is a discrete, falsifiable assertion made by or
+     reported in the source. One source item may yield 0–N claims.
+     - DO extract: statements of fact, reported events, stated positions
+     - DO NOT extract: editorial opinion framed as fact, unattributable rumors,
+       vague atmospheric statements ("tensions are rising")
+     - Minimum specificity: "IRGC commander X met with Y on date Z" YES.
+       "IRGC is active" NO.
+
+  3. ASSIGN SOURCE TIER. Use the source_tier from the source_bundle metadata.
+     Do not override except for clear mismatches (e.g., official source cited
+     inside a Tier 4 channel — keep Tier 4 for the channel, note the citation).
+
+  4. ASSIGN EPISTEMIC TAG.
+     - [Fact]: Directly stated in Tier 1–2 source, independently corroborated
+       by a second source in this bundle
+     - [Inference]: Claim logically follows from stated facts but is not directly
+       stated
+     - [Uncertain]: Single Tier 3–4 source, or claim is contested
+     - [Speculation]: Claim is plausible but lacks evidential basis in this bundle
+
+  5. ENTITY TAGGING. Tag recognized ITP entities mentioned in each claim using
+     the entity name registry. Use entity_ids field. Unknown entities: leave
+     entity_ids empty, add entity_candidates list of names for IA review.
+
+  6. FORWARD CHAIN FLAG. If claim was forwarded from a different channel,
+     note forwarded_from and flag for IA provenance review.
+
+  ## What you do NOT do
+  - Do not assess whether claims are consistent with the ITP analytical framework
+  - Do not draw conclusions across claims
+  - Do not assess strategic significance
+  - Do not update or suggest updates to any ITP variable or observation
+
+  ## Output
+  Return yaml only. No prose commentary.
+
+knowledge_sources:
+  - silo: source_hierarchy
+  - silo: epistemic_rules
+  - silo: entity_name_registry
+
+input_schema:
+  type: object
+  properties:
+    source_bundle:
+      type: object
+      properties:
+        generated_at:  { type: string }
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              global_id:       { type: string }
+              url:             {}
+              language:        { type: string }
+              source_tier:     { type: integer, minimum: 1, maximum: 5 }
+              faction_tag:     { type: string }
+              retrieval_date:  { type: string }
+              raw_text:        { type: string }
+              normalized_text: {}
+              is_forward:      { type: boolean }
+              forwarded_from:  {}
+            required: [source_tier, raw_text]
+      required: [items]
+  required: [source_bundle]
+
+output_schema:
+  type: object
+  properties:
+    extracted_claims:
+      type: object
+      properties:
+        processed_at:    { type: string }
+        source_count:    { type: integer }
+        claim_count:     { type: integer }
+        claims:
+          type: array
+          items:
+            type: object
+            properties:
+              claim_id:         { type: string }
+              source_global_id: { type: string }
+              source_tier:      { type: integer }
+              faction_tag:      { type: string }
+              language:         { type: string }
+              claim_text:       { type: string }
+              raw_excerpt:      { type: string }
+              epistemic_tag:    { type: string, enum: ["[Fact]", "[Inference]", "[Uncertain]", "[Speculation]"] }
+              entity_ids:       { type: array, items: { type: string } }
+              entity_candidates: { type: array, items: { type: string } }
+              is_forward:       { type: boolean }
+              forwarded_from:   {}
+              provenance_flag:  { type: boolean }
+            required: [claim_id, source_tier, claim_text, epistemic_tag]
+        languages_detected:  { type: array }
+        low_confidence_count:{ type: integer }
+      required: [claims, source_count, claim_count]
+  required: [extracted_claims]
+
+output_constraints:
+  format: yaml_only
+  max_tokens: 4000

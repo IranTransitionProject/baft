@@ -1,0 +1,106 @@
+# Baft ITP MCP Gateway — Core operational tools (Tier 1–2)
+#
+# Run with:
+#   loom mcp --config configs/mcp/itp.yaml                              # stdio
+#   loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765  # HTTP
+#
+# Requirements:
+#   NATS running at nats://localhost:4222
+#   Workers started: bash scripts/run_workers.sh
+#   DuckDB imported: python pipeline/scripts/itp_import_to_duckdb.py
+
+name: "baft"
+description: "ITP analytical engine — source processing, intelligence analysis, database operations, entity queries"
+nats_url: "nats://localhost:4222"
+
+tools:
+  workers:
+    # SP — Source Processor (Tier 2 entry point)
+    - config: "configs/workers/sp_source_processor.yaml"
+      name: "process_sources"
+      description: >
+        Ingest raw source material (text, URLs, Telegram messages) and extract
+        structured factual claims with epistemic tags. Output feeds into
+        analyze_intelligence. Supports Farsi, Arabic, English, Hebrew, Turkish.
+
+    # IA — Intelligence Analyst (core analytical engine)
+    - config: "configs/workers/ia_intelligence_analyst.yaml"
+      name: "analyze_intelligence"
+      description: >
+        Generate analytical output from extracted claims: new observations,
+        variable assessments, scenario updates, trap identification, gap
+        registration. Produces integration_spec for update_database. Uses
+        full ITP framework knowledge.
+
+    # DE — Database Engineer (all YAML operations)
+    - config: "configs/workers/de_database_engineer.yaml"
+      name: "update_database"
+      description: >
+        Execute YAML data operations against the ITP framework database.
+        Validates schemas, runs build pipeline, emits governance notifications.
+        Input: integration_spec from analyze_intelligence or direct operations.
+
+    # XV — Cross-Validator (consistency check)
+    - config: "configs/workers/xv_cross_validator.yaml"
+      name: "validate_cross_refs"
+      description: >
+        Validate cross-references between entities. Check that cited entity IDs
+        exist, module codes are valid, and inter-entity relationships are
+        consistent. Run before any database commit.
+
+    # IN — Input Node (quick note capture)
+    - config: "configs/workers/in_input_node.yaml"
+      name: "submit_input"
+      description: >
+        Submit a quick observation, source note, or intelligence item for
+        structured capture and routing. Low-friction entry point for
+        time-sensitive findings. Appends to inbox_queue.yaml for async processing.
+
+  pipelines:
+    # Tier 2 standard pipeline: SP → IA → DE
+    - config: "configs/orchestrators/itp_standard.yaml"
+      name: "run_standard_pipeline"
+      description: >
+        Full Tier 2 analytical pipeline: source processing → intelligence
+        analysis → database integration. Use for new source integration,
+        variable updates, and gap fills. Produces integrated analytical output.
+
+  queries:
+    # DuckDB entity search across all ITP entity types
+    - backend: "loom.contrib.duckdb.query_backend.DuckDBQueryBackend"
+      actions: ["search", "filter", "stats", "get"]
+      name_prefix: "itp"
+      backend_config:
+        db_path: "itp-workspace/itp.duckdb"
+        table_name: "entities"
+        result_columns:
+          - "id"
+          - "type"
+          - "title"
+          - "status"
+          - "epistemic_tag"
+          - "confidence"
+          - "updated_date"
+        id_column: "id"
+        full_text_column: "content"
+        fts_fields: "title,content,tags"
+        filter_fields:
+          entity_type: "type = ?"
+          status: "status = ?"
+          confidence: "confidence = ?"
+        stats_groups: ["type", "status", "epistemic_tag"]
+        stats_aggregates:
+          - "COUNT(*) AS count"
+          - "COUNT(CASE WHEN status='active' THEN 1 END) AS active_count"
+
+resources:
+  # Expose framework data/ YAML files as readable MCP resources
+  workspace_dir: "${FRAMEWORK_REPO}/data"
+  patterns:
+    - "variables.yaml"
+    - "observations.yaml"
+    - "scenarios.yaml"
+    - "traps.yaml"
+    - "gaps.yaml"
+    - "modules.yaml"
+    - "sessions.yaml"

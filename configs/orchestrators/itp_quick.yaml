@@ -1,0 +1,31 @@
+# itp_quick.yaml — Tier 1 direct dispatch
+# Use: database updates, formatting, validation-only operations
+# Nodes: HI-R → DE (optionally XV first for cross-ref check)
+# Cost: ~2–3 API calls
+
+name: itp_quick
+description: "Tier 1: Direct database operation. XV validate → DE write."
+
+stages:
+  - id: xv_validate
+    worker: xv_cross_validator
+    optional: true   # skip if no entity refs in request
+    condition: "len(input.integration_request.get('entity_refs', [])) > 0"
+    input_mapping:
+      validation_request:
+        integration_spec: "{{input.integration_request}}"
+        entity_refs: "{{input.integration_request.entity_refs}}"
+
+  - id: de_write
+    worker: de_database_engineer
+    depends_on: [xv_validate]
+    condition: "stages.xv_validate.skipped or stages.xv_validate.output.validation_result.overall_status != 'FAIL'"
+    input_mapping:
+      integration_request: "{{input.integration_request}}"
+    on_failure:
+      action: halt
+      message: "DE validation failed — no write performed"
+
+error_handling:
+  xv_fail: halt     # Do not write if XV finds broken refs
+  de_fail: report   # Report failure, do not retry automatically

@@ -1,0 +1,44 @@
+# ITP Narrative Intelligence Findings Log
+# Version: 1.0
+# Date: 2026-03-13
+#
+# Purpose: Running log of narrative intelligence findings from corpus-level
+#   Telegram analysis. Produced by manual daily scan (Phase 1) or NI node (Phase 2).
+#
+# Finding types:
+#   coordination     — Multiple channels adopting same framing within short window
+#   silence_pattern  — Topic disappears from channels where it was previously present
+#   divergence       — Same-faction channels taking contradictory positions
+#   velocity_shift   — Unusual posting rate (surge or drop) in a channel cluster
+#   tone_shift       — Rhetorical escalation or de-escalation across a faction
+#   amplification    — Forwarding chain analysis showing content origin and spread
+#
+# Fields:
+#   date:                  Analysis date (not message date)
+#   analyst:               hooman | ni_node | both
+#   finding_type:          see types above
+#   channels_involved:     list of @handles or channel names
+#   time_range:            message timestamp window covered
+#   description:           what was observed
+#   analytical_significance: low | medium-low | medium | medium-high | high
+#   forwarded_to:          session_direct | WT | IN | IA | deferred
+#   session:               session number if forwarded to working session
+#   resolved:              false until addressed in analytical work
+
+findings: []
+
+# Example entry (uncomment to use as template):
+# - date: "2026-03-13"
+#   analyst: hooman
+#   finding_type: silence_pattern
+#   channels_involved:
+#     - "@farsna"
+#     - "@Tasnimnews"
+#   time_range: "2026-03-12T00:00Z to 2026-03-12T23:59Z"
+#   description: >
+#     Succession coverage dropped to zero on both channels despite Reuters report
+#     on Mojtaba appointment confirmation. Coordinated silence or editorial decision?
+#   analytical_significance: medium-high
+#   forwarded_to: session_direct
+#   session: 24
+#   resolved: false

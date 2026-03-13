@@ -1,0 +1,113 @@
+# ITP Task-Tier Rules
+# Version: 1.0
+# Date: 2026-03-13
+# Source: ITP_MULTI_AGENT_ARCHITECTURE v0.5, Task-Tier System section
+#
+# The HI-R (orchestrator) selects tier based on these rules.
+# Human can override tier at any time.
+# SA monitors for tier-appropriateness mismatches.
+
+version: "1.0"
+date: "2026-03-13"
+
+tiers:
+
+  - id: 1
+    name: "Quick"
+    nodes_activated: [HI-R, HI-A, DE]
+    approx_api_calls: "2–3"
+    description: "Database operations, formatting, technical fixes"
+    pipeline_config: "configs/orchestrators/itp_quick.yaml"
+    use_cases:
+      - "Single variable field update"
+      - "Gap status change"
+      - "Observation status update"
+      - "Schema or formatting fix"
+      - "Session log integration of pre-analyzed content"
+    triggers:
+      - "Human requests a direct data write with no new analytical content"
+      - "DE validation or build fix"
+      - "Formatting or technical cleanup"
+    escalation:
+      - condition: "XV finds contradictions in update"
+        escalate_to: 2
+      - condition: "DE validation fails with schema conflict"
+        escalate_to: 2
+
+  - id: 2
+    name: "Standard"
+    nodes_activated: [HI-R, HI-A, SP, IA, DE, XV]
+    approx_api_calls: "5–7"
+    description: "New source integration, variable updates, gap fills"
+    pipeline_config: "configs/orchestrators/itp_standard.yaml"
+    use_cases:
+      - "New Telegram/web source with analytical implications"
+      - "Variable assessment update based on new evidence"
+      - "New gap registration"
+      - "New observation (without publication)"
+      - "Scenario probability adjustment"
+    triggers:
+      - "Human provides a source and asks for integration"
+      - "WT watch alert requires analysis"
+      - "IN note requires analytical processing"
+    escalation:
+      - condition: "IA output contains new core thesis claim"
+        escalate_to: 3
+      - condition: "IA output contradicts existing published brief"
+        escalate_to: 3
+      - condition: "Human or IA flags XV failure"
+        escalate_to: 3
+
+  - id: 3
+    name: "Publication"
+    nodes_activated: [HI-R, HI-A, SP, IA, TN, LA, PA, RT, AS, XV, DE, EP]
+    approx_api_calls: "12–14"
+    description: "New briefs, major thesis revisions, publication-bound analysis"
+    pipeline_config: "configs/orchestrators/itp_audit.yaml"
+    use_cases:
+      - "New brief (any type)"
+      - "Existing brief major update (new thesis element)"
+      - "Core observation revision (Obs 001–022 category)"
+      - "Scenario matrix update affecting wartime baseline"
+      - "Publication to Substack or LinkedIn"
+    triggers:
+      - "Human states intent to publish"
+      - "IA output contradicts a published brief"
+      - "New observation assessed as high-confidence Fact (requires blind audit)"
+      - "Escalated from Tier 2 by XV contradiction or IA core-thesis flag"
+    escalation:
+      - condition: "RT challenge at strength >= 8 on core thesis"
+        escalate_to: 4
+
+  - id: 4
+    name: "Adversarial"
+    nodes_activated: ["Tier 3", "RT (different LLM provider)"]
+    approx_api_calls: "15+"
+    description: "Highest-stakes analysis, core thesis challenges"
+    pipeline_config: null   # Manual coordination for now
+    use_cases:
+      - "Core thesis update (Deal Cannot Hold, A9 Hollowness)"
+      - "Wartime scenario baseline change"
+      - "Predictive scorecard significant miss requiring framework revision"
+    triggers:
+      - "Human explicitly flags a core thesis challenge"
+      - "RT at Tier 3 returns strength >= 8 contradiction"
+    note: "RT must use different LLM provider (Gemini or GPT-4) for genuine training-data independence"
+
+# Tier selection rules for HI-R
+
+selection_rules:
+  - "Default to Tier 1 for explicit data writes with no analytical content"
+  - "Default to Tier 2 for any source that requires SP processing"
+  - "Default to Tier 3 for any output intended for publication"
+  - "Human override always takes precedence"
+  - "SA flags tier-appropriateness mismatch — HI-R surfaces at next pause"
+  - "Escalation is one-way: tasks escalate up, never de-escalate mid-task"
+
+# Cost estimates (rough, based on Claude API pricing March 2026)
+cost_estimates:
+  tier_1: "$0.001–0.005"
+  tier_2: "$0.01–0.05"
+  tier_3: "$0.10–0.30"
+  tier_4: "$0.30–0.75"
+  note: "Frontier model = Opus, Standard = Sonnet, Local = Haiku. Estimates per complete pipeline run."

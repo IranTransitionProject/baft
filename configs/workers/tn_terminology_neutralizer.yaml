@@ -1,0 +1,96 @@
+# TN — Terminology Neutralizer
+# Role: Replace ITP project-specific vocabulary with generic equivalents before
+#   handing off to blind audit nodes (LA, PA, RT). Prevents audit nodes from
+#   pattern-matching to published ITP content and producing pseudo-independent
+#   evaluations.
+#
+# AUDIT INDEPENDENCE CRITICAL: TN is the firewall between IA output and the
+#   blind audit pipeline. A failure here undermines LA/PA/RT independence.
+#
+# Tier: local (Haiku) — mechanical text transformation
+# Silo: itp_terminology_registry.yaml ONLY — nothing else
+# Blind: Operates on analytical text, not framework content
+
+name: tn_terminology_neutralizer
+description: >
+  Replace ITP project-specific terminology with neutral equivalents before
+  blind audit handoff. Preserves analytical meaning. Produces reverse map
+  for de-neutralization after audit. Required step before LA/PA/RT.
+
+default_tier: local
+
+system_prompt: |
+  You are the ITP Terminology Neutralizer (TN). You perform exact string
+  substitution on analytical text using the terminology registry.
+
+  ## Rules
+
+  1. EXACT MATCH FIRST. Replace exact matches (case-sensitive) before
+     attempting case-insensitive matches.
+
+  2. LONGEST MATCH WINS. If "Deal Cannot Hold thesis" and "Deal Cannot Hold"
+     are both in registry, replace the longer match.
+
+  3. PRESERVE MEANING. The replacement must preserve analytical meaning.
+     When in doubt, choose the more specific replacement.
+
+  4. DO NOT ALTER EPISTEMIC TAGS. [Fact], [Inference], [Uncertain],
+     [Speculation] must pass through unchanged.
+
+  5. DO NOT ALTER ENTITY IDs. V-XX, Obs NNN, S-N, etc. pass through unchanged.
+     (They are codes, not project terminology.)
+
+  6. PRODUCE REVERSE MAP. Output a replacements_applied table so the
+     Audit Synthesizer can de-neutralize for the final report.
+
+  7. OUTPUT STRUCTURE. Emit: neutralized_text (the modified content) +
+     replacements_applied (list of substitutions made) + reverse_map (dict).
+
+  Do not add commentary. Output YAML only.
+
+knowledge_sources:
+  - path: "pipeline/config/itp_terminology_registry.yaml"
+    inject_as: "terminology_registry"
+
+input_schema:
+  type: object
+  properties:
+    neutralization_request:
+      type: object
+      properties:
+        analytical_text:
+          type: string
+          description: "IA analytical output text to neutralize"
+        content_type:
+          type: string
+          enum: [analytical_output_yaml, observation_text, brief_section]
+      required: [analytical_text]
+  required: [neutralization_request]
+
+output_schema:
+  type: object
+  properties:
+    neutralization_result:
+      type: object
+      properties:
+        neutralized_text:
+          type: string
+        replacements_applied:
+          type: array
+          items:
+            type: object
+            properties:
+              original:   { type: string }
+              replacement:{ type: string }
+              count:      { type: integer }
+        reverse_map:
+          type: object
+          description: "Maps replacement → original for de-neutralization"
+        replacement_count:
+          type: integer
+      required: [neutralized_text, replacements_applied, reverse_map, replacement_count]
+  required: [neutralization_result]
+
+output_constraints:
+  format: yaml_only
+  max_tokens: 8000  # Must accommodate full IA output + metadata

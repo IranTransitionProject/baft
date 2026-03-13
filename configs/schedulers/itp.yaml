@@ -1,0 +1,100 @@
+# itp.yaml — ITP Scheduled Actors
+# Managed by: loom scheduler --config configs/schedulers/itp.yaml
+#
+# Schedule overview (all times UTC):
+#   06:00 — WT daily scan sweep (all watch items)
+#   07:00 — NI corpus analysis (prior 24hr Telegram exports)
+#   07:30 — AP agenda assembly (WT + NI findings → session agenda)
+#   08:00 — GA weekly audit (Mondays only)
+#   Every 15min — SA session monitor (active sessions only)
+
+name: itp_scheduler
+nats_url: "nats://localhost:4222"
+
+schedules:
+
+  # ── Daily intelligence sweep ──────────────────────────────────────────────
+
+  - name: watch_tower_daily
+    description: "Daily WT sweep across all watch list items"
+    cron: "0 6 * * *"    # 06:00 UTC daily
+    dispatch_type: task
+    task:
+      worker_type: wt_watch_tower
+      payload:
+        watch_list_path: "pipeline/config/itp_watch_list.yaml"
+        mode: scan
+        hours_lookback: 24
+      model_tier: standard
+    on_failure:
+      action: log_and_continue
+      alert: false
+
+  # ── Narrative intelligence (runs after WT so AP has both) ─────────────────
+
+  - name: narrative_intelligence_daily
+    description: "Daily NI corpus analysis — prior 24hr Telegram exports"
+    cron: "0 7 * * *"    # 07:00 UTC daily
+    dispatch_type: task
+    task:
+      worker_type: ni_narrative_intelligence
+      payload:
+        corpus_path: "itp-workspace/exports/corpus_latest.jsonl"
+        time_range: "last_24h"
+        analysis_modes: [coordination, silence, divergence, velocity, tone]
+      model_tier: standard
+    on_failure:
+      action: log_and_continue
+      alert: false
+    condition:
+      file_exists: "itp-workspace/exports/corpus_latest.jsonl"
+
+  # ── Agenda assembly (AP) ──────────────────────────────────────────────────
+
+  - name: agenda_planner_presession
+    description: "Assemble WT + NI findings into session agenda"
+    cron: "30 7 * * *"   # 07:30 UTC daily (after WT + NI complete)
+    dispatch_type: task
+    task:
+      worker_type: wt_watch_tower
+      payload:
+        watch_list_path: "pipeline/config/itp_watch_list.yaml"
+        mode: agenda_assembly
+      model_tier: standard
+    on_failure:
+      action: log_and_continue
+
+  # ── Session advisor ───────────────────────────────────────────────────────
+
+  - name: session_advisor_monitor
+    description: "SA session quality monitor — fires only during active sessions"
+    interval_seconds: 900    # Every 15 minutes
+    dispatch_type: task
+    task:
+      worker_type: sa_session_advisor
+      payload: {}             # SA reads transcript from its knowledge silo
+      model_tier: local
+    condition:
+      session_active: true    # Only fires if HI-R reports an active session
+    on_failure:
+      action: log_and_continue
+      alert: false
+
+  # ── Governance audit ──────────────────────────────────────────────────────
+
+  - name: governance_audit_weekly
+    description: "Weekly GA governance audit — Mondays 08:00 UTC"
+    cron: "0 8 * * 1"    # 08:00 UTC Mondays
+    dispatch_type: goal
+    goal:
+      instruction: |
+        Run weekly governance audit:
+        1. Check that all sessions since last audit have session log entries
+        2. Check that all briefs in data/ have changelog entries
+        3. Check that gaps closed since last audit have resolution notes
+        4. Check human_decision_log for 3+ repeated dismissals of same RT challenge type
+        5. Produce governance_audit_report_YYYY-MM-DD.yaml in itp-workspace/
+      priority: normal
+    on_failure:
+      action: log_and_continue
+      alert: true

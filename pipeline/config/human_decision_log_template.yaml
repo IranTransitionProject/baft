@@ -1,0 +1,42 @@
+# ITP Human Decision Log
+# Version: 1.0
+# Date: 2026-03-13
+# Used by: AS (Audit Synthesizer) — blind-spot detection
+#          GA (Governance Auditor) — weekly review
+#
+# Purpose: Record analyst decisions on RT challenges and AS recommendations.
+#   AS reads this log to detect when the same challenge type has been
+#   dismissed 3+ times without new counter-evidence — BLIND_SPOT_ALERT.
+#
+# Populated by: HI-A (analyst) after each Tier 3 audit cycle
+# Fields:
+#   decision_id:     sequential (HD-001, HD-002, ...)
+#   date:            ISO date
+#   session:         session number
+#   audit_id:        links to audit_report
+#   challenge_id:    the RT challenge that was decided on
+#   challenge_type:  category (causal, counterfactual, evidence, selection_bias, etc.)
+#   claim_challenged: brief description of the claim
+#   decision:        ACCEPTED | REJECTED | DEFERRED | REVISED
+#   counter_evidence: what new evidence or reasoning supported the decision (if REJECTED)
+#   notes:           free text
+
+version: "1.0"
+date: "2026-03-13"
+
+decisions: []
+
+# Example entry:
+# - decision_id: HD-001
+#   date: "2026-03-13"
+#   session: 24
+#   audit_id: "audit_2026-03-13-01"
+#   challenge_id: "RT-003"
+#   challenge_type: "counterfactual"
+#   claim_challenged: "Larijani is the real operational authority via SNSC"
+#   decision: REJECTED
+#   counter_evidence: >
+#     Multiple Tier 2 sources (Fars, ISNA) confirm Larijani chairing SNSC
+#     sessions. No competing evidence of alternate operational authority.
+#     RT challenge strength was 6 — below threshold for revision.
+#   notes: "Challenge is noted — will reassess if Larijani's public visibility drops"

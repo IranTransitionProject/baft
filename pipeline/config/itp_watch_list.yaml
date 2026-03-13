@@ -1,0 +1,181 @@
+# ITP Watch Tower Watch List
+# Version: 1.0 STUB
+# Date: 2026-03-13
+#
+# Purpose: Items for daily WT (Watch Tower) automated monitoring.
+# Code fills this from framework/data/variables.yaml high-priority items.
+# Human adds channel_routing and adjusts search terms.
+#
+# Channel routing: which Telegram channels + platforms to search for each item.
+# Platforms: web | telegram | x_twitter | youtube
+#
+# Priority: 1 (highest) – 5 (lowest)
+# Confidence trigger: create new observation if new evidence crosses this threshold
+
+version: "1.0"
+generated: "2026-03-13"
+status: stub  # Change to "active" once populated from variables.yaml
+
+items:
+
+  # === HIGHEST PRIORITY: Active wartime variables ===
+
+  - id: WT-001
+    entity_id: SV-01        # Map to framework variable ID
+    entity_name: "IRGC command integrity"
+    priority: 1
+    search_terms:
+      - "IRGC command"
+      - "سپاه فرماندهی"
+      - "IRGC autonomous"
+    search_terms_fa:
+      - "فرمانده سپاه"
+      - "دستور سپاه"
+    channel_routing:
+      telegram:
+        - "@sepah_ir"
+        - "@farsna"
+        - "@Tasnimnews"
+      platforms: [web, telegram]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  - id: WT-002
+    entity_id: null
+    entity_name: "Mojtaba Khamenei public statements"
+    priority: 1
+    search_terms:
+      - "Mojtaba Khamenei"
+      - "مجتبی خامنه‌ای"
+    search_terms_fa:
+      - "مجتبی"
+      - "رهبر جدید"
+    channel_routing:
+      telegram:
+        - "@khamenei_ir"
+        - "@irna_fa_news"
+      platforms: [web, telegram, x_twitter]
+    confidence_trigger: High
+    last_checked: null
+    last_finding: null
+
+  - id: WT-003
+    entity_id: null
+    entity_name: "Interceptor stock depletion reports"
+    priority: 1
+    search_terms:
+      - "THAAD interceptors"
+      - "Patriot missiles depleted"
+      - "interceptor stocks"
+    search_terms_fa: []
+    channel_routing:
+      telegram: []
+      platforms: [web, x_twitter]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  - id: WT-004
+    entity_id: null
+    entity_name: "Hormuz Strait shipping updates"
+    priority: 1
+    search_terms:
+      - "Strait of Hormuz"
+      - "تنگه هرمز"
+      - "tanker"
+    search_terms_fa:
+      - "هرمز"
+      - "نفتکش"
+    channel_routing:
+      telegram:
+        - "@farsna"
+      platforms: [web, x_twitter]
+    confidence_trigger: High
+    last_checked: null
+    last_finding: null
+
+  # === HIGH PRIORITY: Succession and power map ===
+
+  - id: WT-005
+    entity_id: null
+    entity_name: "Larijani SNSC signaling"
+    priority: 2
+    search_terms:
+      - "Larijani"
+      - "لاریجانی"
+      - "SNSC"
+    search_terms_fa:
+      - "شورای عالی امنیت ملی"
+      - "علی لاریجانی"
+    channel_routing:
+      telegram:
+        - "@irna_fa_news"
+        - "@isna_fa"
+      platforms: [web, telegram]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  - id: WT-006
+    entity_id: null
+    entity_name: "Mirbagheri / eschatological faction activity"
+    priority: 2
+    search_terms:
+      - "Mirbagheri"
+      - "میربارقی"
+      - "Hojjatiyeh"
+    search_terms_fa:
+      - "میربارقی"
+      - "حجتیه"
+      - "مهدویت"
+    channel_routing:
+      telegram: []  # Handle TBD — verify via Grok SC-X
+      platforms: [web, x_twitter]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  # === MEDIUM PRIORITY: Gap fills ===
+
+  - id: WT-007
+    entity_id: "G17-01"    # HQ-9B integration status
+    entity_name: "Chinese military hardware delivery"
+    priority: 2
+    search_terms:
+      - "HQ-9B"
+      - "China Iran weapons"
+      - "CM-302"
+    search_terms_fa:
+      - "سلاح چین ایران"
+    channel_routing:
+      telegram:
+        - "@sepah_ir"
+      platforms: [web]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  - id: WT-008
+    entity_id: null
+    entity_name: "Kurdish front status (NW Iran)"
+    priority: 2
+    search_terms:
+      - "Kurdish Iran"
+      - "Mahabad"
+      - "PJAK"
+    search_terms_fa:
+      - "کردستان"
+      - "کردها"
+    channel_routing:
+      telegram:
+        - "@hengaw_org"
+      platforms: [web, telegram]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  # === PLACEHOLDER: To be populated from framework/data/variables.yaml ===
+  # Run: python pipeline/scripts/populate_watch_list_from_variables.py
+  # This will add top-priority SV-XX variable watch items automatically.
+

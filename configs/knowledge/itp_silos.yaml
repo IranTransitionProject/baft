@@ -1,0 +1,149 @@
+# ITP Knowledge Silo Index
+# Version: 1.0
+# Date: 2026-03-13
+#
+# Worker configs reference silos by name:
+#   knowledge_sources:
+#     - silo: framework_full
+#
+# SILO ISOLATION IS AN AUDIT REQUIREMENT.
+# LA, PA, RT worker configs must NOT reference any silo marked
+# isolation_required: true. Violation undermines audit independence.
+#
+# ${FRAMEWORK_REPO} resolves to ~/Developer/Repositories/framework
+# ${BAFT_REPO} resolves to ~/Developer/Repositories/baft
+
+version: "1.0"
+date: "2026-03-13"
+
+silos:
+
+  # ── Framework content silos (IA only) ──────────────────────────────────
+
+  framework_full:
+    isolation_required: true    # NOT for LA, PA, RT, AS, TN, SA
+    permitted_nodes: [IA]
+    description: "Full ITB + ISA analytical framework output documents"
+    sources:
+      - path: "${FRAMEWORK_REPO}/output/itb_full.md"
+        inject_as: "analytical_framework_itb"
+        description: "Iran Transition Baseline — full framework"
+      - path: "${FRAMEWORK_REPO}/output/isa_full.md"
+        inject_as: "analytical_framework_isa"
+        description: "Iran Stress Architecture — scenarios and stress analysis"
+
+  database_current:
+    isolation_required: true    # NOT for LA, PA, RT, AS, TN, SA
+    permitted_nodes: [IA, DE]
+    description: "Current state of all ITP entity YAML files"
+    sources:
+      - path: "${FRAMEWORK_REPO}/data/variables.yaml"
+        inject_as: "current_variables"
+      - path: "${FRAMEWORK_REPO}/data/observations.yaml"
+        inject_as: "current_observations"
+      - path: "${FRAMEWORK_REPO}/data/scenarios.yaml"
+        inject_as: "current_scenarios"
+      - path: "${FRAMEWORK_REPO}/data/traps.yaml"
+        inject_as: "current_traps"
+      - path: "${FRAMEWORK_REPO}/data/gaps.yaml"
+        inject_as: "open_gaps"
+      - path: "${FRAMEWORK_REPO}/data/modules.yaml"
+        inject_as: "module_registry"
+
+  framework_schemas:
+    isolation_required: false   # DE needs these; schemas don't contain analytical content
+    permitted_nodes: [DE, XV]
+    description: "JSON schemas for framework entity types"
+    sources:
+      - path: "${FRAMEWORK_REPO}/schemas/variable_schema.yaml"
+        inject_as: "variable_schema"
+      - path: "${FRAMEWORK_REPO}/schemas/observation_schema.yaml"
+        inject_as: "observation_schema"
+      - path: "${FRAMEWORK_REPO}/schemas/scenario_schema.yaml"
+        inject_as: "scenario_schema"
+      - path: "${FRAMEWORK_REPO}/schemas/gap_schema.yaml"
+        inject_as: "gap_schema"
+      - path: "${FRAMEWORK_REPO}/schemas/trap_schema.yaml"
+        inject_as: "trap_schema"
+
+  entity_id_registry:
+    isolation_required: false   # XV + SP: IDs only, no analytical content
+    permitted_nodes: [XV, SP, DE]
+    description: "Flat list of all valid entity IDs and module codes"
+    sources:
+      - path: "pipeline/config/itp_entity_name_registry.yaml"
+        inject_as: "entity_registry"
+        description: "Generated from framework/data/ by itp_import_to_duckdb.py"
+
+  # ── Pipeline config silos (SP) ─────────────────────────────────────────
+
+  source_hierarchy:
+    isolation_required: false
+    permitted_nodes: [SP, WT, NI]
+    description: "5-tier source taxonomy and evaluation rules"
+    sources:
+      - path: "pipeline/config/itp_source_hierarchy.yaml"
+        inject_as: "source_tier_rules"
+
+  epistemic_rules:
+    isolation_required: false
+    permitted_nodes: [SP, IA]
+    description: "Epistemic tag definitions, confidence bands, combination rules"
+    sources:
+      - path: "pipeline/config/itp_epistemic_rules.yaml"
+        inject_as: "epistemic_tagging_rules"
+
+  entity_name_registry:
+    isolation_required: false
+    permitted_nodes: [SP]
+    description: "Entity names, aliases, transliterations for source tagging"
+    sources:
+      - path: "pipeline/config/itp_entity_name_registry.yaml"
+        inject_as: "entity_names"
+
+  # ── Audit silos (TN only) ──────────────────────────────────────────────
+
+  terminology_registry:
+    isolation_required: false
+    permitted_nodes: [TN]
+    description: "ITP-to-neutral vocabulary mapping for blind audit prep"
+    sources:
+      - path: "pipeline/config/itp_terminology_registry.yaml"
+        inject_as: "terminology_registry"
+
+  # ── Session and scheduling silos ───────────────────────────────────────
+
+  tier_rules:
+    isolation_required: false
+    permitted_nodes: [SA, HI-R]
+    description: "Task-tier definitions and selection rules"
+    sources:
+      - path: "pipeline/config/itp_tier_rules.yaml"
+        inject_as: "task_tier_rules"
+
+  watch_list:
+    isolation_required: false
+    permitted_nodes: [WT]
+    description: "Watch items with search terms and channel routing"
+    sources:
+      - path: "pipeline/config/itp_watch_list.yaml"
+        inject_as: "watch_items"
+
+  cognitive_profile:
+    isolation_required: true    # NOT for analytical nodes — SA only
+    permitted_nodes: [SA]
+    description: "Analyst cognitive profile for session quality monitoring"
+    sources:
+      - path: "pipeline/config/itp_cognitive_profile.yaml"
+        inject_as: "analyst_profile"
+
+  # ── Blind audit reference (LA, PA) ────────────────────────────────────
+  # RT has empty knowledge_sources — it is fully blind.
+
+  evaluation_rubric:
+    isolation_required: false
+    permitted_nodes: [LA, PA]
+    description: "ROBOTIC-LLM evaluation rubric — analytical quality dimensions"
+    sources:
+      - path: "docs/references/ROBOTIC-LLM.md"
+        inject_as: "evaluation_rubric"
