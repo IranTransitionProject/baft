@@ -41,6 +41,7 @@ testpaths = ["tests"]
 markers = [
     "integration: end-to-end tests requiring NATS + Redis + LLM backend",
     "unit: unit tests with no external dependencies",
+    "e2e: end-to-end smoke tests requiring live infrastructure (NATS + workers)",
 ]
 
 [tool.ruff]
