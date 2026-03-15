@@ -36,5 +36,10 @@ htmlcov/
 watcher.lock
 watcher.log
 
+# Worker runtime artifacts
+.resolved-configs/
+.worker-logs/
+.worker-pids
+
 # NI findings are committed (analytical record), workspace data is not
 # pipeline/ni_findings/ is tracked

@@ -13,11 +13,10 @@ Skip conditions:
 from __future__ import annotations
 
 import asyncio
-import json
 from pathlib import Path
 
 import pytest
-import yaml
+import pytest_asyncio
 
 BAFT_ROOT = Path(__file__).parent.parent
 
@@ -29,10 +28,12 @@ def _nats_available() -> bool:
     """Check if NATS is reachable."""
     try:
         import nats
+
         async def _check():
             nc = await nats.connect("nats://localhost:4222")
             await nc.close()
             return True
+
         return asyncio.run(_check())
     except Exception:
         return False
@@ -44,27 +45,28 @@ skip_no_nats = pytest.mark.skipif(
 )
 
 
+@pytest_asyncio.fixture
+async def bridge():
+    """Shared async bridge fixture — single event loop for connect/test/teardown."""
+    from loom.bus.nats_adapter import NATSBus
+    from loom.mcp.bridge import MCPBridge
+
+    bus = NATSBus("nats://localhost:4222")
+    br = MCPBridge(bus)
+    await br.connect()
+    yield br
+    try:
+        await bus.close()
+    except Exception:
+        pass
+
+
 @skip_no_nats
 class TestTier1Smoke:
     """Tier 1: Direct DE worker validation (single worker, no pipeline)."""
 
-    @pytest.fixture
-    def bridge(self):
-        from loom.bus.nats_adapter import NATSBus
-        from loom.mcp.bridge import MCPBridge
-
-        bus = NATSBus("nats://localhost:4222")
-        bridge = MCPBridge(bus)
-
-        async def _setup():
-            await bridge.connect()
-            return bridge
-
-        br = asyncio.run(_setup())
-        yield br
-        asyncio.run(br.close())
-
-    def test_de_validate_only(self, bridge):
+    @pytest.mark.asyncio
+    async def test_de_validate_only(self, bridge):
         """Submit a validate-only request to DE and check for valid response."""
         payload = {
             "type": "integration_request",
@@ -74,15 +76,12 @@ class TestTier1Smoke:
             }],
         }
 
-        async def _call():
-            return await bridge.call_worker(
-                worker_type="de_database_engineer",
-                tier="local",
-                payload=payload,
-                timeout=30,
-            )
-
-        result = asyncio.run(_call())
+        result = await bridge.call_worker(
+            worker_type="de_database_engineer",
+            tier="local",
+            payload=payload,
+            timeout=30,
+        )
         assert isinstance(result, dict)
         # DE should return an integration_result
         assert "integration_result" in result or "validation_result" in result
@@ -92,23 +91,8 @@ class TestTier1Smoke:
 class TestTier2Smoke:
     """Tier 2: SP → IA → XV → DE pipeline via source_bundle."""
 
-    @pytest.fixture
-    def bridge(self):
-        from loom.bus.nats_adapter import NATSBus
-        from loom.mcp.bridge import MCPBridge
-
-        bus = NATSBus("nats://localhost:4222")
-        bridge = MCPBridge(bus)
-
-        async def _setup():
-            await bridge.connect()
-            return bridge
-
-        br = asyncio.run(_setup())
-        yield br
-        asyncio.run(br.close())
-
-    def test_sp_processes_source_bundle(self, bridge):
+    @pytest.mark.asyncio
+    async def test_sp_processes_source_bundle(self, bridge):
         """Submit a minimal source_bundle to SP and check for extracted_claims."""
         source_bundle = {
             "type": "source_bundle",
@@ -126,15 +110,12 @@ class TestTier2Smoke:
             }],
         }
 
-        async def _call():
-            return await bridge.call_worker(
-                worker_type="sp_source_processor",
-                tier="local",
-                payload={"source_bundle": source_bundle},
-                timeout=60,
-            )
-
-        result = asyncio.run(_call())
+        result = await bridge.call_worker(
+            worker_type="sp_source_processor",
+            tier="local",
+            payload={"source_bundle": source_bundle},
+            timeout=60,
+        )
         assert isinstance(result, dict)
         # SP should return extracted_claims
         assert "extracted_claims" in result
@@ -144,7 +125,8 @@ class TestTier2Smoke:
 class TestMCPServerStarts:
     """MCP server must start and list tools."""
 
-    def test_create_server_with_itp_config(self):
+    @pytest.mark.asyncio
+    async def test_create_server_with_itp_config(self):
         """create_server succeeds with the ITP MCP config."""
         from loom.mcp.server import create_server
 
