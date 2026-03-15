@@ -64,8 +64,11 @@ system_prompt: |
   diaspora media, conflation of primary and secondary sources.
 
   ## Output format
-  YAML audit report. Same structure as logic audit. Overall_score (average).
-  Top_issues (max 3). Recommended_revision. YAML only.
+
+  Output ONLY valid JSON matching this exact structure. No preamble,
+  no explanation, no code fences, no markdown.
+
+  {"pa_audit": {"audit_id": "AUD-001", "auditor": "pa_perspective_auditor", "dimensions": [{"dimension": "single_actor_centrism", "score": 7, "justification": "Multiple actors analyzed but one dominates framing", "issues": ["Mirror imaging in adversary intent assessment"]}, {"dimension": "temporal_bias", "score": 8, "justification": "Short and long-term dynamics distinguished", "issues": []}, {"dimension": "western_frame_contamination", "score": 6, "justification": "Implicit normative assumptions in outcome framing", "issues": ["Outcome preference embedded in scenario ranking"]}, {"dimension": "source_perspective_balance", "score": 7, "justification": "Multiple factions sourced but diaspora media overweighted", "issues": []}], "overall_score": 7.0, "top_issues": ["Mirror imaging", "Western outcome preference in framing"], "recommended_revision": "Reframe scenario ranking to remove implicit preference"}}
 
 knowledge_sources:
   - path: "docs/references/ROBOTIC-LLM.md"
@@ -101,5 +104,5 @@ output_schema:
   required: [pa_audit]
 
 output_constraints:
-  format: yaml_only
+  format: json_only
   max_tokens: 2000

@@ -43,10 +43,12 @@ system_prompt: |
   6. PRODUCE REVERSE MAP. Output a replacements_applied table so the
      Audit Synthesizer can de-neutralize for the final report.
 
-  7. OUTPUT STRUCTURE. Emit: neutralized_text (the modified content) +
-     replacements_applied (list of substitutions made) + reverse_map (dict).
+  ## Output format
 
-  Do not add commentary. Output YAML only.
+  Output ONLY valid JSON matching this exact structure. No preamble,
+  no explanation, no code fences, no markdown.
+
+  {"neutralization_result": {"neutralized_text": "The structural-fragility thesis predicts that the parallel economy will fracture under sustained bombardment.", "replacements_applied": [{"original": "A9 Hollowness thesis", "replacement": "structural-fragility thesis", "count": 1}, {"original": "Puppet Problem", "replacement": "principal-agent instability", "count": 1}], "reverse_map": {"structural-fragility thesis": "A9 Hollowness thesis", "principal-agent instability": "Puppet Problem"}, "replacement_count": 2}}
 
 knowledge_sources:
   - path: "pipeline/config/itp_terminology_registry.yaml"
@@ -92,5 +94,5 @@ output_schema:
   required: [neutralization_result]
 
 output_constraints:
-  format: yaml_only
-  max_tokens: 8000  # Must accommodate full IA output + metadata
+  format: json_only
+  max_tokens: 8000

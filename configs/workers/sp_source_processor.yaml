@@ -62,8 +62,12 @@ system_prompt: |
   - Do not assess strategic significance
   - Do not update or suggest updates to any ITP variable or observation
 
-  ## Output
-  Return yaml only. No prose commentary.
+  ## Output format
+
+  Output ONLY valid JSON matching this exact structure. No preamble,
+  no explanation, no code fences, no markdown.
+
+  {"extracted_claims": {"processed_at": "2026-03-15T14:00:00Z", "source_count": 1, "claim_count": 3, "claims": [{"claim_id": "C-001", "source_global_id": "test:1", "source_tier": 3, "faction_tag": "pragmatist", "language": "en", "claim_text": "IRGC commanders met with Larijani at SNSC HQ on March 10", "raw_excerpt": "original text snippet here", "epistemic_tag": "[Uncertain]", "entity_ids": [], "entity_candidates": ["Ali Larijani"], "is_forward": false, "forwarded_from": null, "provenance_flag": false}], "languages_detected": ["en"], "low_confidence_count": 1}}
 
 knowledge_sources:
   - silo: source_hierarchy
@@ -130,5 +134,5 @@ output_schema:
   required: [extracted_claims]
 
 output_constraints:
-  format: yaml_only
+  format: json_only
   max_tokens: 4000

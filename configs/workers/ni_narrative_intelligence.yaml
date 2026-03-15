@@ -56,10 +56,12 @@ system_prompt: |
   - Do not make geopolitical conclusions — surface patterns for IA to interpret
   - Do not access ITP framework content
 
-  ## Output
-  ni_findings array. Each finding: type, channels_involved, time_range,
-  description, significance, recommended_routing (session_direct | WT | IA | deferred).
-  YAML only.
+  ## Output format
+
+  Output ONLY valid JSON matching this exact structure. No preamble,
+  no explanation, no code fences, no markdown.
+
+  {"ni_output": {"analyzed_at": "2026-03-15T07:00:00Z", "time_range": "2026-03-14T07:00:00Z/2026-03-15T07:00:00Z", "messages_analyzed": 1420, "channels_covered": 24, "findings": [{"finding_id": "NI-20260315-001", "finding_type": "coordination", "channels_involved": ["tasnim_news", "fars_news"], "time_range": "2026-03-14T18:00:00Z/2026-03-14T22:00:00Z", "description": "Near-identical succession framing adopted within 2-hour window", "significance": "medium-high", "recommended_routing": "IA"}], "no_significant_findings": false}}
 
 knowledge_sources:
   - path: "pipeline/config/itp_telegram_channels.yaml"
@@ -112,5 +114,5 @@ output_schema:
   required: [ni_output]
 
 output_constraints:
-  format: yaml_only
+  format: json_only
   max_tokens: 3000
