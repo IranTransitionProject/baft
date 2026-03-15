@@ -57,13 +57,30 @@ tools:
         time-sensitive findings. Appends to inbox_queue.yaml for async processing.
 
   pipelines:
-    # Tier 2 standard pipeline: SP → IA → DE
+    # Tier 1 quick pipeline: XV → DE (direct database operation)
+    - config: "configs/orchestrators/itp_quick.yaml"
+      name: "run_quick_pipeline"
+      description: >
+        Tier 1 direct database operation: optional cross-validation then
+        database write. Use for single field updates, status changes, and
+        formatting fixes that require no analytical processing.
+
+    # Tier 2 standard pipeline: SP → IA → XV → DE
     - config: "configs/orchestrators/itp_standard.yaml"
       name: "run_standard_pipeline"
       description: >
         Full Tier 2 analytical pipeline: source processing → intelligence
-        analysis → database integration. Use for new source integration,
-        variable updates, and gap fills. Produces integrated analytical output.
+        analysis → cross-validation → database integration. Use for new
+        source integration, variable updates, and gap fills.
+
+    # Tier 3 audit pipeline: TN → [LA + PA + RT parallel] → AS
+    - config: "configs/orchestrators/itp_audit.yaml"
+      name: "run_audit_pipeline"
+      description: >
+        Tier 3 publication audit: terminology neutralization → parallel
+        blind audit (logic, perspective, adversarial) → synthesis. Use
+        before any publication or major thesis revision. Enforces audit
+        independence via silo isolation.
 
   queries:
     # DuckDB entity search across all ITP entity types

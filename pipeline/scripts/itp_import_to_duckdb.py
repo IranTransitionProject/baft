@@ -84,9 +84,20 @@ def import_entity_list(conn: duckdb.DuckDBPyConnection, entity_type: str, entiti
 
     # Derive common columns; entity-specific columns go into content JSON
     rows = []
+    # ID prefix map to avoid collisions between types with numeric IDs
+    prefix_map = {
+        "observations": "Obs-",
+        "traps": "Trap-",
+        "sessions": "Session-",
+        "modules": "Mod-",
+    }
+    prefix = prefix_map.get(entity_type, "")
+
     for e in entities:
+        raw_id = str(e.get("id") or e.get("code") or e.get("number") or "")
+        entity_id = f"{prefix}{raw_id}" if (prefix and not raw_id.startswith(prefix.rstrip("-"))) else raw_id
         row = {
-            "id": str(e.get("id", "")),
+            "id": entity_id,
             "type": entity_type,
             "title": str(e.get("title") or e.get("name") or e.get("description") or ""),
             "status": str(e.get("status") or ""),
@@ -219,11 +230,17 @@ def main() -> None:
     elif BRIEFS_DIR.exists():
         print(f"Importing briefs from {BRIEFS_DIR}/...")
         brief_entities = []
-        for brief_file in BRIEFS_DIR.glob("*.yaml"):
+        for brief_file in sorted(BRIEFS_DIR.glob("*.yaml")):
             brief_data = load_yaml(brief_file)
             if isinstance(brief_data, dict):
+                # Use filename stem as fallback ID (e.g., b01 → B01)
+                if "id" not in brief_data:
+                    brief_data["id"] = brief_file.stem.upper()
                 brief_entities.append(brief_data)
             elif isinstance(brief_data, list):
+                for i, item in enumerate(brief_data):
+                    if isinstance(item, dict) and "id" not in item:
+                        item["id"] = f"{brief_file.stem.upper()}-{i}"
                 brief_entities.extend(brief_data)
         count = import_entity_list(conn, "brief", brief_entities, "entities")
         print(f"  → {count} briefs imported")

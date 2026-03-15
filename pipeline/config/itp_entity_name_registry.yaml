@@ -1,187 +1,477 @@
-# ITP Entity Name Registry
-# Version: 1.0 STUB
-# Date: 2026-03-13
-# Used by: SP (entity tagging in source extraction), XV (ID validation)
-#
-# GENERATION: This file should be regenerated from framework/data/ whenever
-#   entity IDs are added. Run:
-#     python pipeline/scripts/generate_entity_registry.py
-#
-# Manual entries below cover the most critical named entities for SP tagging.
-# Generated section (entity IDs) follows — populated by the script.
-
-version: "1.0"
-generated: "2026-03-13"
-status: stub   # Change to "generated" after running generate_entity_registry.py
-
-# ── Module code registry ──────────────────────────────────────────────────
-# All valid module codes — XV validates against this list
-
+version: '1.0'
+generated: '2026-03-15'
+status: generated
 module_codes:
   itb:
-    - ITB-A1    # Regime Architecture
-    - ITB-A2    # IRGC Parallel Society
-    - ITB-A3    # Succession Mechanisms
-    - ITB-A4    # Economic Binding Agents (A9 Hollowness home)
-    - ITB-A5    # Factional Dynamics
-    - ITB-A6    # Proxy Network Architecture
-    - ITB-A7    # External Patron Dependencies
-    - ITB-A8    # Legitimacy Architecture (A8.8 Taqiyyah)
-    - ITB-A9    # Nuclear Program Architecture
-    - ITB-A10   # Negotiation Architecture (A11 Pinochet, A12 Coercive-Endurance)
-    - ITB-A11   # Historical Analogies
-    - ITB-A12   # Predictive Framework
-    - ITB-A13   # Population and Compliance Architecture
+  - ITB-A1
+  - ITB-A2
+  - ITB-A3
+  - ITB-A4
+  - ITB-A5
+  - ITB-A6
+  - ITB-A7
+  - ITB-A8
+  - ITB-A9
+  - ITB-A10
+  - ITB-A11
+  - ITB-A12
+  - ITB-A13
   isa:
-    - ISA-S1    # Pre-war scenario matrix (S1–S5)
-    - ISA-S2    # Wartime scenario matrix (W1–W5)
-    - ISA-S3    # Stress indicators
-    - ISA-S4    # Transition pathway models
-    - ISA-S5    # External actor positioning
-
-# ── Named entity transliterations ─────────────────────────────────────────
-# For SP: maps common name variants to canonical form + entity ID if known
-
+  - ISA-S1
+  - ISA-S2
+  - ISA-S3
+  - ISA-S4
+  - ISA-S5
 named_entities:
-
   people:
-    - canonical: "Ali Khamenei"
-      aliases: ["Khamenei", "خامنه‌ای", "Ali Hosseini Khamenei", "Supreme Leader (deceased)"]
-      status: deceased  # Killed Feb 28 2026
-      entity_id: null   # Add from variables.yaml when entity exists
-
-    - canonical: "Mojtaba Khamenei"
-      aliases: ["Mojtaba", "مجتبی خامنه‌ای", "مجتبی", "new Supreme Leader"]
-      status: active
-      role: "Announced Supreme Leader (March 8 2026)"
-      entity_id: null
-
-    - canonical: "Ali Larijani"
-      aliases: ["Larijani", "لاریجانی", "علی لاریجانی"]
-      status: active
-      role: "SNSC operational authority"
-      entity_id: null
-
-    - canonical: "Masoud Pezeshkian"
-      aliases: ["Pezeshkian", "پزشکیان", "President Pezeshkian"]
-      status: active
-      role: "President (nominal executive)"
-      entity_id: null
-
-    - canonical: "Gholam-Hossein Mohseni-Ejei"
-      aliases: ["Mohseni-Ejei", "محسنی اژه‌ای", "Chief Justice"]
-      status: active
-      role: "Chief Justice / Interim Trio"
-      entity_id: null
-
-    - canonical: "Ahmad Vahidi"
-      aliases: ["Vahidi", "وحیدی"]
-      status: active
-      role: "IRGC Commander (appointed post-decapitation)"
-      entity_id: null
-
-    - canonical: "Mohammad Mokhber"
-      aliases: ["Mokhber", "مخبر"]
-      status: active
-      entity_id: null
-
-    - canonical: "Saeed Jalili"
-      aliases: ["Jalili", "جلیلی", "سعید جلیلی"]
-      status: active
-      role: "NSC Secretary / documented saboteur"
-      entity_id: null
-
-    - canonical: "Mohammad-Baqer Ghalibaf"
-      aliases: ["Ghalibaf", "قالیباف", "Ghalib af", "Speaker Ghalibaf"]
-      status: active
-      role: "Parliamentary Speaker"
-      entity_id: null
-
-    - canonical: "Mojtaba Zolnour"
-      aliases: ["Zolnour", "ذوالنور"]
-      status: active
-      entity_id: null
-
-    - canonical: "Kamal Kharrazi"
-      aliases: ["Kharrazi", "خرازی"]
-      status: active
-      entity_id: null
-
+  - canonical: Ali Khamenei
+    aliases:
+    - Khamenei
+    - خامنه‌ای
+    - Ali Hosseini Khamenei
+    - Supreme Leader (deceased)
+    status: deceased
+    entity_id: null
+  - canonical: Mojtaba Khamenei
+    aliases:
+    - Mojtaba
+    - مجتبی خامنه‌ای
+    - مجتبی
+    - new Supreme Leader
+    status: active
+    role: Announced Supreme Leader (March 8 2026)
+    entity_id: null
+  - canonical: Ali Larijani
+    aliases:
+    - Larijani
+    - لاریجانی
+    - علی لاریجانی
+    status: active
+    role: SNSC operational authority
+    entity_id: null
+  - canonical: Masoud Pezeshkian
+    aliases:
+    - Pezeshkian
+    - پزشکیان
+    - President Pezeshkian
+    status: active
+    role: President (nominal executive)
+    entity_id: null
+  - canonical: Gholam-Hossein Mohseni-Ejei
+    aliases:
+    - Mohseni-Ejei
+    - محسنی اژه‌ای
+    - Chief Justice
+    status: active
+    role: Chief Justice / Interim Trio
+    entity_id: null
+  - canonical: Ahmad Vahidi
+    aliases:
+    - Vahidi
+    - وحیدی
+    status: active
+    role: IRGC Commander (appointed post-decapitation)
+    entity_id: null
+  - canonical: Mohammad Mokhber
+    aliases:
+    - Mokhber
+    - مخبر
+    status: active
+    entity_id: null
+  - canonical: Saeed Jalili
+    aliases:
+    - Jalili
+    - جلیلی
+    - سعید جلیلی
+    status: active
+    role: NSC Secretary / documented saboteur
+    entity_id: null
+  - canonical: Mohammad-Baqer Ghalibaf
+    aliases:
+    - Ghalibaf
+    - قالیباف
+    - Ghalib af
+    - Speaker Ghalibaf
+    status: active
+    role: Parliamentary Speaker
+    entity_id: null
+  - canonical: Mojtaba Zolnour
+    aliases:
+    - Zolnour
+    - ذوالنور
+    status: active
+    entity_id: null
+  - canonical: Kamal Kharrazi
+    aliases:
+    - Kharrazi
+    - خرازی
+    status: active
+    entity_id: null
   organizations:
-    - canonical: "IRGC"
-      aliases: ["Islamic Revolutionary Guard Corps", "سپاه پاسداران", "Sepah", "Pasdaran", "Revolutionary Guards"]
-      entity_id: null
-
-    - canonical: "Basij"
-      aliases: ["Basij Resistance Force", "بسیج", "Basiji"]
-      entity_id: null
-
-    - canonical: "SNSC"
-      aliases: ["Supreme National Security Council", "شورای عالی امنیت ملی"]
-      entity_id: null
-
-    - canonical: "Quds Force"
-      aliases: ["IRGC Quds Force", "نیروی قدس", "Quds", "Jerusalem Force"]
-      entity_id: null
-
-    - canonical: "IAEA"
-      aliases: ["International Atomic Energy Agency", "آژانس بین‌المللی انرژی اتمی"]
-      entity_id: null
-
-    - canonical: "Hezbollah"
-      aliases: ["حزب‌الله", "Hizballah", "Hizbullah", "Lebanese Hezbollah"]
-      entity_id: null
-
-    - canonical: "Hamas"
-      aliases: ["حماس", "Islamic Resistance Movement"]
-      entity_id: null
-
-    - canonical: "Houthis"
-      aliases: ["Ansar Allah", "أنصار الله", "حوثیون", "Houthi"]
-      entity_id: null
-
-    - canonical: "PJAK"
-      aliases: ["Party of Free Life of Kurdistan", "حزب حیات آزاد کردستان"]
-      entity_id: null
-
+  - canonical: IRGC
+    aliases:
+    - Islamic Revolutionary Guard Corps
+    - سپاه پاسداران
+    - Sepah
+    - Pasdaran
+    - Revolutionary Guards
+    entity_id: null
+  - canonical: Basij
+    aliases:
+    - Basij Resistance Force
+    - بسیج
+    - Basiji
+    entity_id: null
+  - canonical: SNSC
+    aliases:
+    - Supreme National Security Council
+    - شورای عالی امنیت ملی
+    entity_id: null
+  - canonical: Quds Force
+    aliases:
+    - IRGC Quds Force
+    - نیروی قدس
+    - Quds
+    - Jerusalem Force
+    entity_id: null
+  - canonical: IAEA
+    aliases:
+    - International Atomic Energy Agency
+    - آژانس بین‌المللی انرژی اتمی
+    entity_id: null
+  - canonical: Hezbollah
+    aliases:
+    - حزب‌الله
+    - Hizballah
+    - Hizbullah
+    - Lebanese Hezbollah
+    entity_id: null
+  - canonical: Hamas
+    aliases:
+    - حماس
+    - Islamic Resistance Movement
+    entity_id: null
+  - canonical: Houthis
+    aliases:
+    - Ansar Allah
+    - أنصار الله
+    - حوثیون
+    - Houthi
+    entity_id: null
+  - canonical: PJAK
+    aliases:
+    - Party of Free Life of Kurdistan
+    - حزب حیات آزاد کردستان
+    entity_id: null
   locations:
-    - canonical: "Strait of Hormuz"
-      aliases: ["تنگه هرمز", "Hormuz", "Hormuz Strait"]
-      entity_id: null
-
-    - canonical: "Natanz"
-      aliases: ["نطنز", "Natanz nuclear facility"]
-      entity_id: null
-
-    - canonical: "Fordow"
-      aliases: ["فردو", "Fordow Fuel Enrichment Plant"]
-      entity_id: null
-
+  - canonical: Strait of Hormuz
+    aliases:
+    - تنگه هرمز
+    - Hormuz
+    - Hormuz Strait
+    entity_id: null
+  - canonical: Natanz
+    aliases:
+    - نطنز
+    - Natanz nuclear facility
+    entity_id: null
+  - canonical: Fordow
+    aliases:
+    - فردو
+    - Fordow Fuel Enrichment Plant
+    entity_id: null
   concepts:
-    - canonical: "velayat-e-faqih"
-      aliases: ["ولایت فقیه", "guardianship of the jurist", "Islamic governance doctrine"]
-      entity_id: null
-
-    - canonical: "Hojjatiyeh"
-      aliases: ["حجتیه", "Hojjatieh"]
-      notes: "Original was anti-velayat-e-faqih quietist; current Mirbagheri faction has inverted it"
-      entity_id: null
-
-# ── Entity ID list (generated) ────────────────────────────────────────────
-# Populated by: python pipeline/scripts/generate_entity_registry.py
-# Format: all valid entity IDs for XV cross-reference validation
-
+  - canonical: velayat-e-faqih
+    aliases:
+    - ولایت فقیه
+    - guardianship of the jurist
+    - Islamic governance doctrine
+    entity_id: null
+  - canonical: Hojjatiyeh
+    aliases:
+    - حجتیه
+    - Hojjatieh
+    notes: Original was anti-velayat-e-faqih quietist; current Mirbagheri faction
+      has inverted it
+    entity_id: null
 entity_ids:
-  variables:   []   # V-01 through V-XX — run script to populate
-  observations: []  # Obs 001 through Obs NNN — run script to populate
-  scenarios:   []   # S-1 through S-5, W-1 through W-5
-  traps:       []   # Trap 1 through Trap N
-  gaps:        []   # G-XX-NN format
-  briefs:      []   # B-01 through B-NN
-  sessions:    []   # Session 1 through Session N
-
-# Placeholder scenario IDs (wartime matrix — confirmed active)
+  variables:
+  - FV-01
+  - FV-02
+  - FV-03
+  - FV-04
+  - FV-05
+  - FV-06
+  - FV-07
+  - FV-08
+  - FV-09
+  - FV-10
+  - FV-11
+  - FV-12
+  - FV-13
+  - FV-14
+  - FV-15
+  - FV-16
+  - FV-17
+  - FV-18
+  - FV-19
+  - FV-20
+  - FV-21
+  - FV-22
+  - FV-23
+  - FV-24
+  - FV-25
+  - FV-26
+  - FV-27
+  - FV-28
+  - FV-29
+  - FV-30
+  - FV-31
+  - FV-32
+  - FV-33
+  - FV-34
+  - NQ-01
+  - NQ-02
+  - NQ-03
+  - NQ-04
+  - NQ-05
+  - NQ-06
+  - NQ-07
+  - NQ-08
+  - NQ-09
+  - NQ-10
+  - PO-01
+  - PO-02
+  - PO-03
+  - PO-04
+  - PO-05
+  - PO-06
+  - PO-07
+  - PO-08
+  - PO-09
+  - PO-10
+  - SV-01
+  - SV-02
+  - SV-03
+  - SV-04
+  - SV-05
+  - SV-06
+  - SV-07
+  - SV-08
+  - SV-09
+  - SV-10
+  - SV-11
+  - SV-12
+  - SV-13
+  - SV-14
+  - SV-15
+  - SV-16
+  - SV-17
+  - SV-18
+  - TV-01
+  - TV-02
+  - TV-03
+  - TV-04
+  - TV-05
+  - TV-06
+  - TV-07
+  - TV-08
+  - TV-09
+  - TV-10
+  - TV-11
+  - TV-12
+  - TV-13
+  - TV-14
+  - TV-15
+  - TV-16
+  - TV-17
+  - TV-18
+  - TV-19
+  observations:
+  - '1'
+  - '10'
+  - '11'
+  - '12'
+  - '13'
+  - '14'
+  - '15'
+  - '16'
+  - '17'
+  - '18'
+  - '19'
+  - '2'
+  - '20'
+  - '21'
+  - '22'
+  - '23'
+  - '24'
+  - '25'
+  - '26'
+  - '27'
+  - '28'
+  - '29'
+  - '3'
+  - '30'
+  - '31'
+  - '32'
+  - '33'
+  - '34'
+  - '35'
+  - '36'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  scenarios:
+  - S1
+  - S1A
+  - S1B
+  - S2
+  - S3
+  - S4
+  - S5
+  - W1
+  - W2
+  - W3
+  - W4
+  - W5
+  traps:
+  - '1'
+  - '10'
+  - '11'
+  - '12'
+  - '13'
+  - '14'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  gaps:
+  - G12-01
+  - G12-02
+  - G12-03
+  - G12-04
+  - G12-05
+  - G12-06
+  - G12-07
+  - G12-08
+  - G12-09
+  - G12-10
+  - G13-01
+  - G13-02
+  - G13-03
+  - G13-04
+  - G13-05
+  - G13-06
+  - G13-07
+  - G14-01
+  - G14-02
+  - G14-03
+  - G14-04
+  - G14-05
+  - G14-06
+  - G14-07
+  - G14-08
+  - G14-09
+  - G14-10
+  - G16-01
+  - G16-02
+  - G16-03
+  - G16-04
+  - G17-01
+  - G17-02
+  - G17-03
+  - G17-04
+  - G17-05
+  - G20-01
+  - G20-02
+  - G20-03
+  - G20-04
+  - G20-05
+  - G20-06
+  - G20-07
+  - G20-08
+  - G20-09
+  - G20-10
+  - G22-01
+  - G22-02
+  - G22-03
+  - G22-04
+  - G22-05
+  - G23-01
+  - G23-02
+  - G23-03
+  - G23-04
+  - gap-artesh-loyalty
+  - gap-backchannel-substance
+  - gap-basij-active-nominal
+  - gap-eschatological-disruption-speed
+  - gap-heyat-armed
+  - gap-historical-phase-mapping
+  - gap-irgc-command-cohort
+  - gap-regime-strain-assessment
+  - gap-round2-geneva
+  - gap-syria-veterans-domestic
+  - gap-underground-capacity
+  sessions:
+  - '1'
+  - '10'
+  - 11-12
+  - '13'
+  - '14'
+  - '15'
+  - '16'
+  - '17'
+  - '18'
+  - '19'
+  - '2'
+  - '20'
+  - '21'
+  - '22'
+  - '23'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  briefs:
+  - B01
+  - B02
+  - B03
+  - B04
+  - B05
+  - B06
+  - B07
+  - B08
+  - B09
+  - B10
+  - B11
+  - B12
+  - B13
+  - B14
+  - EB01
+  - ES
+  - INTRO
+  - SUPP_PSC
 known_scenario_ids:
-  pre_war:  [S-1, S-2, S-3, S-4, S-5]
-  wartime:  [W-1, W-2, W-3, W-4, W-5]
+  pre_war:
+  - S-1
+  - S-2
+  - S-3
+  - S-4
+  - S-5
+  wartime:
+  - W-1
+  - W-2
+  - W-3
+  - W-4
+  - W-5
   active_baseline: W-2

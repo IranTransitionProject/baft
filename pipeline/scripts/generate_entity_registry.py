@@ -33,23 +33,41 @@ ENTITY_FILES = {
     "scenarios":    DATA_DIR / "scenarios.yaml",
     "traps":        DATA_DIR / "traps.yaml",
     "gaps":         DATA_DIR / "gaps.yaml",
-    "briefs":       DATA_DIR / "briefs.yaml",
     "sessions":     DATA_DIR / "sessions.yaml",
 }
+
+BRIEFS_DIR = DATA_DIR / "briefs"
 
 
 def extract_ids(data: dict | list, entity_type: str) -> list[str]:
     """Extract all entity IDs from a YAML data structure."""
     ids = []
-    items = data if isinstance(data, list) else data.get(entity_type, data.get(entity_type.rstrip("s"), []))
+    items = data if isinstance(data, list) else data.get("entries", data.get(entity_type, data.get(entity_type.rstrip("s"), [])))
     if not items and isinstance(data, dict):
         for v in data.values():
             if isinstance(v, list) and v and isinstance(v[0], dict):
                 items = v
                 break
     for item in (items or []):
-        if isinstance(item, dict) and "id" in item:
-            ids.append(str(item["id"]))
+        if isinstance(item, dict):
+            # Try 'id' first, then 'number' (sessions use number)
+            eid = item.get("id") or item.get("number")
+            if eid is not None:
+                ids.append(str(eid))
+    return sorted(ids)
+
+
+def extract_brief_ids() -> list[str]:
+    """Extract brief IDs from individual files in data/briefs/."""
+    ids = []
+    if not BRIEFS_DIR.exists():
+        return ids
+    for bf in sorted(BRIEFS_DIR.glob("*.yaml")):
+        with open(bf, encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+        if isinstance(data, dict):
+            bid = data.get("id") or bf.stem.upper()
+            ids.append(str(bid))
     return sorted(ids)
 
 
@@ -69,6 +87,11 @@ def main() -> None:
         ids = extract_ids(data, entity_type)
         all_ids[entity_type] = ids
         print(f"  {entity_type:<15} {len(ids):>4} IDs")
+
+    # Briefs are individual files in data/briefs/
+    brief_ids = extract_brief_ids()
+    all_ids["briefs"] = brief_ids
+    print(f"  {'briefs':<15} {len(brief_ids):>4} IDs")
 
     if args.check:
         print(f"\nTotal: {sum(len(v) for v in all_ids.values())} entity IDs")

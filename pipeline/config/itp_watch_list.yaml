@@ -1,9 +1,9 @@
 # ITP Watch Tower Watch List
-# Version: 1.0 STUB
-# Date: 2026-03-13
+# Version: 2.0
+# Date: 2026-03-15
 #
 # Purpose: Items for daily WT (Watch Tower) automated monitoring.
-# Code fills this from framework/data/variables.yaml high-priority items.
+# Populated from framework/data/variables.yaml + gaps.yaml high-priority items.
 # Human adds channel_routing and adjusts search terms.
 #
 # Channel routing: which Telegram channels + platforms to search for each item.
@@ -12,25 +12,26 @@
 # Priority: 1 (highest) – 5 (lowest)
 # Confidence trigger: create new observation if new evidence crosses this threshold
 
-version: "1.0"
-generated: "2026-03-13"
-status: stub  # Change to "active" once populated from variables.yaml
+version: "2.0"
+generated: "2026-03-15"
+status: active
 
 items:
 
-  # === HIGHEST PRIORITY: Active wartime variables ===
+  # === HIGHEST PRIORITY: Active wartime / daily monitoring required ===
 
   - id: WT-001
-    entity_id: SV-01        # Map to framework variable ID
-    entity_name: "IRGC command integrity"
+    entity_id: TV-17
+    entity_name: "IRGC command coherence"
     priority: 1
     search_terms:
       - "IRGC command"
-      - "سپاه فرماندهی"
       - "IRGC autonomous"
+      - "ceasefire Iran"
     search_terms_fa:
       - "فرمانده سپاه"
       - "دستور سپاه"
+      - "سپاه فرماندهی"
     channel_routing:
       telegram:
         - "@sepah_ir"
@@ -42,32 +43,34 @@ items:
     last_finding: null
 
   - id: WT-002
-    entity_id: null
-    entity_name: "Mojtaba Khamenei public statements"
+    entity_id: TV-19
+    entity_name: "Mojtaba Khamenei public emergence"
     priority: 1
     search_terms:
       - "Mojtaba Khamenei"
-      - "مجتبی خامنه‌ای"
+      - "new Supreme Leader"
     search_terms_fa:
+      - "مجتبی خامنه‌ای"
       - "مجتبی"
       - "رهبر جدید"
     channel_routing:
       telegram:
-        - "@khamenei_ir"
-        - "@irna_fa_news"
+        - "@iraborsaw"
+        - "@iribnews"
       platforms: [web, telegram, x_twitter]
     confidence_trigger: High
     last_checked: null
     last_finding: null
 
   - id: WT-003
-    entity_id: null
-    entity_name: "Interceptor stock depletion reports"
+    entity_id: FV-28
+    entity_name: "US defensive munitions depletion"
     priority: 1
     search_terms:
       - "THAAD interceptors"
       - "Patriot missiles depleted"
       - "interceptor stocks"
+      - "munitions cost"
     search_terms_fa: []
     channel_routing:
       telegram: []
@@ -77,86 +80,203 @@ items:
     last_finding: null
 
   - id: WT-004
-    entity_id: null
-    entity_name: "Hormuz Strait shipping updates"
+    entity_id: TV-16
+    entity_name: "Hormuz Strait closure duration"
     priority: 1
     search_terms:
       - "Strait of Hormuz"
-      - "تنگه هرمز"
       - "tanker"
+      - "Hormuz closure"
+      - "oil shipping"
     search_terms_fa:
+      - "تنگه هرمز"
       - "هرمز"
       - "نفتکش"
     channel_routing:
       telegram:
         - "@farsna"
+        - "@defapress_ir"
       platforms: [web, x_twitter]
     confidence_trigger: High
     last_checked: null
     last_finding: null
 
-  # === HIGH PRIORITY: Succession and power map ===
-
   - id: WT-005
-    entity_id: null
-    entity_name: "Larijani SNSC signaling"
-    priority: 2
+    entity_id: TV-18
+    entity_name: "Civilian casualty trajectory"
+    priority: 1
     search_terms:
-      - "Larijani"
-      - "لاریجانی"
-      - "SNSC"
+      - "Iran civilian casualties"
+      - "Iran bombing"
+      - "school strike"
     search_terms_fa:
-      - "شورای عالی امنیت ملی"
-      - "علی لاریجانی"
+      - "تلفات غیرنظامی"
+      - "بمباران"
     channel_routing:
       telegram:
-        - "@irna_fa_news"
-        - "@isna_fa"
-      platforms: [web, telegram]
+        - "@iraborsaw"
+        - "@bbcpersian"
+        - "@IranIntl_Fa"
+      platforms: [web, telegram, x_twitter]
     confidence_trigger: Medium
     last_checked: null
     last_finding: null
 
   - id: WT-006
-    entity_id: null
-    entity_name: "Mirbagheri / eschatological faction activity"
+    entity_id: FV-32
+    entity_name: "Regime narrative coherence"
+    priority: 1
+    search_terms:
+      - "Iran regime message"
+      - "Iran state media"
+    search_terms_fa:
+      - "رسانه رسمی"
+      - "پیام حکومت"
+    channel_routing:
+      telegram:
+        - "@farsna"
+        - "@Tasnimnews"
+        - "@iraborsaw"
+        - "@EtemadOnline"
+      platforms: [web, telegram]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  # === HIGH PRIORITY: Succession and power map ===
+
+  - id: WT-007
+    entity_id: FV-15
+    entity_name: "Larijani authority scope expansion"
     priority: 2
     search_terms:
+      - "Larijani"
+      - "SNSC"
+    search_terms_fa:
+      - "لاریجانی"
+      - "علی لاریجانی"
+      - "شورای عالی امنیت ملی"
+    channel_routing:
+      telegram:
+        - "@iraborsaw"
+        - "@isna94"
+      platforms: [web, telegram]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  - id: WT-008
+    entity_id: null
+    entity_name: "Mirbagheri / eschatological faction activity"
+    priority: 1
+    search_terms:
       - "Mirbagheri"
-      - "میربارقی"
       - "Hojjatiyeh"
     search_terms_fa:
       - "میربارقی"
       - "حجتیه"
       - "مهدویت"
     channel_routing:
-      telegram: []  # Handle TBD — verify via Grok SC-X
+      telegram:
+        - "@masaf"
+        - "@mahdaviatsiasi"
       platforms: [web, x_twitter]
     confidence_trigger: Medium
     last_checked: null
     last_finding: null
 
-  # === MEDIUM PRIORITY: Gap fills ===
-
-  - id: WT-007
-    entity_id: "G17-01"    # HQ-9B integration status
-    entity_name: "Chinese military hardware delivery"
+  - id: WT-009
+    entity_id: FV-33
+    entity_name: "Assembly of Experts election status"
     priority: 2
+    search_terms:
+      - "Assembly of Experts"
+    search_terms_fa:
+      - "مجلس خبرگان"
+      - "انتخابات خبرگان"
+    channel_routing:
+      telegram:
+        - "@iraborsaw"
+        - "@farsna"
+      platforms: [web, telegram]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  - id: WT-010
+    entity_id: TV-11
+    entity_name: "Defense Council composition and activity"
+    priority: 2
+    search_terms:
+      - "Defense Council Iran"
+    search_terms_fa:
+      - "شورای دفاع"
+    channel_routing:
+      telegram:
+        - "@Nournews_ir"
+        - "@iraborsaw"
+      platforms: [web, telegram]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  # === HIGH PRIORITY: Military / strategic ===
+
+  - id: WT-011
+    entity_id: FV-25
+    entity_name: "Chinese weapons pipeline to Iran"
+    priority: 1
     search_terms:
       - "HQ-9B"
       - "China Iran weapons"
       - "CM-302"
+      - "China military airlift"
     search_terms_fa:
       - "سلاح چین ایران"
     channel_routing:
       telegram:
         - "@sepah_ir"
-      platforms: [web]
+      platforms: [web, x_twitter]
     confidence_trigger: Medium
     last_checked: null
     last_finding: null
 
-  - id: WT-008
+  - id: WT-012
+    entity_id: FV-31
+    entity_name: "BTC pipeline threat status"
+    priority: 1
+    search_terms:
+      - "BTC pipeline"
+      - "Baku-Tbilisi-Ceyhan"
+      - "pipeline attack"
+    search_terms_fa: []
+    channel_routing:
+      telegram: []
+      platforms: [web, x_twitter]
+    confidence_trigger: High
+    last_checked: null
+    last_finding: null
+
+  - id: WT-013
+    entity_id: FV-30
+    entity_name: "Iranian naval combat status"
+    priority: 2
+    search_terms:
+      - "Iran navy"
+      - "Iran ships sunk"
+      - "naval combat Iran"
+    search_terms_fa:
+      - "نیروی دریایی"
+    channel_routing:
+      telegram:
+        - "@defapress_ir"
+        - "@sepah_ir"
+      platforms: [web, x_twitter]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  - id: WT-014
     entity_id: null
     entity_name: "Kurdish front status (NW Iran)"
     priority: 2
@@ -168,14 +288,161 @@ items:
       - "کردستان"
       - "کردها"
     channel_routing:
-      telegram:
-        - "@hengaw_org"
+      telegram: []
       platforms: [web, telegram]
     confidence_trigger: Medium
     last_checked: null
     last_finding: null
 
-  # === PLACEHOLDER: To be populated from framework/data/variables.yaml ===
-  # Run: python pipeline/scripts/populate_watch_list_from_variables.py
-  # This will add top-priority SV-XX variable watch items automatically.
+  # === HIGH PRIORITY: Diplomatic / economic ===
 
+  - id: WT-015
+    entity_id: FV-01
+    entity_name: "Rial exchange rate collapse"
+    priority: 2
+    search_terms:
+      - "Iran rial"
+      - "Iran currency"
+      - "dollar rial"
+    search_terms_fa:
+      - "ریال"
+      - "دلار"
+      - "نرخ ارز"
+    channel_routing:
+      telegram:
+        - "@BourseNews"
+      platforms: [web, telegram]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  - id: WT-016
+    entity_id: FV-34
+    entity_name: "Coercive compliance reach (international)"
+    priority: 2
+    search_terms:
+      - "Iran athlete"
+      - "Iran abroad threats"
+      - "Iran coercion"
+    search_terms_fa: []
+    channel_routing:
+      telegram: []
+      platforms: [web, x_twitter]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  # === PRIORITY 1 GAP FILLS ===
+
+  - id: WT-017
+    entity_id: gap-irgc-command-cohort
+    entity_name: "IRGC command cohort factional alignment"
+    priority: 1
+    search_terms:
+      - "IRGC commander"
+      - "Vahidi"
+      - "IRGC appointment"
+    search_terms_fa:
+      - "فرمانده سپاه"
+      - "وحیدی"
+    channel_routing:
+      telegram:
+        - "@sepah_ir"
+        - "@farsna"
+      platforms: [web, telegram]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  - id: WT-018
+    entity_id: G20-01
+    entity_name: "Mojtaba policy orientation signals"
+    priority: 1
+    search_terms:
+      - "Mojtaba policy"
+      - "Mojtaba decree"
+      - "new Supreme Leader statement"
+    search_terms_fa:
+      - "حکم مجتبی"
+      - "بیانیه رهبر"
+    channel_routing:
+      telegram:
+        - "@iraborsaw"
+        - "@iribnews"
+      platforms: [web, telegram, x_twitter]
+    confidence_trigger: High
+    last_checked: null
+    last_finding: null
+
+  - id: WT-019
+    entity_id: G20-05
+    entity_name: "Ground truth inside Iran (population sentiment)"
+    priority: 1
+    search_terms:
+      - "Iran protests"
+      - "Iran public opinion"
+      - "Iran population"
+    search_terms_fa:
+      - "اعتراض"
+      - "مردم ایران"
+    channel_routing:
+      telegram:
+        - "@bbcpersian"
+        - "@IranIntl_Fa"
+        - "@radiofarda_"
+      platforms: [web, telegram, x_twitter]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  - id: WT-020
+    entity_id: G22-02
+    entity_name: "BTC pipeline physical security"
+    priority: 1
+    search_terms:
+      - "BTC pipeline security"
+      - "pipeline sabotage"
+      - "Ceyhan pipeline"
+    search_terms_fa: []
+    channel_routing:
+      telegram: []
+      platforms: [web, x_twitter]
+    confidence_trigger: High
+    last_checked: null
+    last_finding: null
+
+  - id: WT-021
+    entity_id: G22-05
+    entity_name: "IRGC autonomous action mapping"
+    priority: 1
+    search_terms:
+      - "IRGC rogue"
+      - "IRGC unauthorized"
+      - "Nakhchivan"
+    search_terms_fa:
+      - "سپاه خودسرانه"
+    channel_routing:
+      telegram:
+        - "@sepah_ir"
+        - "@farsna"
+      platforms: [web, x_twitter]
+    confidence_trigger: Medium
+    last_checked: null
+    last_finding: null
+
+  - id: WT-022
+    entity_id: G17-03
+    entity_name: "Chinese military personnel in Iran"
+    priority: 1
+    search_terms:
+      - "China military Iran"
+      - "Chinese advisors Iran"
+      - "Chinese troops Iran"
+    search_terms_fa:
+      - "نظامی چین ایران"
+    channel_routing:
+      telegram: []
+      platforms: [web, x_twitter]
+    confidence_trigger: High
+    last_checked: null
+    last_finding: null

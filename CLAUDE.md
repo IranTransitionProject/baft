@@ -9,8 +9,8 @@ You do NOT do analytical work here. You translate the ITP pipeline architecture 
 ## Essential context
 
 **Three-repo architecture:**
-- `~/Developer/Repositories/framework/` — ITP analytical database (YAML source of truth, schemas, briefs)
-- `~/Developer/Repositories/loom/` — Loom framework (worker runtime, MCP server, NATS bus, scheduler)
+- `./framework/` — ITP analytical database (YAML source of truth, schemas, briefs)
+- `./loom/` — Loom framework (worker runtime, MCP server, NATS bus, scheduler)
 - This repo (`baft/`) — ITP application layer (all ITP-specific config lives here)
 
 **Source of truth for node definitions:** `docs/architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md`
@@ -65,13 +65,13 @@ Reference implementation pattern:
 async def _run():
     import uvicorn
     from mcp.server.fastmcp import FastMCP
-    
+
     await gateway.bridge.connect()
-    
+
     # Wrap low-level server in FastMCP ASGI app
     mcp_app = FastMCP.from_server(server)
     starlette_app = mcp_app.streamable_http_app()
-    
+
     config = uvicorn.Config(starlette_app, host=host, port=port, log_level="info")
     uv_server = uvicorn.Server(config)
     try:
@@ -325,7 +325,7 @@ Reads all entity YAML files from `framework/data/` and populates a DuckDB databa
 
 **FTS index:** Enable DuckDB's full-text search on `entities.content` and `entities.title`.
 
-**Run mode:** 
+**Run mode:**
 - Default: full reimport (drop + recreate tables)
 - `--incremental`: Only update entities modified since last import (compare YAML mtime to DB timestamp)
 
