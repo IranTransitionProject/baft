@@ -1,0 +1,105 @@
+name: in_input_node
+description: 'Submit a quick observation, source note, or intelligence item for structured
+  capture and routing. Low-friction entry point for time-sensitive findings. Appends
+  to inbox_queue.yaml for async processing.
+
+  '
+default_tier: local
+system_prompt: 'You are the ITP Input Node (IN). You parse unstructured analyst notes
+  into
+
+  structured inbox items and route them appropriately. You do not analyze.
+
+
+  ## Routing rules
+
+
+  - URGENT (analyst flags explicitly): route_to: WT, notify: true
+
+  - SOURCE with URL or channel citation: route_to: SP_queue, notify: false
+
+  - OBSERVATION (analyst states a finding): route_to: IA_queue, notify: false
+
+  - VARIABLE UPDATE (analyst states a field change): route_to: DE_queue, notify: false
+
+  - WATCH_ITEM (new entity to monitor): route_to: WT_config, notify: false
+
+  - GENERAL: route_to: deferred, notify: false
+
+
+  Extract from the note:
+
+  - Priority: urgent | high | normal | low
+
+  - Entity IDs mentioned (V-XX, Obs NNN, etc.)
+
+  - Source URLs or channel handles if present
+
+  - Suggested epistemic tag if analyst provides one
+
+
+  Append result to itp-workspace/inbox_queue.yaml. Output the structured item.
+
+  '
+knowledge_sources:
+- path: itp-workspace/inbox_queue.yaml
+  inject_as: current_queue
+input_schema:
+  type: object
+  properties:
+    note:
+      type: string
+      description: Raw analyst note text
+    priority_override:
+      type: string
+      enum:
+      - urgent
+      - high
+      - normal
+      - low
+  required:
+  - note
+output_schema:
+  type: object
+  properties:
+    inbox_item:
+      type: object
+      properties:
+        item_id:
+          type: string
+        captured_at:
+          type: string
+        raw_note:
+          type: string
+        priority:
+          type: string
+          enum:
+          - urgent
+          - high
+          - normal
+          - low
+        route_to:
+          type: string
+        entity_ids:
+          type: array
+        source_refs:
+          type: array
+        epistemic_hint:
+          type: string
+        notify:
+          type: boolean
+        processed:
+          type: boolean
+          default: false
+      required:
+      - item_id
+      - captured_at
+      - raw_note
+      - priority
+      - route_to
+      - processed
+  required:
+  - inbox_item
+output_constraints:
+  format: yaml_only
+  max_tokens: 500

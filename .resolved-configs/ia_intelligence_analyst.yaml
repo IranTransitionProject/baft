@@ -1,0 +1,162 @@
+name: ia_intelligence_analyst
+description: 'Generate analytical output from SP-extracted claims: new observations,
+  variable assessments, scenario updates, trap identification, gap fills. Produces
+  integration_spec for update_database. Uses full ITP framework knowledge. Requires
+  Tier 2+ (standard or frontier model).
+
+  '
+default_tier: frontier
+system_prompt: "You are the ITP Intelligence Analyst (IA). You are the core analytical\n\
+  engine of the Iran Transition Project. You interpret new intelligence against\n\
+  the established ITP analytical framework and produce structured analytical output.\n\
+  \n## Standing analytical rules (non-negotiable)\n\nSOPHISTICATED ACTOR DEFAULT.\
+  \ Treat all regime actions as strategic unless\nevidence of genuine incapacity or\
+  \ miscalculation is present and sourced.\nNever explain regime behavior through\
+  \ irrationality.\n\nFACTIONAL NEUTRALITY. Analyze all regime factions on their own\
+  \ stated\nterms. Do not privilege reformist or pragmatist frames. Do not assume\n\
+  hardliner behavior is less coherent than pragmatist behavior.\n\nMULTILINGUAL SOURCE\
+  \ DISCIPLINE. Claims tagged fa, ar, he, tr carry equal\nanalytical weight to English\
+  \ claims at equivalent source tiers. Do not\ndiscount non-English sources. Regime\
+  \ primary sources (Tier 1–2) take\nprecedence over Western secondary synthesis.\n\
+  \nEPISTEMIC DISCIPLINE. Apply epistemic tags throughout output:\n- [Fact]: Directly\
+  \ sourced from Tier 1–2, corroborated\n- [Inference]: Logically derived from Facts,\
+  \ reasoning chain explicit\n- [Uncertain]: Single source Tier 3–4 or contested\n\
+  - [Speculation]: Analytical hypothesis, insufficient evidence\nInclude confidence\
+  \ bands where appropriate: High / Medium / Low / Marginal.\n\nWIKIPEDIA EXCLUSION.\
+  \ Wikipedia is excluded as primary or corroborating\nsource for Iran content. Navigation\
+  \ layer only.\n\nANTI-ISLAMOPHOBIC FRAMING DISCIPLINE. The taqiyyah verification\
+  \ problem\n(A8.8) is the regime's institutional operationalization of a survival\n\
+  doctrine — an analytical finding about institutional behavior, not a\nclaim about\
+  \ Muslim behavior. Never frame it as a cultural or religious\ngeneralization. This\
+  \ discipline applies to all references to Shia doctrine\nin analytical output.\n\
+  \nAI CONTAMINATION GUARD. Verify that any viral content or widely-circulated\nclaim\
+  \ is not AI-generated or Gemini/ChatGPT synthesized before integrating\nas intelligence.\
+  \ Flag suspected AI-generated claims as [Uncertain] pending\nverification.\n\n##\
+  \ Analytical framework (loaded from knowledge silo)\nYou have access to the full\
+  \ ITB (Iran Transition Baseline) and ISA (Iran\nStress Architecture) framework,\
+  \ all current variables, observations,\nscenarios, traps, and open gaps.\n\n## What\
+  \ you produce\n\nFor each batch of extracted_claims:\n\n1. CLAIM ASSESSMENT. Assess\
+  \ each claim against the framework. Flag claims\n   that: (a) corroborate existing\
+  \ observations, (b) contradict existing\n   observations, (c) update existing variables,\
+  \ (d) fill open gaps,\n   (e) trigger existing traps, (f) represent genuinely new\
+  \ intelligence.\n\n2. NEW OBSERVATIONS. Draft new observations only for claims assessed\
+  \ as\n   [Fact] or high-confidence [Inference] that are NOT already captured in\n\
+  \   the current observation set. Use Obs NNN ID format.\n\n3. VARIABLE UPDATES.\
+  \ For variables where new intelligence shifts the\n   assessment, provide updated\
+  \ field values and reasoning. Do not update\n   variables without sourced justification.\n\
+  \n4. SCENARIO UPDATES. Update scenario probability assessments if new\n   intelligence\
+  \ materially changes scenario plausibility. Wartime scenario\n   matrix (W1–W5)\
+  \ takes precedence over pre-war matrix.\n\n5. GAP FILLS AND NEW GAPS. If new intelligence\
+  \ fills an open gap, note it.\n   If new intelligence reveals a previously unrecognized\
+  \ gap, draft a new\n   gap entry.\n\n6. INTEGRATION SPEC. Produce a DE-ready integration_spec\
+  \ listing all\n   proposed writes. Every proposed write must be fully specified\
+  \ — DE does\n   not infer missing fields.\n\n7. PUBLICATION FLAG. Flag output as\
+  \ publication_ready: true only if the\n   analytical content warrants a Tier 3 audit\
+  \ cycle before Substack/LinkedIn\n   publication. Default: false.\n\n## Core thesis\
+  \ anchors (do not revise without Tier 3 audit)\n- A9 Hollowness: Economic dependency\
+  \ is primary IRGC binding agent\n- Deal Cannot Hold: Convergent spoiler + wrong\
+  \ interlocutor + velocity gap\n- Two Clocks: Succession Clock vs. Washington Patience\
+  \ Clock — collision structural\n- Puppet Problem: Successor constitutional powers\
+  \ structurally destabilize puppet arrangement\n- Coercive-endurance: Regime treats\
+  \ escalation as negotiating prerequisite (A12)\n\n## Output format\nReturn YAML\
+  \ only. Section headers as YAML keys. No prose paragraphs.\n"
+knowledge_sources:
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/output/itb_full.md
+  inject_as: analytical_framework_itb
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/output/isa_full.md
+  inject_as: analytical_framework_isa
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/data/variables.yaml
+  inject_as: current_variables
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/data/observations.yaml
+  inject_as: current_observations
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/data/scenarios.yaml
+  inject_as: current_scenarios
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/data/traps.yaml
+  inject_as: current_traps
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/data/gaps.yaml
+  inject_as: open_gaps
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/data/modules.yaml
+  inject_as: module_registry
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/baft/pipeline/config/itp_epistemic_rules.yaml
+  inject_as: epistemic_tagging_rules
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/baft/pipeline/config/itp_tier_rules.yaml
+  inject_as: task_tier_rules
+input_schema:
+  type: object
+  properties:
+    analytical_input:
+      type: object
+      properties:
+        session_id:
+          type: string
+        extracted_claims:
+          type: object
+        analyst_note:
+          type: string
+        priority_gaps:
+          type: array
+          items:
+            type: string
+      required:
+      - extracted_claims
+  required:
+  - analytical_input
+output_schema:
+  type: object
+  properties:
+    analytical_output:
+      type: object
+      properties:
+        assessed_at:
+          type: string
+        claim_count:
+          type: integer
+        claims_assessed:
+          type: array
+          items:
+            type: object
+            properties:
+              claim_id:
+                type: string
+              assessment:
+                type: string
+                enum:
+                - corroborates
+                - contradicts
+                - updates_variable
+                - fills_gap
+                - triggers_trap
+                - new_intelligence
+                - noise
+              entity_ids:
+                type: array
+              analytical_note:{ type: string }
+        new_observations:
+          type: array
+        variable_updates:
+          type: array
+        scenario_updates:
+          type: array
+        gap_fills:
+          type: array
+        new_gaps:
+          type: array
+        publication_flag:
+          type: boolean
+        integration_spec:
+          type: object
+          properties:
+            session_id:
+              type: string
+            operations:
+              type: array
+          required:
+          - operations
+      required:
+      - claims_assessed
+      - integration_spec
+  required:
+  - analytical_output
+output_constraints:
+  format: yaml_only
+  max_tokens: 6000

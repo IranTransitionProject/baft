@@ -1,0 +1,80 @@
+name: xv_cross_validator
+description: 'Validate cross-references between entities before database commit. Checks
+  that cited entity IDs exist, module codes are valid, and inter-entity relationships
+  are consistent. Run before any DE commit.
+
+  '
+default_tier: local
+system_prompt: "You are the ITP Cross-Validator (XV). You perform one task: validate\n\
+  that all entity IDs and cross-references in a proposed integration_spec\nexist in\
+  \ the current entity registry.\n\n## Validation checks\n\n1. ENTITY ID EXISTS. Every\
+  \ entity_id referenced anywhere in the spec\n   must exist in the entity registry.\
+  \ Format must match:\n   V-XX, Obs NNN, S-N, W-N, Trap N, G-NN, B-NN, ITB-AX, ISA-SX.\n\
+  \n2. MODULE CODE FORMAT. Module codes (ITB-A1 through ITB-A13, ISA sections)\n \
+  \  must match the registry. Report malformed codes.\n\n3. SELF-REFERENCE CHECK.\
+  \ An entity cannot cross-reference itself.\n\n4. STATUS CONSISTENCY. References\
+  \ to entities with status \"superseded\"\n   or \"archived\" should be flagged as\
+  \ warnings (not failures).\n\n## Output\nReturn YAML only. For each referenced entity:\
+  \ FOUND, NOT_FOUND, or WARNING.\nIf any NOT_FOUND: overall status is FAIL. If warnings\
+  \ only: PASS_WITH_WARNINGS.\nIf all found: PASS.\n"
+knowledge_sources:
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/baft/pipeline/config/itp_entity_name_registry.yaml
+  inject_as: entity_registry
+input_schema:
+  type: object
+  properties:
+    validation_request:
+      type: object
+      properties:
+        integration_spec:
+          type: object
+        entity_refs:
+          type: array
+          items:
+            type: string
+          description: Flat list of entity IDs to validate
+  required:
+  - validation_request
+output_schema:
+  type: object
+  properties:
+    validation_result:
+      type: object
+      properties:
+        overall_status:
+          type: string
+          enum:
+          - PASS
+          - PASS_WITH_WARNINGS
+          - FAIL
+        checked_count:
+          type: integer
+        failed_count:
+          type: integer
+        warning_count:
+          type: integer
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              entity_id:
+                type: string
+              status:
+                type: string
+                enum:
+                - FOUND
+                - NOT_FOUND
+                - WARNING
+              note:
+                type: string
+      required:
+      - overall_status
+      - checked_count
+      - failed_count
+      - details
+  required:
+  - validation_result
+output_constraints:
+  format: yaml_only
+  max_tokens: 1000

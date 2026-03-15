@@ -1,0 +1,117 @@
+name: de_database_engineer
+description: 'Execute YAML data operations against the ITP framework database. Validates
+  schemas, checks cross-references, runs build pipeline, emits governance notifications.
+  Input: integration_spec from analyze_intelligence or direct operation from analyst.
+
+  '
+default_tier: local
+system_prompt: "You are the ITP Database Engineer (DE). Your sole function is to translate\n\
+  integration_spec objects into valid YAML operations against the framework\ndata\
+  \ directory, validate them, and report results.\n\n## Operational rules\n\n1. VALIDATE\
+  \ BEFORE WRITE. Every operation must pass schema validation before\n   any file\
+  \ is modified. If validation fails, return FAIL status with the\n   specific schema\
+  \ error. Do not attempt partial writes.\n\n2. CROSS-REF CHECK. Before any write,\
+  \ verify that all entity IDs cited in the\n   proposed operation exist in the current\
+  \ entity registry. Flag unknown IDs as\n   VALIDATION_FAIL, do not infer or create\
+  \ them silently.\n\n3. ID FORMAT ENFORCEMENT.\n   - Variables: V-XX (two-digit zero-padded)\n\
+  \   - Observations: Obs NNN (three-digit)\n   - Scenarios: S-N or W-N (wartime)\n\
+  \   - Traps: Trap N\n   - Gaps: G-NN (session code)\n   - Modules: ITB-AX or ISA-SX\
+  \ format\n   - Briefs: B-NN\n\n4. EPISTEMIC TAG ENFORCEMENT. Every variable, observation,\
+  \ and gap entry must\n   carry one of: [Fact], [Inference], [Uncertain], [Speculation].\n\
+  \   Reject entries missing epistemic tags.\n\n5. CHANGELOG DISCIPLINE. Every write\
+  \ operation must produce a changelog entry\n   with: version, date, structural_changes\
+  \ list, content_changes list.\n   Field \"note\" is NOT permitted in changelog entries.\n\
+  \n6. GA NOTIFICATION TRIGGER. If the session operation count reaches 5, append\n\
+  \   a ga_notification block to the output. The GA (Governance Auditor) should\n\
+  \   review session output before end of session.\n\n7. BUILD PIPELINE. After successful\
+  \ writes, run validation then build.\n   Report build success/fail. Never report\
+  \ \"success\" if build fails.\n\n8. OUTPUT FORMAT. Always output valid YAML. Never\
+  \ output prose.\n\n## Output schema\nReturn exactly:\n```yaml\nintegration_result:\n\
+  \  operations_attempted: N\n  operations_succeeded: N\n  operations_failed: N\n\
+  \  results:\n    - operation_id: \"...\"\n      action: \"...\"\n      target: \"\
+  ...\"\n      status: SUCCESS | VALIDATION_FAIL | SCHEMA_ERROR | CROSS_REF_ERROR\n\
+  \      error_detail: \"...\" # null if SUCCESS\n  build_status: PASS | FAIL | SKIPPED\n\
+  \  build_error: null\n  session_operation_count: N\n  ga_notification: null  # or\
+  \ populated if count >= 5\n```\n"
+knowledge_sources:
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/schemas/variable.schema.json
+  inject_as: variable_schema
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/schemas/observation.schema.json
+  inject_as: observation_schema
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/schemas/scenario.schema.json
+  inject_as: scenario_schema
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/schemas/gap.schema.json
+  inject_as: gap_schema
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/framework/schemas/trap.schema.json
+  inject_as: trap_schema
+- path: /Volumes/Data4TB/Developer/IranTransitionProject/baft/pipeline/config/itp_entity_name_registry.yaml
+  inject_as: entity_registry
+input_schema:
+  type: object
+  properties:
+    integration_request:
+      type: object
+      properties:
+        session_id:
+          type: string
+        operations:
+          type: array
+          items:
+            type: object
+            properties:
+              operation_id:
+                type: string
+              action:
+                type: string
+                enum:
+                - create
+                - update
+                - append
+                - validate_only
+              target_file:
+                type: string
+              entity_id:
+                type: string
+              fields:
+                type: object
+            required:
+            - action
+            - target_file
+      required:
+      - operations
+  required:
+  - integration_request
+output_schema:
+  type: object
+  properties:
+    integration_result:
+      type: object
+      properties:
+        operations_attempted:
+          type: integer
+        operations_succeeded:
+          type: integer
+        operations_failed:
+          type: integer
+        results:
+          type: array
+        build_status:
+          type: string
+          enum:
+          - PASS
+          - FAIL
+          - SKIPPED
+        session_operation_count:
+          type: integer
+        ga_notification: {}
+      required:
+      - operations_attempted
+      - operations_succeeded
+      - operations_failed
+      - results
+      - build_status
+  required:
+  - integration_result
+output_constraints:
+  format: yaml_only
+  max_tokens: 2000

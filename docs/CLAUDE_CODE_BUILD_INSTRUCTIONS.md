@@ -1,7 +1,7 @@
 # Claude Code Instructions — Baft Repository Build
 
 **Date:** 2026-03-13  
-**Repo:** `~/Developer/Repositories/baft/`  
+**Repo:** `$ITP_ROOT/baft/`  
 **For:** Claude Code (EXECUTOR role)
 
 ---
@@ -13,8 +13,8 @@ Build the Baft repository from the skeleton provided. Baft is the ITP-specific c
 **Read before starting:**
 1. `CLAUDE.md` — operating rules for this repo
 2. `docs/architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md` — the canonical node spec
-3. `~/Developer/Repositories/loom/configs/workers/_template.yaml` — Loom worker config format
-4. `~/Developer/Repositories/loom/configs/workers/summarizer.yaml` — real example worker config
+3. `$ITP_ROOT/loom/configs/workers/_template.yaml` — Loom worker config format
+4. `$ITP_ROOT/loom/configs/workers/summarizer.yaml` — real example worker config
 
 ---
 
@@ -23,8 +23,8 @@ Build the Baft repository from the skeleton provided. Baft is the ITP-specific c
 ### Step 1.1 — Read the Loom worker template format
 
 ```bash
-cat ~/Developer/Repositories/loom/configs/workers/_template.yaml
-cat ~/Developer/Repositories/loom/configs/workers/summarizer.yaml
+cat $ITP_ROOT/loom/configs/workers/_template.yaml
+cat $ITP_ROOT/loom/configs/workers/summarizer.yaml
 ```
 
 Understand the schema before writing any worker config. Every worker config needs:
@@ -170,7 +170,7 @@ These nodes are blind. They receive only the neutralized analytical text and the
 
 ### Step 1.5 — Write orchestrator pipeline configs
 
-Read `~/Developer/Repositories/loom/configs/orchestrators/rag_pipeline.yaml` for format.
+Read `$ITP_ROOT/loom/configs/orchestrators/rag_pipeline.yaml` for format.
 
 **File: `configs/orchestrators/itp_quick.yaml`** — single-stage, just DE
 **File: `configs/orchestrators/itp_standard.yaml`** — SP → IA → DE (sequential, pass output forward)
@@ -206,7 +206,7 @@ loom mcp --config configs/mcp/itp.yaml --dry-run 2>/dev/null || echo "Note: --dr
 ### Step 2.1 — Run DuckDB import
 
 ```bash
-cd ~/Developer/Repositories/baft
+cd $ITP_ROOT/baft
 python pipeline/scripts/itp_import_to_duckdb.py
 python pipeline/scripts/itp_import_to_duckdb.py --stats
 ```
@@ -248,7 +248,7 @@ Include: confidence band definitions (High/Medium/Low/Marginal) and combination 
 python3 -c "
 import yaml
 from pathlib import Path
-data = yaml.safe_load(open('$FRAMEWORK_REPO/data/variables.yaml'))
+data = yaml.safe_load(open('$ITP_ROOT/framework/data/variables.yaml'))
 # Extract entity names and aliases
 # Write to pipeline/config/itp_entity_name_registry.yaml
 "
@@ -279,17 +279,17 @@ Note: ROBOTIC-LLM.md path is wherever Hooman has it. Ask if unclear.
 
 ### Step 3.1 — Fix Loom streamable HTTP transport (Gap 1)
 
-**File:** `~/Developer/Repositories/loom/src/loom/mcp/server.py`
+**File:** `$ITP_ROOT/loom/src/loom/mcp/server.py`
 **Function:** `run_streamable_http()`
 
 Read the current implementation first:
 ```bash
-cat ~/Developer/Repositories/loom/src/loom/mcp/server.py | grep -A 40 "def run_streamable_http"
+cat $ITP_ROOT/loom/src/loom/mcp/server.py | grep -A 40 "def run_streamable_http"
 ```
 
 Replace the stub with a working implementation. The FastMCP library should provide an ASGI app wrapper. Check what's available:
 ```bash
-cd ~/Developer/Repositories/loom
+cd $ITP_ROOT/loom
 python3 -c "import mcp.server.fastmcp; help(mcp.server.fastmcp)" 2>/dev/null | head -50
 ```
 
@@ -297,7 +297,7 @@ If `FastMCP.from_server()` or similar exists, use it. Otherwise use the `mcp.ser
 
 After fixing, validate:
 ```bash
-cd ~/Developer/Repositories/baft
+cd $ITP_ROOT/baft
 loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765 &
 sleep 2
 curl http://localhost:8765/health
@@ -306,7 +306,7 @@ kill %1
 
 Commit the fix to the Loom repo separately:
 ```bash
-cd ~/Developer/Repositories/loom
+cd $ITP_ROOT/loom
 git add src/loom/mcp/server.py
 git commit -m "Fix streamable HTTP MCP transport (was stub, now functional)"
 ```
@@ -314,7 +314,7 @@ git commit -m "Fix streamable HTTP MCP transport (was stub, now functional)"
 ### Step 3.2 — End-to-end Tier 1 validation
 
 ```bash
-cd ~/Developer/Repositories/baft
+cd $ITP_ROOT/baft
 
 # Start infrastructure
 nats-server &
@@ -363,7 +363,7 @@ Validate that SP returns `extracted_claims` with properly tagged claims.
 ### Step 3.4 — Commit initial state
 
 ```bash
-cd ~/Developer/Repositories/baft
+cd $ITP_ROOT/baft
 git init
 git add .
 git commit -m "Session 1: Initial Baft repository — worker configs, MCP gateway, data layer"

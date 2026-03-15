@@ -1,0 +1,7 @@
+[2m2026-03-15T19:06:07.210759Z[0m [1mbus.connected                 [0m [36murl[0m=[35mnats://localhost:4222[0m
+[2m2026-03-15T19:06:07.211073Z[0m [1mactor.connected               [0m [36mactor_id[0m=[35mworker-de_database_engineer-local[0m
+[2m2026-03-15T19:06:07.211139Z[0m [1mactor.subscribed              [0m [36mactor_id[0m=[35mworker-de_database_engineer-local[0m [36msubject[0m=[35mloom.tasks.de_database_engineer.local[0m
+[2m2026-03-15T19:06:07.211237Z[0m [1mactor.running                 [0m [36mactor_id[0m=[35mworker-de_database_engineer-local[0m [36mmax_concurrent[0m=[35m1[0m [36msubject[0m=[35mloom.tasks.de_database_engineer.local[0m
+[2m2026-03-15T19:07:41.961629Z[0m [1mworker.calling_llm            [0m [36mtier[0m=[35mlocal[0m [36mtools[0m=[35m0[0m
+[2m2026-03-15T19:07:46.584888Z[0m [1mworker.completed              [0m [36mmodel_tier[0m=[35mlocal[0m [36mms[0m=[35m4624[0m [36mtask_id[0m=[35md60048ca-ed5b-4dc4-b0fb-456d47e06071[0m [36mworker_type[0m=[35mde_database_engineer[0m
+[2m2026-03-15T19:07:46.584989Z[0m [1mactor.processed               [0m [36mactor_id[0m=[35mworker-de_database_engineer-local[0m [36mms[0m=[35m4625[0m

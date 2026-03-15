@@ -33,9 +33,27 @@ import duckdb
 # Config
 # ---------------------------------------------------------------------------
 
-FRAMEWORK_REPO = Path(os.environ.get("FRAMEWORK_REPO", Path.home() / "Developer" / "Repositories" / "framework"))
-DATA_DIR = FRAMEWORK_REPO / "data"
 BAFT_DIR = Path(__file__).parent.parent.parent  # repo root
+
+def _resolve_itp_root() -> Path:
+    """Find the ITP project root: ITP_ROOT env var > parent of baft dir."""
+    if "ITP_ROOT" in os.environ:
+        return Path(os.environ["ITP_ROOT"])
+    # baft is a child of ITP_ROOT
+    candidate = BAFT_DIR.parent
+    if (candidate / "framework" / "data").is_dir():
+        return candidate
+    # Legacy env var
+    if "FRAMEWORK_REPO" in os.environ:
+        return Path(os.environ["FRAMEWORK_REPO"]).parent
+    raise FileNotFoundError(
+        "Cannot find ITP project root. Set ITP_ROOT env var to the directory "
+        "containing framework/, loom/, and baft/."
+    )
+
+ITP_ROOT = _resolve_itp_root()
+FRAMEWORK_REPO = ITP_ROOT / "framework"
+DATA_DIR = FRAMEWORK_REPO / "data"
 WORKSPACE_DIR = BAFT_DIR / "itp-workspace"
 DB_PATH = WORKSPACE_DIR / "itp.duckdb"
 

@@ -112,7 +112,7 @@ tools:
 
 resources:
   # Expose framework data/ YAML files as readable MCP resources
-  workspace_dir: "${FRAMEWORK_REPO}/data"
+  workspace_dir: "${ITP_ROOT}/framework/data"
   patterns:
     - "variables.yaml"
     - "observations.yaml"

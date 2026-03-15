@@ -68,7 +68,7 @@ docs/
 - NATS server (`brew install nats-server` or Docker)
 - Redis (`brew install redis` or Docker)
 - Anthropic API key (`export ANTHROPIC_API_KEY=sk-ant-...`)
-- ITP framework repo at `~/Developer/Repositories/framework/`
+- `ITP_ROOT` env var set to the project root (parent of `framework/`, `loom/`, `baft/`)
 
 ## Quick start
 

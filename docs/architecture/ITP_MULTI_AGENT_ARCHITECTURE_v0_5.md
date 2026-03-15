@@ -161,7 +161,7 @@ The system prompt content already exists — it's in v0.4 under each node's "Sys
 # In each worker config, knowledge_sources field:
 knowledge_sources:
   - type: file
-    path: "~/Developer/Repositories/framework/data/variables.yaml"
+    path: "$ITP_ROOT/framework/data/variables.yaml"
     inject_as: "current_variables_snapshot"
   - type: file  
     path: "pipeline/config/itp_terminology_registry.yaml"

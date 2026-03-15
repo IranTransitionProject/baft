@@ -22,9 +22,25 @@ from pathlib import Path
 
 import yaml
 
-FRAMEWORK_REPO = Path(os.environ.get("FRAMEWORK_REPO", Path.home() / "Developer" / "Repositories" / "framework"))
-DATA_DIR = FRAMEWORK_REPO / "data"
 BAFT_DIR = Path(__file__).parent.parent.parent
+
+def _resolve_itp_root() -> Path:
+    """Find the ITP project root: ITP_ROOT env var > parent of baft dir."""
+    if "ITP_ROOT" in os.environ:
+        return Path(os.environ["ITP_ROOT"])
+    candidate = BAFT_DIR.parent
+    if (candidate / "framework" / "data").is_dir():
+        return candidate
+    if "FRAMEWORK_REPO" in os.environ:
+        return Path(os.environ["FRAMEWORK_REPO"]).parent
+    raise FileNotFoundError(
+        "Cannot find ITP project root. Set ITP_ROOT env var to the directory "
+        "containing framework/, loom/, and baft/."
+    )
+
+ITP_ROOT = _resolve_itp_root()
+FRAMEWORK_REPO = ITP_ROOT / "framework"
+DATA_DIR = FRAMEWORK_REPO / "data"
 REGISTRY_PATH = BAFT_DIR / "pipeline" / "config" / "itp_entity_name_registry.yaml"
 
 ENTITY_FILES = {

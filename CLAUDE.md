@@ -16,7 +16,7 @@ You do NOT do analytical work here. You translate the ITP pipeline architecture 
 **Source of truth for node definitions:** `docs/architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md`
 Every worker config system prompt, knowledge silo, and I/O schema is specified there. Read that document before writing worker configs.
 
-**Loom worker config format** (from `~/Developer/Repositories/loom/configs/workers/_template.yaml`):
+**Loom worker config format** (from `$ITP_ROOT/loom/configs/workers/_template.yaml`):
 ```yaml
 name: worker_name
 description: "One-line description"
@@ -53,7 +53,7 @@ Work through gaps in this order. Each gap has a validation step — do not move 
 
 ### Gap 1 [BLOCKING] — Streamable HTTP MCP transport
 
-**File:** `~/Developer/Repositories/loom/src/loom/mcp/server.py`
+**File:** `$ITP_ROOT/loom/src/loom/mcp/server.py`
 **Function:** `run_streamable_http()`
 
 The current implementation serves only a `/health` route via bare Starlette. It does not handle MCP protocol messages over HTTP.
@@ -110,7 +110,7 @@ tools:
       actions: ["search", "filter", "stats", "get"]
       name_prefix: "itp"
       backend_config:
-        db_path: "${HOME}/Developer/Repositories/baft/itp-workspace/itp.duckdb"
+        db_path: "${ITP_ROOT}/baft/itp-workspace/itp.duckdb"
         table_name: "entities"
         result_columns: ["id", "type", "title", "status", "epistemic_tag", "confidence"]
         id_column: "id"
@@ -123,7 +123,7 @@ tools:
         stats_aggregates: ["COUNT(*) AS count"]
 
 resources:
-  workspace_dir: "${HOME}/Developer/Repositories/framework/data"
+  workspace_dir: "${ITP_ROOT}/framework/data"
   patterns: ["*.yaml"]
 ```
 
@@ -196,7 +196,7 @@ TN (terminology_neutralizer) → [LA + PA + RT in parallel] → AS (audit_synthe
 LA, PA, RT run in parallel (Loom supports this via orchestrator decomposer).
 AS receives all three audit outputs as `audit_inputs`.
 
-**Reference:** `~/Developer/Repositories/loom/configs/orchestrators/rag_pipeline.yaml` for pipeline config format.
+**Reference:** `$ITP_ROOT/loom/configs/orchestrators/rag_pipeline.yaml` for pipeline config format.
 
 **Validation:** `loom pipeline --config configs/orchestrators/itp_standard.yaml --dry-run`
 
@@ -271,21 +271,21 @@ silos:
       inject_as: "terminology_registry"
 
   framework_full:
-    - path: "${FRAMEWORK_REPO}/output/itb_full.md"
+    - path: "${ITP_ROOT}/framework/output/itb_full.md"
       inject_as: "analytical_framework"
-    - path: "${FRAMEWORK_REPO}/output/isa_full.md"
+    - path: "${ITP_ROOT}/framework/output/isa_full.md"
       inject_as: "stress_architecture"
 
   database_current:
-    - path: "${FRAMEWORK_REPO}/data/variables.yaml"
+    - path: "${ITP_ROOT}/framework/data/variables.yaml"
       inject_as: "current_variables"
-    - path: "${FRAMEWORK_REPO}/data/observations.yaml"
+    - path: "${ITP_ROOT}/framework/data/observations.yaml"
       inject_as: "current_observations"
-    - path: "${FRAMEWORK_REPO}/data/scenarios.yaml"
+    - path: "${ITP_ROOT}/framework/data/scenarios.yaml"
       inject_as: "current_scenarios"
-    - path: "${FRAMEWORK_REPO}/data/traps.yaml"
+    - path: "${ITP_ROOT}/framework/data/traps.yaml"
       inject_as: "current_traps"
-    - path: "${FRAMEWORK_REPO}/data/gaps.yaml"
+    - path: "${ITP_ROOT}/framework/data/gaps.yaml"
       inject_as: "open_gaps"
 
   tier_rules:
@@ -301,7 +301,8 @@ silos:
       inject_as: "analyst_profile"
 ```
 
-Where `${FRAMEWORK_REPO}` = `~/Developer/Repositories/framework`. Use Python's `os.path.expandvars()` in the silo loader, or hardcode the expanded path.
+All cross-repo paths use `${ITP_ROOT}` — the project root containing framework/, loom/, baft/.
+Python scripts resolve it via `os.environ.get("ITP_ROOT")` with auto-detection fallback.
 
 ---
 
@@ -407,8 +408,8 @@ Write `tests/test_duckdb_import.py` — validates that `itp_import_to_duckdb.py`
 
 ```bash
 export ANTHROPIC_API_KEY="sk-ant-..."
-export FRAMEWORK_REPO="$HOME/Developer/Repositories/framework"
-export BAFT_WORKSPACE="$HOME/Developer/Repositories/baft/itp-workspace"
+export ITP_ROOT="/path/to/IranTransitionProject"  # parent of framework/, loom/, baft/
+export BAFT_WORKSPACE="$ITP_ROOT/baft/itp-workspace"
 export NATS_URL="nats://localhost:4222"
 export REDIS_URL="redis://localhost:6379"
 ```

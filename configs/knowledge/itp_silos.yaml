@@ -10,8 +10,8 @@
 # LA, PA, RT worker configs must NOT reference any silo marked
 # isolation_required: true. Violation undermines audit independence.
 #
-# ${FRAMEWORK_REPO} resolves to ~/Developer/Repositories/framework
-# ${BAFT_REPO} resolves to ~/Developer/Repositories/baft
+# ${ITP_ROOT} is the project root containing framework/, loom/, baft/
+# All cross-repo paths derive from it: ${ITP_ROOT}/framework, ${ITP_ROOT}/loom
 
 version: "1.0"
 date: "2026-03-13"
@@ -25,10 +25,10 @@ silos:
     permitted_nodes: [IA]
     description: "Full ITB + ISA analytical framework output documents"
     sources:
-      - path: "${FRAMEWORK_REPO}/output/itb_full.md"
+      - path: "${ITP_ROOT}/framework/output/itb_full.md"
         inject_as: "analytical_framework_itb"
         description: "Iran Transition Baseline — full framework"
-      - path: "${FRAMEWORK_REPO}/output/isa_full.md"
+      - path: "${ITP_ROOT}/framework/output/isa_full.md"
         inject_as: "analytical_framework_isa"
         description: "Iran Stress Architecture — scenarios and stress analysis"
 
@@ -37,17 +37,17 @@ silos:
     permitted_nodes: [IA, DE]
     description: "Current state of all ITP entity YAML files"
     sources:
-      - path: "${FRAMEWORK_REPO}/data/variables.yaml"
+      - path: "${ITP_ROOT}/framework/data/variables.yaml"
         inject_as: "current_variables"
-      - path: "${FRAMEWORK_REPO}/data/observations.yaml"
+      - path: "${ITP_ROOT}/framework/data/observations.yaml"
         inject_as: "current_observations"
-      - path: "${FRAMEWORK_REPO}/data/scenarios.yaml"
+      - path: "${ITP_ROOT}/framework/data/scenarios.yaml"
         inject_as: "current_scenarios"
-      - path: "${FRAMEWORK_REPO}/data/traps.yaml"
+      - path: "${ITP_ROOT}/framework/data/traps.yaml"
         inject_as: "current_traps"
-      - path: "${FRAMEWORK_REPO}/data/gaps.yaml"
+      - path: "${ITP_ROOT}/framework/data/gaps.yaml"
         inject_as: "open_gaps"
-      - path: "${FRAMEWORK_REPO}/data/modules.yaml"
+      - path: "${ITP_ROOT}/framework/data/modules.yaml"
         inject_as: "module_registry"
 
   framework_schemas:
@@ -55,15 +55,15 @@ silos:
     permitted_nodes: [DE, XV]
     description: "JSON schemas for framework entity types"
     sources:
-      - path: "${FRAMEWORK_REPO}/schemas/variable_schema.yaml"
+      - path: "${ITP_ROOT}/framework/schemas/variable.schema.json"
         inject_as: "variable_schema"
-      - path: "${FRAMEWORK_REPO}/schemas/observation_schema.yaml"
+      - path: "${ITP_ROOT}/framework/schemas/observation.schema.json"
         inject_as: "observation_schema"
-      - path: "${FRAMEWORK_REPO}/schemas/scenario_schema.yaml"
+      - path: "${ITP_ROOT}/framework/schemas/scenario.schema.json"
         inject_as: "scenario_schema"
-      - path: "${FRAMEWORK_REPO}/schemas/gap_schema.yaml"
+      - path: "${ITP_ROOT}/framework/schemas/gap.schema.json"
         inject_as: "gap_schema"
-      - path: "${FRAMEWORK_REPO}/schemas/trap_schema.yaml"
+      - path: "${ITP_ROOT}/framework/schemas/trap.schema.json"
         inject_as: "trap_schema"
 
   entity_id_registry:
