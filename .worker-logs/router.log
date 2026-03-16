@@ -1,6 +1,0 @@
-[2m2026-03-15T19:06:06.055349Z[0m [1mrate_limiter.initialized      [0m [36mtiers[0m=[35m{'local': 4, 'standard': 10, 'frontier': 3}[0m
-[2m2026-03-15T19:06:06.055673Z[0m [1mrouter.initialized            [0m [36mrate_limit_tiers[0m=[35m['local', 'standard', 'frontier'][0m [36mtier_overrides[0m=[35m{'summarizer': 'local', 'classifier': 'local', 'extractor': 'standard'}[0m
-[2m2026-03-15T19:06:06.063541Z[0m [1mbus.connected                 [0m [36murl[0m=[35mnats://localhost:4222[0m
-[2m2026-03-15T19:06:06.063622Z[0m [1mrouter.running                [0m [36mdead_letter_subject[0m=[35mloom.tasks.dead_letter[0m
-[2m2026-03-15T19:07:41.958837Z[0m [1mrouter.routing                [0m [36msubject[0m=[35mloom.tasks.de_database_engineer.local[0m [36mtask_id[0m=[35md60048ca-ed5b-4dc4-b0fb-456d47e06071[0m [36mtier[0m=[35mlocal[0m [36mworker_type[0m=[35mde_database_engineer[0m
-[2m2026-03-15T19:07:46.598475Z[0m [1mrouter.routing                [0m [36msubject[0m=[35mloom.tasks.sp_source_processor.local[0m [36mtask_id[0m=[35m4e34bd0a-f947-4c61-92cd-6041b3adf1c3[0m [36mtier[0m=[35mlocal[0m [36mworker_type[0m=[35msp_source_processor[0m
