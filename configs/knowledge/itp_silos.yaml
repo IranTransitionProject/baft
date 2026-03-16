@@ -137,6 +137,16 @@ silos:
       - path: "pipeline/config/itp_cognitive_profile.yaml"
         inject_as: "analyst_profile"
 
+  # ── Constitution (all sighted workers) ────────────────────────────
+
+  constitution:
+    isolation_required: false
+    permitted_nodes: [SP, IA, DE, XV, IN, TN, LA, PA, RT, AS, SA, WT, NI]
+    description: "Standing analytical rules injected into every worker"
+    sources:
+      - path: "configs/pipeline/itp_constitution.yaml"
+        inject_as: "standing_rules"
+
   # ── Blind audit reference (LA, PA) ────────────────────────────────────
   # RT has empty knowledge_sources — it is fully blind.
 

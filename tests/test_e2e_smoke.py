@@ -69,11 +69,13 @@ class TestTier1Smoke:
     async def test_de_validate_only(self, bridge):
         """Submit a validate-only request to DE and check for valid response."""
         payload = {
-            "type": "integration_request",
-            "operations": [{
-                "action": "validate_only",
-                "target": "data/variables.yaml",
-            }],
+            "integration_request": {
+                "session_id": "e2e_test",
+                "operations": [{
+                    "action": "validate_only",
+                    "target_file": "data/variables.yaml",
+                }],
+            },
         }
 
         result = await bridge.call_worker(

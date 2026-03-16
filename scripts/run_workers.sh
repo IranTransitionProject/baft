@@ -100,7 +100,7 @@ start_worker() {
     config=$(resolve_config "$name")
     local log="$LOG_DIR/${name}.log"
 
-    "$LOOM" worker --config "$config" --tier "$tier" --nats-url nats://localhost:4222 \
+    nohup "$LOOM" worker --config "$config" --tier "$tier" --nats-url nats://localhost:4222 \
         > "$log" 2>&1 &
     local pid=$!
     echo "$pid $name" >> "$PID_FILE"
@@ -114,7 +114,7 @@ rm -f "$PID_FILE"
 
 # --- Start router ---
 info "Starting Loom router..."
-"$LOOM" router --config "$LOOM_DIR/configs/router_rules.yaml" --nats-url nats://localhost:4222 \
+nohup "$LOOM" router --config "$LOOM_DIR/configs/router_rules.yaml" --nats-url nats://localhost:4222 \
     > "$LOG_DIR/router.log" 2>&1 &
 ROUTER_PID=$!
 echo "$ROUTER_PID router" >> "$PID_FILE"

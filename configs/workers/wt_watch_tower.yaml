@@ -54,6 +54,7 @@ system_prompt: |
   {"session_agenda": {"generated_at": "2026-03-15T07:00:00Z", "priority_items": [{"topic": "Succession update", "significance": "high", "findings_count": 3}], "secondary_items": [], "silence_alerts": []}}
 
 knowledge_sources:
+  - silo: constitution
   - silo: watch_list
   - path: "pipeline/config/itp_telegram_channels.yaml"
     inject_as: "channel_registry"

@@ -70,6 +70,7 @@ system_prompt: |
   {"sa_advisory": {"no_flags": false, "flags": [{"flag_type": "FATIGUE", "severity": "medium", "evidence": "Response terseness increased over last 4 exchanges", "recommended_action": "Suggest session break to HI-R"}]}}
 
 knowledge_sources:
+  - silo: constitution
   - silo: cognitive_profile
   - silo: tier_rules
 

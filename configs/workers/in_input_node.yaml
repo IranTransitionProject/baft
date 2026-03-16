@@ -41,6 +41,7 @@ system_prompt: |
   {"inbox_item": {"item_id": "IN-20260315-001", "captured_at": "2026-03-15T14:22:00Z", "raw_note": "original note text here", "priority": "urgent", "route_to": "WT", "entity_ids": ["G23-03"], "source_refs": ["@factnameh"], "epistemic_hint": "[Uncertain]", "notify": true, "processed": false}}
 
 knowledge_sources:
+  - silo: constitution
   - path: "itp-workspace/inbox_queue.yaml"
     inject_as: "current_queue"
 

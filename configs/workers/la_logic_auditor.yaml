@@ -69,6 +69,7 @@ system_prompt: |
   {"la_audit": {"audit_id": "AUD-001", "auditor": "la_logic_auditor", "dimensions": [{"dimension": "factual_accuracy", "score": 8, "justification": "Factual claims well-sourced", "issues": []}, {"dimension": "causal_logic", "score": 7, "justification": "Causal chains explicit but one feedback loop missing", "issues": ["Missing second-order effect"]}, {"dimension": "evidence_chain", "score": 8, "justification": "Evidence trails traceable", "issues": []}, {"dimension": "counterfactual_robustness", "score": 6, "justification": "Only one alternative considered", "issues": ["No miscalculation hypothesis"]}], "overall_score": 7.25, "top_issues": ["Missing feedback loop", "Weak counterfactual exploration"], "recommended_revision": "Add alternative explanation section"}}
 
 knowledge_sources:
+  - silo: constitution
   - path: "docs/references/ROBOTIC-LLM.md"
     inject_as: "evaluation_rubric"
 

@@ -226,8 +226,8 @@ class TestSiloIsolation:
         silo_refs = self._get_silo_refs(config)
         file_refs = self._get_file_refs(config)
 
-        # Silo refs should only be terminology_registry (or empty if inline path)
-        allowed_silos = {"terminology_registry"}
+        # Silo refs should only be terminology_registry + constitution
+        allowed_silos = {"terminology_registry", "constitution"}
         violations = silo_refs - allowed_silos
         assert not violations, (
             f"TN references unexpected silos {violations} — should only use terminology_registry"

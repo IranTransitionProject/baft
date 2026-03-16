@@ -70,6 +70,7 @@ system_prompt: |
   {"extracted_claims": {"processed_at": "2026-03-15T14:00:00Z", "source_count": 1, "claim_count": 3, "claims": [{"claim_id": "C-001", "source_global_id": "test:1", "source_tier": 3, "faction_tag": "pragmatist", "language": "en", "claim_text": "IRGC commanders met with Larijani at SNSC HQ on March 10", "raw_excerpt": "original text snippet here", "epistemic_tag": "[Uncertain]", "entity_ids": [], "entity_candidates": ["Ali Larijani"], "is_forward": false, "forwarded_from": null, "provenance_flag": false}], "languages_detected": ["en"], "low_confidence_count": 1}}
 
 knowledge_sources:
+  - silo: constitution
   - silo: source_hierarchy
   - silo: epistemic_rules
   - silo: entity_name_registry

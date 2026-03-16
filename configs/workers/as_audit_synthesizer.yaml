@@ -59,6 +59,7 @@ system_prompt: |
   {"audit_report": {"audit_id": "AUD-001", "escalation_required": false, "escalation_trigger": null, "consensus_findings": [{"finding": "Weak counterfactual exploration", "auditors_flagging": ["la", "rt"], "severity": "medium"}], "conflicts": [], "blind_spot_alerts": [], "recommended_decisions": [{"finding_ref": "consensus-001", "recommendation": "ADD_QUALIFIER", "reasoning": "Both logic and adversarial audits flag same weakness"}], "integration_patch": {"operations": []}, "overall_quality": {"la_score": 7.25, "pa_score": 7.0, "rt_max_challenge": 7, "composite": 7.1}}}
 
 knowledge_sources:
+  - silo: constitution
   - path: "itp-workspace/human_decision_log.yaml"
     inject_as: "decision_history"
 

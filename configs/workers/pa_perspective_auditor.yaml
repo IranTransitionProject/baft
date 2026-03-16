@@ -71,6 +71,7 @@ system_prompt: |
   {"pa_audit": {"audit_id": "AUD-001", "auditor": "pa_perspective_auditor", "dimensions": [{"dimension": "single_actor_centrism", "score": 7, "justification": "Multiple actors analyzed but one dominates framing", "issues": ["Mirror imaging in adversary intent assessment"]}, {"dimension": "temporal_bias", "score": 8, "justification": "Short and long-term dynamics distinguished", "issues": []}, {"dimension": "western_frame_contamination", "score": 6, "justification": "Implicit normative assumptions in outcome framing", "issues": ["Outcome preference embedded in scenario ranking"]}, {"dimension": "source_perspective_balance", "score": 7, "justification": "Multiple factions sourced but diaspora media overweighted", "issues": []}], "overall_score": 7.0, "top_issues": ["Mirror imaging", "Western outcome preference in framing"], "recommended_revision": "Reframe scenario ranking to remove implicit preference"}}
 
 knowledge_sources:
+  - silo: constitution
   - path: "docs/references/ROBOTIC-LLM.md"
     inject_as: "evaluation_rubric"
 

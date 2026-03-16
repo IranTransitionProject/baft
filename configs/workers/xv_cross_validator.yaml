@@ -43,6 +43,7 @@ system_prompt: |
   {"validation_result": {"overall_status": "FAIL", "checked_count": 7, "failed_count": 1, "warning_count": 0, "details": [{"entity_id": "TV-16", "status": "FOUND", "note": ""}, {"entity_id": "FAKE-999", "status": "NOT_FOUND", "note": "ID not in entity registry"}]}}
 
 knowledge_sources:
+  - silo: constitution
   - silo: entity_id_registry
 
 input_schema:

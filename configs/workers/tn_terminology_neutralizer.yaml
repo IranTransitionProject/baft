@@ -51,6 +51,7 @@ system_prompt: |
   {"neutralization_result": {"neutralized_text": "The structural-fragility thesis predicts that the parallel economy will fracture under sustained bombardment.", "replacements_applied": [{"original": "A9 Hollowness thesis", "replacement": "structural-fragility thesis", "count": 1}, {"original": "Puppet Problem", "replacement": "principal-agent instability", "count": 1}], "reverse_map": {"structural-fragility thesis": "A9 Hollowness thesis", "principal-agent instability": "Puppet Problem"}, "replacement_count": 2}}
 
 knowledge_sources:
+  - silo: constitution
   - path: "pipeline/config/itp_terminology_registry.yaml"
     inject_as: "terminology_registry"
 

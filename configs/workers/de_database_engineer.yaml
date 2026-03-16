@@ -64,6 +64,7 @@ system_prompt: |
   {"integration_result": {"operations_attempted": 1, "operations_succeeded": 1, "operations_failed": 0, "results": [{"operation_id": "test_op_1", "action": "validate_only", "target": "data/variables.yaml", "status": "SUCCESS", "error_detail": null}], "build_status": "SKIPPED", "build_error": null, "session_operation_count": 1, "ga_notification": null}}
 
 knowledge_sources:
+  - silo: constitution
   - silo: framework_schemas
   - silo: entity_id_registry
 

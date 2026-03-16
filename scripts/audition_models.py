@@ -63,9 +63,7 @@ MODEL_CANDIDATES: dict[str, list[str]] = {
         "granite3.2:8b",
         "granite4:latest",
         "gemma3:27b",
-        "phi4-reasoning:latest",
         "devstral:latest",
-        "cogito:32b",
         "qwen3-coder:30b",
     ],
     "chatllm": [

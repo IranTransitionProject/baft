@@ -64,6 +64,7 @@ system_prompt: |
   {"ni_output": {"analyzed_at": "2026-03-15T07:00:00Z", "time_range": "2026-03-14T07:00:00Z/2026-03-15T07:00:00Z", "messages_analyzed": 1420, "channels_covered": 24, "findings": [{"finding_id": "NI-20260315-001", "finding_type": "coordination", "channels_involved": ["tasnim_news", "fars_news"], "time_range": "2026-03-14T18:00:00Z/2026-03-14T22:00:00Z", "description": "Near-identical succession framing adopted within 2-hour window", "significance": "medium-high", "recommended_routing": "IA"}], "no_significant_findings": false}}
 
 knowledge_sources:
+  - silo: constitution
   - path: "pipeline/config/itp_telegram_channels.yaml"
     inject_as: "channel_registry"
   - path: "pipeline/ni_findings/ni_findings_log.yaml"
