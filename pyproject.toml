@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "baft"
@@ -9,9 +9,7 @@ description = "ITP analytical engine — application layer on the Loom framework
 requires-python = ">=3.11"
 
 dependencies = [
-    # Loom framework — install from local clone or GitHub
-    # pip install -e /path/to/loom[mcp,duckdb,rag]
-    # or: loom @ git+https://github.com/IranTransitionProject/loom@main
+    "loom[mcp,duckdb,rag]",
     "pyyaml>=6.0",
     "pydantic>=2.0",
     "structlog>=24.0",
@@ -32,8 +30,11 @@ dev = [
 [project.scripts]
 baft = "baft.cli:main"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/baft"]
+
+[tool.uv.sources]
+loom = { path = "../loom", editable = true }
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

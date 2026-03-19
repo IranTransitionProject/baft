@@ -10,7 +10,7 @@
 #   - NATS running at localhost:4222
 #   - Ollama running (for local-tier workers)
 #   - ITP_ROOT set or auto-detected
-#   - Python venv with loom installed
+#   - uv installed and deps synced (uv sync --extra dev)
 
 set -euo pipefail
 
@@ -23,7 +23,6 @@ export OLLAMA_MODEL="${OLLAMA_MODEL:-llama3.2:3b}"
 # ANTHROPIC_API_KEY must already be set in environment for standard/frontier tier workers
 export ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-}"
 LOOM_DIR="$ITP_ROOT/loom"
-VENV="$ITP_ROOT/.venv"
 RESOLVER="$SCRIPT_DIR/resolve_config.py"
 RESOLVED_DIR="$BAFT_DIR/.resolved-configs"
 LOG_DIR="$BAFT_DIR/.worker-logs"
@@ -68,18 +67,15 @@ if ! curl -sf http://localhost:4222 >/dev/null 2>&1 && ! curl -sf http://localho
     fi
 fi
 
-if [[ ! -f "$VENV/bin/python" ]]; then
-    error "Python venv not found at $VENV. Run:"
-    echo "  cd $ITP_ROOT && python3 -m venv .venv && source .venv/bin/activate && pip install -e './loom[dev]'"
+if ! command -v uv &>/dev/null; then
+    error "uv not found. Install from: https://docs.astral.sh/uv/"
     exit 1
 fi
 
-PYTHON="$VENV/bin/python"
-LOOM="$VENV/bin/loom"
-
-if [[ ! -x "$LOOM" ]]; then
-    error "loom CLI not found. Install: pip install -e '$LOOM_DIR'"
-    exit 1
+# Ensure deps are synced (creates .venv if needed)
+if [[ ! -d "$BAFT_DIR/.venv" ]]; then
+    info "Running uv sync..."
+    (cd "$BAFT_DIR" && uv sync --extra dev)
 fi
 
 # --- Resolve configs ---
@@ -89,7 +85,7 @@ resolve_config() {
     local name="$1"
     local src="$BAFT_DIR/configs/workers/${name}.yaml"
     local dst="$RESOLVED_DIR/${name}.yaml"
-    "$PYTHON" "$RESOLVER" "$src" -o "$dst" 2>/dev/null
+    (cd "$BAFT_DIR" && uv run python "$RESOLVER" "$src" -o "$dst" 2>/dev/null)
     echo "$dst"
 }
 
@@ -100,7 +96,7 @@ start_worker() {
     config=$(resolve_config "$name")
     local log="$LOG_DIR/${name}.log"
 
-    nohup "$LOOM" worker --config "$config" --tier "$tier" --nats-url nats://localhost:4222 \
+    nohup uv run --project "$BAFT_DIR" loom worker --config "$config" --tier "$tier" --nats-url nats://localhost:4222 \
         > "$log" 2>&1 &
     local pid=$!
     echo "$pid $name" >> "$PID_FILE"
@@ -114,7 +110,7 @@ rm -f "$PID_FILE"
 
 # --- Start router ---
 info "Starting Loom router..."
-nohup "$LOOM" router --config "$LOOM_DIR/configs/router_rules.yaml" --nats-url nats://localhost:4222 \
+nohup uv run --project "$BAFT_DIR" loom router --config "$LOOM_DIR/configs/router_rules.yaml" --nats-url nats://localhost:4222 \
     > "$LOG_DIR/router.log" 2>&1 &
 ROUTER_PID=$!
 echo "$ROUTER_PID router" >> "$PID_FILE"
@@ -155,4 +151,4 @@ info "Logs: $LOG_DIR/"
 info "Stop: bash $0 --stop"
 info ""
 info "Ready for e2e tests:"
-info "  cd $BAFT_DIR && $PYTHON -m pytest tests/test_e2e_smoke.py -v"
+info "  cd $BAFT_DIR && uv run pytest tests/test_e2e_smoke.py -v"

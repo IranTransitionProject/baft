@@ -64,7 +64,8 @@ docs/
 ## Prerequisites
 
 - Python 3.11+
-- [Loom](https://github.com/IranTransitionProject/loom) installed (`pip install -e path/to/loom`)
+- [uv](https://docs.astral.sh/uv/) package manager
+- [Loom](https://github.com/IranTransitionProject/loom) cloned as sibling directory (`../loom`)
 - NATS server (`brew install nats-server` or Docker)
 - Redis (`brew install redis` or Docker)
 - Anthropic API key (`export ANTHROPIC_API_KEY=sk-ant-...`)
@@ -73,25 +74,24 @@ docs/
 ## Quick start
 
 ```bash
-# 1. Install
-python3 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
+# 1. Install (resolves loom from ../loom automatically)
+uv sync --extra dev
 
 # 2. Infrastructure
 nats-server &
 redis-server &
 
 # 3. Import ITP data to DuckDB (first run)
-python pipeline/scripts/itp_import_to_duckdb.py
+uv run python pipeline/scripts/itp_import_to_duckdb.py
 
 # 4. Start workers
 bash scripts/run_workers.sh
 
 # 5. Start MCP gateway (stdio for Claude Code)
-loom mcp --config configs/mcp/itp.yaml
+uv run loom mcp --config configs/mcp/itp.yaml
 
 # 6. Start MCP gateway (HTTP for claude.ai)
-loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765
+uv run loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765
 ```
 
 ## Relationship to other ITP repos
