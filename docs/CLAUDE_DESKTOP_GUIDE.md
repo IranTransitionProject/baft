@@ -5,7 +5,7 @@ This guide walks through connecting Baft's multi-agent analytical pipeline to Cl
 ## How it works
 
 ```
-┌─────────────────────┐     MCP (stdio or HTTP)     ┌──────────────────┐
+┌─────────────────────┐     MCP (stdio or HTTP)      ┌──────────────────┐
 │   Claude Desktop    │ ◄──────────────────────────► │  Loom MCP Server │
 │   (HI-A node)       │                              │  (baft gateway)  │
 └─────────────────────┘                              └────────┬─────────┘
@@ -13,9 +13,9 @@ This guide walks through connecting Baft's multi-agent analytical pipeline to Cl
                                               ┌───────────────┼───────────────┐
                                               ▼               ▼               ▼
                                          ┌─────────┐   ┌──────────┐   ┌──────────┐
-                                         │ Router   │   │ Workers  │   │ DuckDB   │
-                                         │          │   │ SP,IA,DE │   │ Queries  │
-                                         │          │   │ XV,TN,...│   │          │
+                                         │ Router  │   │ Workers  │   │ DuckDB   │
+                                         │         │   │ SP,IA,DE │   │ Queries  │
+                                         │         │   │ XV,TN,...│   │          │
                                          └─────────┘   └──────────┘   └──────────┘
 ```
 
