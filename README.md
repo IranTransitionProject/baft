@@ -52,6 +52,7 @@ pipeline/
     ni_findings_log.yaml            # Running narrative intelligence log
 
 scripts/
+  baft.sh                         # Unified start/stop (NATS + workers + MCP)
   run_mcp_server.sh               # Start Baft MCP gateway (stdio or HTTP)
   run_workers.sh                  # Start all worker processes
   run_scheduler.sh                # Start scheduled actors
@@ -101,6 +102,10 @@ uv run loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port
 | [framework](https://github.com/IranTransitionProject/framework) | Analytical database (YAML source of truth) |
 | [loom](https://github.com/IranTransitionProject/loom) | Actor mesh framework (infrastructure) |
 | **baft** (this repo) | ITP application layer (config + scripts) |
+
+## Using with Claude Desktop
+
+See **[docs/CLAUDE_DESKTOP_GUIDE.md](docs/CLAUDE_DESKTOP_GUIDE.md)** for a step-by-step guide to connecting Baft to Claude Desktop (macOS or Windows) or Claude Code as an MCP analytical engine.
 
 ## Architecture
 
