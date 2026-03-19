@@ -76,6 +76,9 @@ schedules:
       model_tier: local
     condition:
       session_active: true    # Only fires if HI-R reports an active session
+    # NOTE: For multi-session support, the scheduler should dispatch one SA
+    # task per active session, each with a distinct session_id in the payload.
+    # The condition mechanism is not yet implemented in loom's scheduler.
     on_failure:
       action: log_and_continue
       alert: false

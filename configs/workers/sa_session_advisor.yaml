@@ -80,6 +80,9 @@ input_schema:
     session_monitor_request:
       type: object
       properties:
+        session_id:
+          type: string
+          description: "Unique identifier for the session being monitored"
         transcript:
           type: string
           description: "Recent session transcript (last N exchanges)"
@@ -87,7 +90,7 @@ input_schema:
         session_objective: { type: string }
         current_tier:   { type: integer }
         operation_count:{ type: integer }
-      required: [transcript]
+      required: [session_id, transcript]
   required: [session_monitor_request]
 
 output_schema:
