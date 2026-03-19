@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: IranTransitionProject/loom
+          path: loom
+      - uses: astral-sh/setup-uv@v5
+      - run: ln -s $GITHUB_WORKSPACE/loom $GITHUB_WORKSPACE/../loom
+      - run: uv sync --extra dev
+      - name: Ruff lint
+        run: uv run ruff check scripts/ pipeline/scripts/ tests/
+      - name: Ruff format check
+        run: uv run ruff format --check scripts/ pipeline/scripts/ tests/
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: IranTransitionProject/loom
+          path: loom
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: ln -s $GITHUB_WORKSPACE/loom $GITHUB_WORKSPACE/../loom
+      - name: Install dependencies
+        run: uv sync --extra dev
+      - name: Run tests
+        run: uv run pytest tests/ -v -m "not integration and not e2e"

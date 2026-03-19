@@ -1,39 +1,31 @@
 #!/usr/bin/env python3
-"""
-itp_import_to_duckdb.py
------------------------
-Import ITP framework YAML entity data into DuckDB for structured querying.
+"""Import ITP framework YAML entity data into DuckDB for structured querying.
 
-Creates tables: variables, observations, scenarios, traps, gaps, briefs,
-                modules, sessions
-Creates view:   entities (unified across all types for MCP query backend)
-Creates FTS:    full-text search index on entities.content and entities.title
+Creates a unified ``entities`` table, an FTS index, and supports full reimport,
+incremental mode, and stats-only queries.
 
-Run modes:
-  python itp_import_to_duckdb.py                  # full reimport
-  python itp_import_to_duckdb.py --incremental    # skip unchanged entities
-  python itp_import_to_duckdb.py --stats          # print counts, no import
-
-Output: itp-workspace/itp.duckdb
+Output: ``itp-workspace/itp.duckdb``
 """
 
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
-import yaml
 import duckdb
+import yaml
 
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
 
 BAFT_DIR = Path(__file__).parent.parent.parent  # repo root
+
 
 def _resolve_itp_root() -> Path:
     """Find the ITP project root: ITP_ROOT env var > parent of baft dir."""
@@ -51,6 +43,7 @@ def _resolve_itp_root() -> Path:
         "containing framework/, loom/, and baft/."
     )
 
+
 ITP_ROOT = _resolve_itp_root()
 FRAMEWORK_REPO = ITP_ROOT / "framework"
 DATA_DIR = FRAMEWORK_REPO / "data"
@@ -58,19 +51,20 @@ WORKSPACE_DIR = BAFT_DIR / "itp-workspace"
 DB_PATH = WORKSPACE_DIR / "itp.duckdb"
 
 ENTITY_YAML_FILES = {
-    "variables":    DATA_DIR / "variables.yaml",
+    "variables": DATA_DIR / "variables.yaml",
     "observations": DATA_DIR / "observations.yaml",
-    "scenarios":    DATA_DIR / "scenarios.yaml",
-    "traps":        DATA_DIR / "traps.yaml",
-    "gaps":         DATA_DIR / "gaps.yaml",
-    "modules":      DATA_DIR / "modules.yaml",
-    "sessions":     DATA_DIR / "sessions.yaml",
+    "scenarios": DATA_DIR / "scenarios.yaml",
+    "traps": DATA_DIR / "traps.yaml",
+    "gaps": DATA_DIR / "gaps.yaml",
+    "modules": DATA_DIR / "modules.yaml",
+    "sessions": DATA_DIR / "sessions.yaml",
 }
 
 BRIEFS_DIR = DATA_DIR / "briefs"
 
 
 def load_yaml(path: Path) -> dict | list:
+    """Load a YAML file, returning an empty dict if not found."""
     if not path.exists():
         print(f"  [WARN] Not found: {path}")
         return {}
@@ -86,7 +80,16 @@ def serialize(entity: dict) -> str:
 def extract_tags(entity: dict) -> str:
     """Extract searchable tags from entity fields."""
     parts = []
-    for field in ["title", "name", "tags", "topics", "entities_mentioned", "cross_refs", "faction", "status"]:
+    for field in [
+        "title",
+        "name",
+        "tags",
+        "topics",
+        "entities_mentioned",
+        "cross_refs",
+        "faction",
+        "status",
+    ]:
         val = entity.get(field)
         if isinstance(val, str):
             parts.append(val)
@@ -95,7 +98,9 @@ def extract_tags(entity: dict) -> str:
     return " ".join(parts)
 
 
-def import_entity_list(conn: duckdb.DuckDBPyConnection, entity_type: str, entities: list[dict], table: str) -> int:
+def import_entity_list(
+    conn: duckdb.DuckDBPyConnection, entity_type: str, entities: list[dict], table: str
+) -> int:
     """Import a list of entity dicts into the given table."""
     if not entities:
         return 0
@@ -113,7 +118,11 @@ def import_entity_list(conn: duckdb.DuckDBPyConnection, entity_type: str, entiti
 
     for e in entities:
         raw_id = str(e.get("id") or e.get("code") or e.get("number") or "")
-        entity_id = f"{prefix}{raw_id}" if (prefix and not raw_id.startswith(prefix.rstrip("-"))) else raw_id
+        entity_id = (
+            f"{prefix}{raw_id}"
+            if (prefix and not raw_id.startswith(prefix.rstrip("-")))
+            else raw_id
+        )
         row = {
             "id": entity_id,
             "type": entity_type,
@@ -123,7 +132,7 @@ def import_entity_list(conn: duckdb.DuckDBPyConnection, entity_type: str, entiti
             "confidence": str(e.get("confidence") or ""),
             "content": serialize(e),
             "tags": extract_tags(e),
-            "updated_date": str(e.get("updated_date") or e.get("date") or datetime.now(timezone.utc).date()),
+            "updated_date": str(e.get("updated_date") or e.get("date") or datetime.now(UTC).date()),
         }
         rows.append(row)
 
@@ -131,8 +140,20 @@ def import_entity_list(conn: duckdb.DuckDBPyConnection, entity_type: str, entiti
         f"""INSERT OR REPLACE INTO {table}
             (id, type, title, status, epistemic_tag, confidence, content, tags, updated_date)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        [(r["id"], r["type"], r["title"], r["status"], r["epistemic_tag"],
-          r["confidence"], r["content"], r["tags"], r["updated_date"]) for r in rows],
+        [
+            (
+                r["id"],
+                r["type"],
+                r["title"],
+                r["status"],
+                r["epistemic_tag"],
+                r["confidence"],
+                r["content"],
+                r["tags"],
+                r["updated_date"],
+            )
+            for r in rows
+        ],
     )
     return len(rows)
 
@@ -155,10 +176,8 @@ def create_schema(conn: duckdb.DuckDBPyConnection) -> None:
     """)
 
     # DuckDB FTS (full-text search)
-    try:
+    with contextlib.suppress(Exception):
         conn.execute("INSTALL fts; LOAD fts;")
-    except Exception:
-        pass  # Already installed
 
     try:
         conn.execute("""
@@ -178,10 +197,17 @@ def create_schema(conn: duckdb.DuckDBPyConnection) -> None:
 
 
 def main() -> None:
+    """Run the ITP DuckDB import pipeline."""
     parser = argparse.ArgumentParser(description="Import ITP framework YAML into DuckDB")
-    parser.add_argument("--incremental", action="store_true", help="Skip entities not modified since last import")
-    parser.add_argument("--stats", action="store_true", help="Print entity counts from current DB, no import")
-    parser.add_argument("--db", default=str(DB_PATH), help="DuckDB path (default: itp-workspace/itp.duckdb)")
+    parser.add_argument(
+        "--incremental", action="store_true", help="Skip entities not modified since last import"
+    )
+    parser.add_argument(
+        "--stats", action="store_true", help="Print entity counts from current DB, no import"
+    )
+    parser.add_argument(
+        "--db", default=str(DB_PATH), help="DuckDB path (default: itp-workspace/itp.duckdb)"
+    )
     args = parser.parse_args()
 
     db_path = Path(args.db)
@@ -191,7 +217,9 @@ def main() -> None:
             print("No database found. Run without --stats to create it.")
             sys.exit(1)
         conn = duckdb.connect(str(db_path))
-        results = conn.execute("SELECT type, COUNT(*) as n FROM entities GROUP BY type ORDER BY type").fetchall()
+        results = conn.execute(
+            "SELECT type, COUNT(*) as n FROM entities GROUP BY type ORDER BY type"
+        ).fetchall()
         total = sum(r[1] for r in results)
         print(f"\nITP DuckDB entity counts ({db_path}):")
         for entity_type, count in results:
@@ -239,7 +267,7 @@ def main() -> None:
     # --- Briefs (one file per brief or all in briefs.yaml) ---
     briefs_yaml = DATA_DIR / "briefs.yaml"
     if briefs_yaml.exists():
-        print(f"Importing briefs from briefs.yaml...")
+        print("Importing briefs from briefs.yaml...")
         data = load_yaml(briefs_yaml)
         entities = data if isinstance(data, list) else data.get("briefs", [])
         count = import_entity_list(conn, "brief", entities, "entities")
@@ -286,7 +314,7 @@ def main() -> None:
 
     conn.close()
     print(f"\nImport complete: {total_imported} total entities → {db_path}")
-    print(f"Run with --stats to verify counts.")
+    print("Run with --stats to verify counts.")
 
 
 if __name__ == "__main__":

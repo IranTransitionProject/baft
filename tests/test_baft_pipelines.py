@@ -12,6 +12,7 @@ Validates:
   - Pipeline output mappings reference valid stage IDs
   - MCP gateway config references valid workers and pipelines
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -74,18 +75,14 @@ class TestStageDependencies:
         stage_ids = {s["id"] for s in config["stages"]}
         for stage in config["stages"]:
             for dep in stage.get("depends_on", []):
-                assert dep in stage_ids, (
-                    f"Stage '{stage['id']}' depends on unknown stage '{dep}'"
-                )
+                assert dep in stage_ids, f"Stage '{stage['id']}' depends on unknown stage '{dep}'"
 
     @pytest.mark.parametrize("path", ALL_ORCHESTRATOR_FILES, ids=lambda p: p.stem)
     def test_no_self_dependency(self, path: Path):
         config = _load_yaml(path)
         for stage in config["stages"]:
             deps = stage.get("depends_on", [])
-            assert stage["id"] not in deps, (
-                f"Stage '{stage['id']}' depends on itself"
-            )
+            assert stage["id"] not in deps, f"Stage '{stage['id']}' depends on itself"
 
     @pytest.mark.parametrize("path", ALL_ORCHESTRATOR_FILES, ids=lambda p: p.stem)
     def test_unique_stage_ids(self, path: Path):
@@ -184,9 +181,7 @@ class TestAuditPipeline:
         for stage in config["stages"]:
             if stage.get("worker") in audit_workers:
                 pg = stage.get("parallel_group")
-                assert pg is not None, (
-                    f"Audit stage '{stage['id']}' should have a parallel_group"
-                )
+                assert pg is not None, f"Audit stage '{stage['id']}' should have a parallel_group"
                 parallel_groups.add(pg)
         # All should be in the same group
         assert len(parallel_groups) == 1, (
@@ -201,7 +196,8 @@ class TestAuditPipeline:
         assert synth is not None, "Missing audit synthesizer stage"
         deps = set(synth.get("depends_on", []))
         audit_stage_ids = {
-            s["id"] for s in config["stages"]
+            s["id"]
+            for s in config["stages"]
             if s.get("worker") in {"la_logic_auditor", "pa_perspective_auditor", "rt_red_teamer"}
         }
         assert audit_stage_ids.issubset(deps), (
@@ -251,18 +247,14 @@ class TestMCPGateway:
         for w in workers:
             config_path = w.get("config", "")
             full_path = BAFT_ROOT / config_path
-            assert full_path.exists(), (
-                f"MCP worker config not found: {config_path}"
-            )
+            assert full_path.exists(), f"MCP worker config not found: {config_path}"
 
     def test_pipeline_configs_exist(self, config):
         pipelines = config.get("tools", {}).get("pipelines", [])
         for p in pipelines:
             config_path = p.get("config", "")
             full_path = BAFT_ROOT / config_path
-            assert full_path.exists(), (
-                f"MCP pipeline config not found: {config_path}"
-            )
+            assert full_path.exists(), f"MCP pipeline config not found: {config_path}"
 
     def test_has_query_backend(self, config):
         queries = config.get("tools", {}).get("queries", [])

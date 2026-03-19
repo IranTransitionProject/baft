@@ -13,22 +13,21 @@ Validates:
   - Incremental import flag
   - Stats mode
 """
+
 from __future__ import annotations
 
+# Import the module under test
+import importlib.util
 import json
 from pathlib import Path
-from unittest.mock import patch
 
 import duckdb
 import pytest
 import yaml
 
-# Import the module under test
 BAFT_ROOT = Path(__file__).parent.parent
 SCRIPT_PATH = BAFT_ROOT / "pipeline" / "scripts" / "itp_import_to_duckdb.py"
 
-# We need to import the functions from the script
-import importlib.util
 spec = importlib.util.spec_from_file_location("itp_import_to_duckdb", SCRIPT_PATH)
 itp_import = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(itp_import)
@@ -69,8 +68,18 @@ class TestSchemaCreation:
             "WHERE table_name = 'entities' ORDER BY ordinal_position"
         ).fetchall()
         col_names = [c[0] for c in cols]
-        expected = ["id", "type", "title", "status", "epistemic_tag",
-                     "confidence", "content", "tags", "updated_date", "imported_at"]
+        expected = [
+            "id",
+            "type",
+            "title",
+            "status",
+            "epistemic_tag",
+            "confidence",
+            "content",
+            "tags",
+            "updated_date",
+            "imported_at",
+        ]
         for col in expected:
             assert col in col_names, f"Missing column: {col}"
 
@@ -80,11 +89,10 @@ class TestSchemaCreation:
             "INSERT INTO entities (id, type, title) VALUES ('V-01', 'variables', 'Test')"
         )
         db_with_schema.execute(
-            "INSERT OR REPLACE INTO entities (id, type, title) VALUES ('V-01', 'variables', 'Updated')"
+            "INSERT OR REPLACE INTO entities (id, type, title) "
+            "VALUES ('V-01', 'variables', 'Updated')"
         )
-        result = db_with_schema.execute(
-            "SELECT title FROM entities WHERE id = 'V-01'"
-        ).fetchone()
+        result = db_with_schema.execute("SELECT title FROM entities WHERE id = 'V-01'").fetchone()
         assert result[0] == "Updated"
 
     def test_schema_idempotent(self, db_conn):
@@ -101,10 +109,20 @@ class TestEntityImport:
 
     def test_import_variables(self, db_with_schema):
         entities = [
-            {"id": "V-01", "title": "Supreme Leader Authority", "status": "active",
-             "epistemic_tag": "fact", "confidence": "high"},
-            {"id": "V-02", "title": "IRGC Economic Power", "status": "active",
-             "epistemic_tag": "inference", "confidence": "medium"},
+            {
+                "id": "V-01",
+                "title": "Supreme Leader Authority",
+                "status": "active",
+                "epistemic_tag": "fact",
+                "confidence": "high",
+            },
+            {
+                "id": "V-02",
+                "title": "IRGC Economic Power",
+                "status": "active",
+                "epistemic_tag": "inference",
+                "confidence": "medium",
+            },
         ]
         count = itp_import.import_entity_list(db_with_schema, "variables", entities, "entities")
         assert count == 2

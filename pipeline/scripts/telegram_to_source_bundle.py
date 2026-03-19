@@ -1,38 +1,24 @@
 #!/usr/bin/env python3
-"""
-telegram_to_source_bundle.py
------------------------------
-Convert a Telegram JSON export (processed by TelegramIngestor) into
-SP (Source Processor) source_bundle format.
+"""Convert a Telegram JSON export into SP source_bundle format.
 
-Workflow:
-  1. Parse Telegram JSON export via loom's TelegramIngestor
-  2. Enrich with channel metadata from telegram_channel_registry.yaml
-  3. Apply keyword pre-filter against WT watch list
-  4. Emit source_bundle.yaml in SP input schema format
-
-Usage:
-  python telegram_to_source_bundle.py \\
-      --export /path/to/telegram_export.json \\
-      --registry pipeline/config/itp_telegram_channels.yaml \\
-      --watch-list pipeline/config/itp_watch_list.yaml \\
-      --output pipeline/exports/source_bundle_YYYY-MM-DD.yaml \\
-      [--no-filter]   # include all messages regardless of watch list match
+Parses Telegram JSON via loom's TelegramIngestor, enriches with channel
+metadata, applies keyword pre-filter against the WT watch list, and emits
+a ``source_bundle.yaml`` in SP input schema format.
 """
 
 from __future__ import annotations
 
 import argparse
 import hashlib
-import re
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import yaml
 
 
 def load_yaml(path: Path) -> dict | list:
+    """Load a YAML file, returning an empty dict on empty content."""
     with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f) or {}
 
@@ -67,8 +53,10 @@ def build_source_entry(post, channel_meta: dict, watch_match: bool) -> dict:
         "language": post.language.value if hasattr(post.language, "value") else str(post.language),
         "source_tier": channel_meta.get("source_tier", 4),
         "faction_tag": channel_meta.get("faction", "unknown"),
-        "retrieval_date": datetime.now(timezone.utc).date().isoformat(),
-        "timestamp": post.timestamp.isoformat() if hasattr(post.timestamp, "isoformat") else str(post.timestamp),
+        "retrieval_date": datetime.now(UTC).date().isoformat(),
+        "timestamp": post.timestamp.isoformat()
+        if hasattr(post.timestamp, "isoformat")
+        else str(post.timestamp),
         "channel_id": post.source_channel_id,
         "channel_name": post.source_channel_name,
         "raw_text": post.text_raw,
@@ -109,17 +97,33 @@ def find_channel_meta(channel_id: int, channel_name: str, registry: dict) -> dic
 
 
 def main() -> None:
+    """Convert a Telegram export to SP source_bundle YAML."""
     parser = argparse.ArgumentParser(description="Convert Telegram export to SP source_bundle")
     parser.add_argument("--export", required=True, help="Telegram JSON export file")
-    parser.add_argument("--registry", default="pipeline/config/itp_telegram_channels.yaml",
-                        help="Channel registry YAML")
-    parser.add_argument("--watch-list", default="pipeline/config/itp_watch_list.yaml",
-                        help="WT watch list YAML for keyword pre-filter")
-    parser.add_argument("--output", help="Output path (default: pipeline/exports/source_bundle_DATE.yaml)")
-    parser.add_argument("--no-filter", action="store_true",
-                        help="Include all messages regardless of watch list match")
-    parser.add_argument("--min-tier", type=int, default=1,
-                        help="Minimum source_tier to include (1=all, 3=independent+, 5=noise only)")
+    parser.add_argument(
+        "--registry",
+        default="pipeline/config/itp_telegram_channels.yaml",
+        help="Channel registry YAML",
+    )
+    parser.add_argument(
+        "--watch-list",
+        default="pipeline/config/itp_watch_list.yaml",
+        help="WT watch list YAML for keyword pre-filter",
+    )
+    parser.add_argument(
+        "--output", help="Output path (default: pipeline/exports/source_bundle_DATE.yaml)"
+    )
+    parser.add_argument(
+        "--no-filter",
+        action="store_true",
+        help="Include all messages regardless of watch list match",
+    )
+    parser.add_argument(
+        "--min-tier",
+        type=int,
+        default=1,
+        help="Minimum source_tier to include (1=all, 3=independent+, 5=noise only)",
+    )
     args = parser.parse_args()
 
     export_path = Path(args.export)
@@ -131,7 +135,7 @@ def main() -> None:
     if args.output:
         output_path = Path(args.output)
     else:
-        date_str = datetime.now(timezone.utc).date().isoformat()
+        date_str = datetime.now(UTC).date().isoformat()
         output_path = Path(f"pipeline/exports/source_bundle_{date_str}.yaml")
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -179,7 +183,8 @@ def main() -> None:
 
     # Filter by min_tier
     if channel_meta["source_tier"] > args.min_tier:
-        print(f"Channel source_tier={channel_meta['source_tier']} > min_tier={args.min_tier} — skipping")
+        tier = channel_meta["source_tier"]
+        print(f"Channel source_tier={tier} > min_tier={args.min_tier} -- skipping")
         sys.exit(0)
 
     # Process messages
@@ -206,7 +211,7 @@ def main() -> None:
     # Build SP source_bundle output
     source_bundle = {
         "type": "source_bundle",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "source_file": str(export_path),
         "channel_id": ingestor.channel_id,
         "channel_name": ingestor.channel_name,
@@ -220,7 +225,7 @@ def main() -> None:
     with open(output_path, "w", encoding="utf-8") as f:
         yaml.dump(source_bundle, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
-    print(f"\nConversion complete:")
+    print("\nConversion complete:")
     print(f"  Total messages processed: {stats['total']}")
     print(f"  Watch list matches:        {stats['watch_match']}")
     print(f"  No match (excluded):       {stats['no_match']}")

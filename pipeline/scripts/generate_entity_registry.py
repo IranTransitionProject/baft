@@ -1,28 +1,25 @@
 #!/usr/bin/env python3
-"""
-generate_entity_registry.py
------------------------------
-Populate the entity_ids section of itp_entity_name_registry.yaml from
-the live framework/data/ YAML files. Run this after any session that
-adds new entity IDs.
+"""Populate entity_ids in itp_entity_name_registry.yaml from framework YAML files.
 
-Updates only the entity_ids section — preserves manual entries above.
+Run this after any session that adds new entity IDs.
+Updates only the entity_ids section -- preserves manual entries above.
 
-Usage:
-  python pipeline/scripts/generate_entity_registry.py
-  python pipeline/scripts/generate_entity_registry.py --check   # dry run, show counts
+Usage::
+
+    python pipeline/scripts/generate_entity_registry.py
+    python pipeline/scripts/generate_entity_registry.py --check   # dry run
 """
 
 from __future__ import annotations
 
 import argparse
 import os
-import sys
 from pathlib import Path
 
 import yaml
 
 BAFT_DIR = Path(__file__).parent.parent.parent
+
 
 def _resolve_itp_root() -> Path:
     """Find the ITP project root: ITP_ROOT env var > parent of baft dir."""
@@ -38,18 +35,19 @@ def _resolve_itp_root() -> Path:
         "containing framework/, loom/, and baft/."
     )
 
+
 ITP_ROOT = _resolve_itp_root()
 FRAMEWORK_REPO = ITP_ROOT / "framework"
 DATA_DIR = FRAMEWORK_REPO / "data"
 REGISTRY_PATH = BAFT_DIR / "pipeline" / "config" / "itp_entity_name_registry.yaml"
 
 ENTITY_FILES = {
-    "variables":    DATA_DIR / "variables.yaml",
+    "variables": DATA_DIR / "variables.yaml",
     "observations": DATA_DIR / "observations.yaml",
-    "scenarios":    DATA_DIR / "scenarios.yaml",
-    "traps":        DATA_DIR / "traps.yaml",
-    "gaps":         DATA_DIR / "gaps.yaml",
-    "sessions":     DATA_DIR / "sessions.yaml",
+    "scenarios": DATA_DIR / "scenarios.yaml",
+    "traps": DATA_DIR / "traps.yaml",
+    "gaps": DATA_DIR / "gaps.yaml",
+    "sessions": DATA_DIR / "sessions.yaml",
 }
 
 BRIEFS_DIR = DATA_DIR / "briefs"
@@ -58,13 +56,17 @@ BRIEFS_DIR = DATA_DIR / "briefs"
 def extract_ids(data: dict | list, entity_type: str) -> list[str]:
     """Extract all entity IDs from a YAML data structure."""
     ids = []
-    items = data if isinstance(data, list) else data.get("entries", data.get(entity_type, data.get(entity_type.rstrip("s"), [])))
+    items = (
+        data
+        if isinstance(data, list)
+        else data.get("entries", data.get(entity_type, data.get(entity_type.rstrip("s"), [])))
+    )
     if not items and isinstance(data, dict):
         for v in data.values():
             if isinstance(v, list) and v and isinstance(v[0], dict):
                 items = v
                 break
-    for item in (items or []):
+    for item in items or []:
         if isinstance(item, dict):
             # Try 'id' first, then 'number' (sessions use number)
             eid = item.get("id") or item.get("number")
@@ -88,6 +90,7 @@ def extract_brief_ids() -> list[str]:
 
 
 def main() -> None:
+    """Generate or check the entity name registry from framework YAML files."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true", help="Dry run — show counts only")
     args = parser.parse_args()

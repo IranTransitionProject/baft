@@ -1,37 +1,28 @@
 #!/usr/bin/env python3
-"""
-telegram_corpus_interleave.py
-------------------------------
-Merge multiple Telegram JSON exports into a single chronologically
-interleaved timeline for manual narrative intelligence scanning.
+"""Merge multiple Telegram JSON exports into a chronologically interleaved timeline.
 
-Output: one line per message, sorted by timestamp, prefixed with
-channel name, faction tag, and source tier.
-
-Usage:
-  python telegram_corpus_interleave.py \\
-      --exports /path/to/exports/*.json \\
-      --registry pipeline/config/itp_telegram_channels.yaml \\
-      --hours 24 \\
-      --output /tmp/merged_timeline.txt
+Output is one line per message, sorted by timestamp, prefixed with channel name,
+faction tag, and source tier.
 """
 
 from __future__ import annotations
 
 import argparse
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import yaml
 
 
 def load_yaml(path: Path) -> dict:
+    """Load a YAML file, returning an empty dict on empty content."""
     with open(path, encoding="utf-8") as f:
         return yaml.safe_load(f) or {}
 
 
 def main() -> None:
+    """Merge Telegram exports into an interleaved timeline."""
     parser = argparse.ArgumentParser(description="Merge Telegram exports into interleaved timeline")
     parser.add_argument("--exports", nargs="+", required=True, help="Telegram JSON export files")
     parser.add_argument("--registry", default="pipeline/config/itp_telegram_channels.yaml")
@@ -57,7 +48,7 @@ def main() -> None:
             for term in item.get("search_terms", []) + item.get("search_terms_fa", []):
                 keywords.add(term.lower())
 
-    cutoff = datetime.now(timezone.utc) - timedelta(hours=args.hours)
+    cutoff = datetime.now(UTC) - timedelta(hours=args.hours)
 
     all_messages = []
     for export_file in args.exports:
@@ -82,30 +73,36 @@ def main() -> None:
         for post in ingestor.ingest():
             ts = post.timestamp
             if hasattr(ts, "tzinfo") and ts.tzinfo is None:
-                ts = ts.replace(tzinfo=timezone.utc)
+                ts = ts.replace(tzinfo=UTC)
             if ts < cutoff:
                 continue
 
             match = bool(keywords) and any(kw in post.text_clean.lower() for kw in keywords)
-            all_messages.append({
-                "timestamp": ts,
-                "channel": ingestor.channel_name or path.stem,
-                "faction": faction,
-                "tier": tier,
-                "text": post.text_clean,
-                "is_forward": post.is_forward,
-                "forwarded_from": post.forwarded_from,
-                "watch_match": match,
-            })
+            all_messages.append(
+                {
+                    "timestamp": ts,
+                    "channel": ingestor.channel_name or path.stem,
+                    "faction": faction,
+                    "tier": tier,
+                    "text": post.text_clean,
+                    "is_forward": post.is_forward,
+                    "forwarded_from": post.forwarded_from,
+                    "watch_match": match,
+                }
+            )
 
     all_messages.sort(key=lambda x: x["timestamp"])
 
     lines = []
     for msg in all_messages:
         ts_str = msg["timestamp"].strftime("%Y-%m-%d %H:%M")
-        fwd = f" [FWD:{msg['forwarded_from']}]" if msg["is_forward"] and msg["forwarded_from"] else ""
+        fwd = (
+            f" [FWD:{msg['forwarded_from']}]" if msg["is_forward"] and msg["forwarded_from"] else ""
+        )
         match_marker = " *** WATCH MATCH ***" if msg["watch_match"] else ""
-        header = f"[{ts_str}] [{msg['channel']} | {msg['faction']} | T{msg['tier']}]{fwd}{match_marker}"
+        header = (
+            f"[{ts_str}] [{msg['channel']} | {msg['faction']} | T{msg['tier']}]{fwd}{match_marker}"
+        )
         text = msg["text"].replace("\n", " ").strip()
         lines.append(f"{header}\n{text}\n")
 

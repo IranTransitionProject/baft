@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""
-Quick e2e smoke test — single event loop, no pytest overhead.
+"""Quick e2e smoke test -- single event loop, no pytest overhead.
 
-Usage:
-  python scripts/test_e2e_quick.py            # Test DE (Tier 1)
-  python scripts/test_e2e_quick.py --tier2    # Test SP (Tier 2 entry)
+Usage::
+
+    python scripts/test_e2e_quick.py            # Test DE (Tier 1)
+    python scripts/test_e2e_quick.py --tier2    # Test SP (Tier 2 entry)
 """
+
 import asyncio
+import contextlib
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -17,7 +18,7 @@ BAFT_DIR = Path(__file__).parent.parent
 sys.path.insert(0, str(BAFT_DIR.parent / "loom" / "src"))
 
 from loom.bus.nats_adapter import NATSBus
-from loom.mcp.bridge import MCPBridge, BridgeTimeoutError
+from loom.mcp.bridge import BridgeTimeoutError, MCPBridge
 
 
 async def test_tier1_de():
@@ -34,14 +35,16 @@ async def test_tier1_de():
     payload = {
         "integration_request": {
             "session_id": "e2e_test",
-            "operations": [{
-                "action": "validate_only",
-                "target_file": "data/variables.yaml",
-            }],
+            "operations": [
+                {
+                    "action": "validate_only",
+                    "target_file": "data/variables.yaml",
+                }
+            ],
         },
     }
 
-    print(f"[..] Dispatching to de_database_engineer (tier=local, timeout=60s)...")
+    print("[..] Dispatching to de_database_engineer (tier=local, timeout=60s)...")
 
     try:
         result = await bridge.call_worker(
@@ -50,9 +53,9 @@ async def test_tier1_de():
             payload=payload,
             timeout=60,
         )
-        print(f"[OK] Got result!")
-        status = result.status if hasattr(result, 'status') else result.get('status', 'unknown')
-        output = result.output if hasattr(result, 'output') else result.get('output', result)
+        print("[OK] Got result!")
+        status = result.status if hasattr(result, "status") else result.get("status", "unknown")
+        output = result.output if hasattr(result, "output") else result.get("output", result)
         print(f"     Status: {status}")
         print(f"     Output: {json.dumps(output, indent=2, default=str)[:500]}")
         success = True
@@ -63,10 +66,8 @@ async def test_tier1_de():
         print(f"[FAIL] Error: {type(e).__name__}: {e}")
         success = False
     finally:
-        try:
+        with contextlib.suppress(Exception):
             await bus.close()
-        except Exception:
-            pass
 
     return success
 
@@ -85,22 +86,24 @@ async def test_tier2_sp():
     payload = {
         "source_bundle": {
             "type": "source_bundle",
-            "items": [{
-                "url": "https://example.com/test",
-                "language": "en",
-                "source_tier": 3,
-                "retrieval_date": "2026-03-15",
-                "raw_text": (
-                    "Iranian state media reported that IRGC commanders met with "
-                    "Larijani to discuss succession arrangements following the "
-                    "February strikes. The meeting took place at a secure "
-                    "location in Tehran on March 10, 2026."
-                ),
-            }],
+            "items": [
+                {
+                    "url": "https://example.com/test",
+                    "language": "en",
+                    "source_tier": 3,
+                    "retrieval_date": "2026-03-15",
+                    "raw_text": (
+                        "Iranian state media reported that IRGC commanders met with "
+                        "Larijani to discuss succession arrangements following the "
+                        "February strikes. The meeting took place at a secure "
+                        "location in Tehran on March 10, 2026."
+                    ),
+                }
+            ],
         },
     }
 
-    print(f"[..] Dispatching to sp_source_processor (tier=local, timeout=90s)...")
+    print("[..] Dispatching to sp_source_processor (tier=local, timeout=90s)...")
 
     try:
         result = await bridge.call_worker(
@@ -109,9 +112,9 @@ async def test_tier2_sp():
             payload=payload,
             timeout=90,
         )
-        print(f"[OK] Got result!")
-        status = result.status if hasattr(result, 'status') else result.get('status', 'unknown')
-        output = result.output if hasattr(result, 'output') else result.get('output', result)
+        print("[OK] Got result!")
+        status = result.status if hasattr(result, "status") else result.get("status", "unknown")
+        output = result.output if hasattr(result, "output") else result.get("output", result)
         print(f"     Status: {status}")
         print(f"     Output: {json.dumps(output, indent=2, default=str)[:500]}")
         success = True
@@ -122,15 +125,14 @@ async def test_tier2_sp():
         print(f"[FAIL] Error: {type(e).__name__}: {e}")
         success = False
     finally:
-        try:
+        with contextlib.suppress(Exception):
             await bus.close()
-        except Exception:
-            pass
 
     return success
 
 
-async def main():
+async def main() -> None:
+    """Run Tier 1 and optionally Tier 2 smoke tests."""
     tier2 = "--tier2" in sys.argv
 
     ok = await test_tier1_de()

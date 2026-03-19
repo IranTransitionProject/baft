@@ -1,22 +1,10 @@
 #!/usr/bin/env python3
+"""Resolve silo references in baft worker configs to concrete file paths.
+
+Baft worker configs use ``silo: <name>`` in knowledge_sources.  Loom's runtime
+expects ``path:`` + ``inject_as:`` entries.  This script bridges the two.
 """
-resolve_config.py
------------------
-Resolve silo references in baft worker configs to concrete file paths.
 
-Baft worker configs use `silo: <name>` in knowledge_sources. Loom's runtime
-expects `path:` + `inject_as:` entries. This script bridges the two.
-
-Usage:
-  # Print resolved config to stdout
-  python scripts/resolve_config.py configs/workers/de_database_engineer.yaml
-
-  # Write to file
-  python scripts/resolve_config.py configs/workers/de_database_engineer.yaml -o /tmp/resolved_de.yaml
-
-  # Start a loom worker with resolved config
-  loom worker --config <(python scripts/resolve_config.py configs/workers/de_database_engineer.yaml) --tier local
-"""
 from __future__ import annotations
 
 import argparse
@@ -31,14 +19,13 @@ SILO_INDEX = BAFT_DIR / "configs" / "knowledge" / "itp_silos.yaml"
 
 
 def _resolve_itp_root() -> Path:
+    """Find the ITP project root from env var or parent directory."""
     if "ITP_ROOT" in os.environ:
         return Path(os.environ["ITP_ROOT"])
     candidate = BAFT_DIR.parent
     if (candidate / "framework" / "data").is_dir():
         return candidate
-    raise FileNotFoundError(
-        "Cannot find ITP project root. Set ITP_ROOT env var."
-    )
+    raise FileNotFoundError("Cannot find ITP project root. Set ITP_ROOT env var.")
 
 
 def load_silo_index(silo_path: Path) -> dict:
@@ -72,10 +59,12 @@ def resolve_worker_config(config_path: Path, silos: dict) -> dict:
                 p = Path(s["path"])
                 if not p.is_absolute():
                     p = BAFT_DIR / p
-                resolved.append({
-                    "path": str(p),
-                    "inject_as": s.get("inject_as", "reference"),
-                })
+                resolved.append(
+                    {
+                        "path": str(p),
+                        "inject_as": s.get("inject_as", "reference"),
+                    }
+                )
         else:
             # Direct path reference — pass through
             resolved.append(source)
@@ -84,12 +73,12 @@ def resolve_worker_config(config_path: Path, silos: dict) -> dict:
     return config
 
 
-def main():
+def main() -> None:
+    """CLI entry point for resolving silo references."""
     parser = argparse.ArgumentParser(description="Resolve silo refs in worker config")
     parser.add_argument("config", help="Path to worker YAML config")
     parser.add_argument("-o", "--output", help="Output path (default: stdout)")
-    parser.add_argument("--silo-index", default=str(SILO_INDEX),
-                        help="Path to silo index YAML")
+    parser.add_argument("--silo-index", default=str(SILO_INDEX), help="Path to silo index YAML")
     args = parser.parse_args()
 
     silos = load_silo_index(Path(args.silo_index))

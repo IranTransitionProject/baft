@@ -23,6 +23,7 @@ Env vars:
 
 Requirements: pip install httpx pyyaml
 """
+
 from __future__ import annotations
 
 import argparse
@@ -85,37 +86,41 @@ MODEL_CANDIDATES: dict[str, list[str]] = {
 TEST_PAYLOADS: dict[str, dict[str, Any]] = {
     "sp": {
         "source_bundle": {
-            "items": [{
-                "global_id": "test:1",
-                "url": "https://example.com/report",
-                "language": "en",
-                "source_tier": 3,
-                "retrieval_date": "2026-03-15",
-                "raw_text": (
-                    "Iranian state media reported that IRGC commanders met with "
-                    "Ali Larijani at SNSC headquarters to discuss succession "
-                    "arrangements following Khamenei's death in the February strikes. "
-                    "The meeting took place at a secure location in Tehran on March 10, "
-                    "2026. Separately, Tasnim News Agency published a statement "
-                    "attributed to Mojtaba Khamenei calling for 'national unity in the "
-                    "face of aggression.' This was the first public statement from "
-                    "Mojtaba since the February 28 strikes. The statement was text-only "
-                    "with no video or audio evidence."
-                ),
-                "is_forward": False,
-            }],
+            "items": [
+                {
+                    "global_id": "test:1",
+                    "url": "https://example.com/report",
+                    "language": "en",
+                    "source_tier": 3,
+                    "retrieval_date": "2026-03-15",
+                    "raw_text": (
+                        "Iranian state media reported that IRGC commanders met with "
+                        "Ali Larijani at SNSC headquarters to discuss succession "
+                        "arrangements following Khamenei's death in the February strikes. "
+                        "The meeting took place at a secure location in Tehran on March 10, "
+                        "2026. Separately, Tasnim News Agency published a statement "
+                        "attributed to Mojtaba Khamenei calling for 'national unity in the "
+                        "face of aggression.' This was the first public statement from "
+                        "Mojtaba since the February 28 strikes. The statement was text-only "
+                        "with no video or audio evidence."
+                    ),
+                    "is_forward": False,
+                }
+            ],
         },
     },
     "de": {
         "integration_request": {
             "session_id": "audition_test",
-            "operations": [{
-                "operation_id": "test_op_1",
-                "action": "validate_only",
-                "target_file": "data/variables.yaml",
-                "entity_id": "TV-16",
-                "fields": {"current_value": "near-halted", "epistemic_tag": "[Fact]"},
-            }],
+            "operations": [
+                {
+                    "operation_id": "test_op_1",
+                    "action": "validate_only",
+                    "target_file": "data/variables.yaml",
+                    "entity_id": "TV-16",
+                    "fields": {"current_value": "near-halted", "epistemic_tag": "[Fact]"},
+                }
+            ],
         },
     },
     "xv": {
@@ -158,6 +163,8 @@ _FENCE_RE = re.compile(r"```(?:json|ya?ml)?\s*\n?(.*?)\n?\s*```", re.DOTALL)
 
 @dataclass
 class ScoreResult:
+    """Result of auditing a single model against a worker schema."""
+
     model: str
     provider: str
     role: str
@@ -173,6 +180,7 @@ class ScoreResult:
 
 
 def _detect_format(raw: str) -> str:
+    """Detect the output format (json, yaml, fenced_json, etc.) of a response."""
     stripped = raw.strip()
     if stripped.startswith("{"):
         try:
@@ -202,6 +210,7 @@ def _detect_format(raw: str) -> str:
 
 
 def _parse_response(raw: str) -> dict | None:
+    """Parse a model response as JSON or YAML, returning None on failure."""
     stripped = raw.strip()
     try:
         return json.loads(stripped)
@@ -247,8 +256,10 @@ def _check_required_fields(parsed: dict, output_schema: dict) -> tuple[int, int]
     return found, total
 
 
-def call_model(provider_name: str, model: str, system_prompt: str,
-               user_message: str, timeout: float = 120) -> tuple[str, int, int, float]:
+def call_model(
+    provider_name: str, model: str, system_prompt: str, user_message: str, timeout: float = 120
+) -> tuple[str, int, int, float]:
+    """Send a chat completion request and return (content, tokens_in, tokens_out, latency_ms)."""
     provider = PROVIDERS[provider_name]
     base_url = provider["base_url"]
     api_key = provider["api_key"]
@@ -276,12 +287,15 @@ def call_model(provider_name: str, model: str, system_prompt: str,
 
 
 def load_worker_config(role: str) -> dict:
+    """Load a worker YAML config by role abbreviation."""
     with open(WORKERS_DIR / ROLE_TO_CONFIG[role]) as f:
         return yaml.safe_load(f)
 
 
-def audition_one(provider_name: str, model: str, role: str,
-                 verbose: bool = False, timeout: float = 120) -> ScoreResult:
+def audition_one(
+    provider_name: str, model: str, role: str, verbose: bool = False, timeout: float = 120
+) -> ScoreResult:
+    """Run a single model audition against the specified worker role."""
     config = load_worker_config(role)
     system_prompt = config["system_prompt"]
     output_schema = config.get("output_schema", {})
@@ -289,7 +303,7 @@ def audition_one(provider_name: str, model: str, role: str,
     # Belt-and-suspenders: inject output schema key hints into user message
     schema_hint = ""
     if output_schema and output_schema.get("properties"):
-        top_key = list(output_schema["properties"].keys())[0]
+        top_key = next(iter(output_schema["properties"].keys()))
         nested_props = output_schema["properties"].get(top_key, {})
         nested_req = nested_props.get("required", [])
         schema_hint = (
@@ -305,63 +319,106 @@ def audition_one(provider_name: str, model: str, role: str,
     )
     try:
         content, tok_in, tok_out, latency = call_model(
-            provider_name, model, system_prompt, user_msg, timeout)
+            provider_name, model, system_prompt, user_msg, timeout
+        )
     except Exception as e:
-        return ScoreResult(model=model, provider=provider_name, role=role,
-                           schema_pass=False, required_fields_found=0,
-                           required_fields_total=0, output_format="error",
-                           latency_ms=0, tokens_in=0, tokens_out=0,
-                           error=f"{type(e).__name__}: {str(e)[:100]}")
+        return ScoreResult(
+            model=model,
+            provider=provider_name,
+            role=role,
+            schema_pass=False,
+            required_fields_found=0,
+            required_fields_total=0,
+            output_format="error",
+            latency_ms=0,
+            tokens_in=0,
+            tokens_out=0,
+            error=f"{type(e).__name__}: {str(e)[:100]}",
+        )
     fmt = _detect_format(content)
     parsed = _parse_response(content)
     if parsed is None:
-        return ScoreResult(model=model, provider=provider_name, role=role,
-                           schema_pass=False, required_fields_found=0,
-                           required_fields_total=0, output_format=fmt,
-                           latency_ms=latency, tokens_in=tok_in, tokens_out=tok_out,
-                           error="Could not parse structured output",
-                           raw_response=content if verbose else content[:200])
+        return ScoreResult(
+            model=model,
+            provider=provider_name,
+            role=role,
+            schema_pass=False,
+            required_fields_found=0,
+            required_fields_total=0,
+            output_format=fmt,
+            latency_ms=latency,
+            tokens_in=tok_in,
+            tokens_out=tok_out,
+            error="Could not parse structured output",
+            raw_response=content if verbose else content[:200],
+        )
     found, total = _check_required_fields(parsed, output_schema)
-    return ScoreResult(model=model, provider=provider_name, role=role,
-                       schema_pass=(found == total and total > 0),
-                       required_fields_found=found, required_fields_total=total,
-                       output_format=fmt, latency_ms=latency,
-                       tokens_in=tok_in, tokens_out=tok_out,
-                       raw_response=content if verbose else "")
+    return ScoreResult(
+        model=model,
+        provider=provider_name,
+        role=role,
+        schema_pass=(found == total and total > 0),
+        required_fields_found=found,
+        required_fields_total=total,
+        output_format=fmt,
+        latency_ms=latency,
+        tokens_in=tok_in,
+        tokens_out=tok_out,
+        raw_response=content if verbose else "",
+    )
 
 
 def print_results(results: list[ScoreResult], as_json: bool = False) -> None:
+    """Print audition results as a table or JSON."""
     if as_json:
-        print(json.dumps([{
-            "model": r.model, "provider": r.provider, "role": r.role,
-            "schema_pass": r.schema_pass,
-            "fields": f"{r.required_fields_found}/{r.required_fields_total}",
-            "format": r.output_format, "latency_ms": r.latency_ms,
-            "tokens_out": r.tokens_out, "error": r.error,
-        } for r in results], indent=2))
+        print(
+            json.dumps(
+                [
+                    {
+                        "model": r.model,
+                        "provider": r.provider,
+                        "role": r.role,
+                        "schema_pass": r.schema_pass,
+                        "fields": f"{r.required_fields_found}/{r.required_fields_total}",
+                        "format": r.output_format,
+                        "latency_ms": r.latency_ms,
+                        "tokens_out": r.tokens_out,
+                        "error": r.error,
+                    }
+                    for r in results
+                ],
+                indent=2,
+            )
+        )
         return
     roles_seen: dict[str, list[ScoreResult]] = {}
     for r in results:
         roles_seen.setdefault(r.role, []).append(r)
     for role, rr in roles_seen.items():
-        print(f"\n{'='*72}")
+        print(f"\n{'=' * 72}")
         print(f"  Role: {role.upper()} ({ROLE_TO_CONFIG[role]})")
-        print(f"{'='*72}")
-        print(f"  {'Model':<35} {'Pass':>4}  {'Fields':>8}  {'Format':<13} {'Latency':>8}  {'Tok':>5}")
-        print(f"  {'-'*35} {'-'*4}  {'-'*8}  {'-'*13} {'-'*8}  {'-'*5}")
+        print(f"{'=' * 72}")
+        print(
+            f"  {'Model':<35} {'Pass':>4}  {'Fields':>8}  {'Format':<13} {'Latency':>8}  {'Tok':>5}"
+        )
+        print(f"  {'-' * 35} {'-' * 4}  {'-' * 8}  {'-' * 13} {'-' * 8}  {'-' * 5}")
         for r in sorted(rr, key=lambda x: (not x.schema_pass, x.latency_ms)):
             mark = "\u2705" if r.schema_pass else "\u274c"
             fields = f"{r.required_fields_found}/{r.required_fields_total}"
             err = f"  \u26a0 {r.error[:40]}" if r.error else ""
-            print(f"  {r.model:<35} {mark:>4}  {fields:>8}  {r.output_format:<13} {r.latency_ms:>7}ms  {r.tokens_out:>5}{err}")
+            print(
+                f"  {r.model:<35} {mark:>4}  {fields:>8}  "
+                f"{r.output_format:<13} {r.latency_ms:>7}ms  {r.tokens_out:>5}{err}"
+            )
     total = len(results)
     passed = sum(1 for r in results if r.schema_pass)
-    print(f"\n{'='*72}")
+    print(f"\n{'=' * 72}")
     print(f"  TOTAL: {passed}/{total} passed schema validation")
-    print(f"{'='*72}")
+    print(f"{'=' * 72}")
 
 
-def main():
+def main() -> None:
+    """CLI entry point for the model audition runner."""
     parser = argparse.ArgumentParser(description="Audition LLMs against ITP worker schemas")
     parser.add_argument("--role", choices=list(ROLE_TO_CONFIG.keys()))
     parser.add_argument("--model", help="Test specific model")
@@ -392,9 +449,9 @@ def main():
                     s = "\u2705" if r.schema_pass else "\u274c"
                     print(f" {s} ({r.latency_ms}ms)")
                 if args.verbose and r.raw_response:
-                    print(f"    --- Response (first 400 chars) ---")
+                    print("    --- Response (first 400 chars) ---")
                     print(f"    {r.raw_response[:400]}")
-                    print(f"    ----------------------------------")
+                    print("    ----------------------------------")
     print_results(results, as_json=args.json)
 
 

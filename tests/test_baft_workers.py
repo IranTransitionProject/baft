@@ -10,6 +10,7 @@ Validates:
   - Silo references resolve in itp_silos.yaml
   - Schema structures are valid JSON Schema objects
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -136,11 +137,7 @@ class TestWorkerSchemas:
         for schema_key in ("input_schema", "output_schema"):
             schema = config.get(schema_key, {})
             if isinstance(schema, dict):
-                has_props = (
-                    "properties" in schema
-                    or "oneOf" in schema
-                    or "anyOf" in schema
-                )
+                has_props = "properties" in schema or "oneOf" in schema or "anyOf" in schema
                 assert has_props, (
                     f"{worker_path.name}: {schema_key} missing 'properties' (or oneOf/anyOf)"
                 )
@@ -172,11 +169,11 @@ class TestSiloIsolation:
 
     def _get_file_refs(self, config: dict) -> list[str]:
         """Extract file paths referenced in knowledge_sources."""
-        paths = []
-        for ks in config.get("knowledge_sources", []):
-            if isinstance(ks, dict) and "path" in ks:
-                paths.append(ks["path"])
-        return paths
+        return [
+            ks["path"]
+            for ks in config.get("knowledge_sources", [])
+            if isinstance(ks, dict) and "path" in ks
+        ]
 
     @pytest.mark.parametrize("worker_name", sorted(BLIND_AUDIT_NODES))
     def test_blind_nodes_no_isolated_silos(self, worker_name: str):
@@ -213,9 +210,7 @@ class TestSiloIsolation:
         config = _load_yaml(worker_path)
         file_refs = self._get_file_refs(config)
         framework_refs = [p for p in file_refs if "framework" in p.lower() or "FRAMEWORK" in p]
-        assert not framework_refs, (
-            f"{worker_name} references framework paths {framework_refs} — audit independence violated"
-        )
+        assert not framework_refs, f"{worker_name} references framework paths {framework_refs}"
 
     def test_tn_only_terminology_registry(self):
         """TN must ONLY reference the terminology_registry silo."""
@@ -235,9 +230,7 @@ class TestSiloIsolation:
 
         # File refs should only point to terminology registry
         for path in file_refs:
-            assert "terminology" in path.lower(), (
-                f"TN references non-terminology path: {path}"
-            )
+            assert "terminology" in path.lower(), f"TN references non-terminology path: {path}"
 
     def test_as_no_framework_content(self):
         """AS must NOT have ITP framework content — only audit outputs."""
@@ -275,17 +268,14 @@ class TestSiloResolution:
         silo_config = _load_silos()
         defined_silos = set(silo_config.get("silos", {}).keys())
 
-        unresolved = []
-        for worker_path in ALL_WORKER_FILES:
-            config = _load_yaml(worker_path)
-            for ks in config.get("knowledge_sources", []):
-                if isinstance(ks, dict) and "silo" in ks:
-                    if ks["silo"] not in defined_silos:
-                        unresolved.append((worker_path.stem, ks["silo"]))
+        unresolved = [
+            (worker_path.stem, ks["silo"])
+            for worker_path in ALL_WORKER_FILES
+            for ks in _load_yaml(worker_path).get("knowledge_sources", [])
+            if isinstance(ks, dict) and "silo" in ks and ks["silo"] not in defined_silos
+        ]
 
-        assert not unresolved, (
-            f"Unresolved silo references: {unresolved}"
-        )
+        assert not unresolved, f"Unresolved silo references: {unresolved}"
 
 
 # ── Test: worker naming conventions ────────────────────────────────────

@@ -11,6 +11,7 @@ Covers:
 Uses tmp_path for fake silo index and worker config YAML files.
 Monkeypatches os.environ for ITP_ROOT and module-level BAFT_DIR.
 """
+
 from __future__ import annotations
 
 import sys
@@ -25,10 +26,10 @@ sys.path.insert(0, str(BAFT_ROOT / "scripts"))
 
 import resolve_config
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def fake_itp_root(tmp_path):
@@ -45,13 +46,22 @@ def silo_index_file(tmp_path):
         "silos": {
             "framework_full": {
                 "sources": [
-                    {"path": "${ITP_ROOT}/framework/output/itb_full.md", "inject_as": "analytical_framework"},
-                    {"path": "${ITP_ROOT}/framework/output/isa_full.md", "inject_as": "stress_architecture"},
+                    {
+                        "path": "${ITP_ROOT}/framework/output/itb_full.md",
+                        "inject_as": "analytical_framework",
+                    },
+                    {
+                        "path": "${ITP_ROOT}/framework/output/isa_full.md",
+                        "inject_as": "stress_architecture",
+                    },
                 ]
             },
             "entity_names": {
                 "sources": [
-                    {"path": "pipeline/config/itp_entity_name_registry.yaml", "inject_as": "entity_names"},
+                    {
+                        "path": "pipeline/config/itp_entity_name_registry.yaml",
+                        "inject_as": "entity_names",
+                    },
                 ]
             },
         }
@@ -122,6 +132,7 @@ def worker_config_unknown_silo(tmp_path):
 # _resolve_itp_root tests
 # ---------------------------------------------------------------------------
 
+
 class TestResolveItpRoot:
     """Tests for _resolve_itp_root()."""
 
@@ -178,6 +189,7 @@ class TestResolveItpRoot:
 # load_silo_index tests
 # ---------------------------------------------------------------------------
 
+
 class TestLoadSiloIndex:
     """Tests for load_silo_index()."""
 
@@ -216,10 +228,13 @@ class TestLoadSiloIndex:
 # resolve_worker_config tests
 # ---------------------------------------------------------------------------
 
+
 class TestResolveWorkerConfig:
     """Tests for resolve_worker_config()."""
 
-    def test_silo_reference_resolved(self, monkeypatch, fake_itp_root, silo_index_file, worker_config_with_silo):
+    def test_silo_reference_resolved(
+        self, monkeypatch, fake_itp_root, silo_index_file, worker_config_with_silo
+    ):
         """Silo references should be expanded to concrete path + inject_as entries."""
         monkeypatch.setenv("ITP_ROOT", str(fake_itp_root))
         silos = resolve_config.load_silo_index(silo_index_file)
@@ -237,7 +252,11 @@ class TestResolveWorkerConfig:
         result = resolve_config.resolve_worker_config(worker_config_no_sources, {})
 
         assert result["name"] == "simple_worker"
-        assert "knowledge_sources" not in result or result.get("knowledge_sources") is None or result.get("knowledge_sources") == []
+        assert (
+            "knowledge_sources" not in result
+            or result.get("knowledge_sources") is None
+            or result.get("knowledge_sources") == []
+        )
 
     def test_direct_path_passes_through(self, worker_config_direct_path):
         """Sources without a 'silo' key should be passed through unchanged."""

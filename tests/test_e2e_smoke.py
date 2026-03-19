@@ -10,6 +10,7 @@ Skip conditions:
   - NATS not reachable at localhost:4222
   - Loom workers not running
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -71,10 +72,12 @@ class TestTier1Smoke:
         payload = {
             "integration_request": {
                 "session_id": "e2e_test",
-                "operations": [{
-                    "action": "validate_only",
-                    "target_file": "data/variables.yaml",
-                }],
+                "operations": [
+                    {
+                        "action": "validate_only",
+                        "target_file": "data/variables.yaml",
+                    }
+                ],
             },
         }
 
@@ -98,18 +101,20 @@ class TestTier2Smoke:
         """Submit a minimal source_bundle to SP and check for extracted_claims."""
         source_bundle = {
             "type": "source_bundle",
-            "items": [{
-                "url": "https://example.com/test",
-                "language": "en",
-                "source_tier": 3,
-                "retrieval_date": "2026-03-15",
-                "raw_text": (
-                    "Iranian state media reported that IRGC commanders met with "
-                    "Larijani to discuss succession arrangements following the "
-                    "February strikes. The meeting took place at a secure "
-                    "location in Tehran on March 10, 2026."
-                ),
-            }],
+            "items": [
+                {
+                    "url": "https://example.com/test",
+                    "language": "en",
+                    "source_tier": 3,
+                    "retrieval_date": "2026-03-15",
+                    "raw_text": (
+                        "Iranian state media reported that IRGC commanders met with "
+                        "Larijani to discuss succession arrangements following the "
+                        "February strikes. The meeting took place at a secure "
+                        "location in Tehran on March 10, 2026."
+                    ),
+                }
+            ],
         }
 
         result = await bridge.call_worker(
@@ -148,6 +153,4 @@ class TestMCPServerCreation:
         tool_names = sorted(gateway.tool_registry.keys())
         # Query tools should always be discovered (don't need NATS)
         query_tools = [t for t in tool_names if t.startswith("itp_")]
-        assert len(query_tools) >= 4, (
-            f"Expected at least 4 itp_* query tools, found: {query_tools}"
-        )
+        assert len(query_tools) >= 4, f"Expected at least 4 itp_* query tools, found: {query_tools}"
