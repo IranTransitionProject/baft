@@ -1,0 +1,53 @@
+name: baft
+version: "0.2.0"
+description: "ITP analytical engine — actor-based intelligence analysis pipeline"
+loom_version: ">=0.4.0"
+
+required_extras:
+  - duckdb
+  - mcp
+  - rag
+  - scheduler
+
+entry_configs:
+  workers:
+    - config: configs/workers/sp_source_processor.yaml
+      tier: local
+    - config: configs/workers/ia_intelligence_analyst.yaml
+      tier: frontier
+    - config: configs/workers/de_database_engineer.yaml
+      tier: local
+    - config: configs/workers/xv_cross_validator.yaml
+      tier: local
+    - config: configs/workers/in_input_node.yaml
+      tier: local
+    - config: configs/workers/tn_terminology_neutralizer.yaml
+      tier: local
+    - config: configs/workers/la_logic_auditor.yaml
+      tier: standard
+    - config: configs/workers/pa_perspective_auditor.yaml
+      tier: standard
+    - config: configs/workers/rt_red_teamer.yaml
+      tier: frontier
+    - config: configs/workers/as_audit_synthesizer.yaml
+      tier: standard
+    - config: configs/workers/sa_session_advisor.yaml
+      tier: local
+    - config: configs/workers/wt_watch_tower.yaml
+      tier: standard
+    - config: configs/workers/ni_narrative_intelligence.yaml
+      tier: standard
+  pipelines:
+    - config: configs/orchestrators/itp_standard.yaml
+    - config: configs/orchestrators/itp_quick.yaml
+    - config: configs/orchestrators/itp_audit.yaml
+  schedulers:
+    - config: configs/schedulers/itp.yaml
+  mcp:
+    - config: configs/mcp/itp.yaml
+
+scripts:
+  - path: scripts/resolve_config.py
+    description: "Config silo variable resolver"
+  - path: pipeline/scripts/itp_import_to_duckdb.py
+    description: "YAML to DuckDB import (full + incremental)"

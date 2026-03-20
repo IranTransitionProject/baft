@@ -5,6 +5,7 @@
 
 name: itp_standard
 description: "Tier 2: Source processing → intelligence analysis → cross-validation → database write."
+max_concurrent_goals: 4  # Support multiple analyst sessions simultaneously
 
 stages:
   - id: source_process

@@ -35,7 +35,7 @@ wheels = [
 
 [[package]]
 name = "baft"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -566,7 +566,7 @@ wheels = [
 
 [[package]]
 name = "loom"
-version = "0.3.0"
+version = "0.4.0"
 source = { editable = "../loom" }
 dependencies = [
     { name = "click" },
@@ -628,8 +628,9 @@ requires-dist = [
     { name = "structlog", specifier = ">=24.1.0" },
     { name = "tiktoken", specifier = ">=0.7.0" },
     { name = "uvicorn", marker = "extra == 'workshop'", specifier = ">=0.27.0" },
+    { name = "zeroconf", marker = "extra == 'mdns'", specifier = ">=0.131.0" },
 ]
-provides-extras = ["redis", "local", "docproc", "duckdb", "rag", "scheduler", "mcp", "workshop", "docs", "dev"]
+provides-extras = ["redis", "local", "docproc", "duckdb", "rag", "scheduler", "mcp", "workshop", "mdns", "docs", "dev"]
 
 [[package]]
 name = "mcp"

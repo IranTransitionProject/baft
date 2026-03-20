@@ -10,6 +10,7 @@
 
 name: itp_audit
 description: "Tier 3: TN neutralize → LA+PA+RT parallel audit → AS synthesize → optional patch."
+max_concurrent_goals: 4  # Support multiple analyst sessions simultaneously
 
 stages:
   - id: neutralize

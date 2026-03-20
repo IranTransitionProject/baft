@@ -60,10 +60,17 @@ pipeline/
     telegram_corpus_interleave.py   # Multi-channel corpus interleaving
     generate_entity_registry.py     # Extract entity names from framework data
 
+src/baft/               # Python package (v0.2.0)
+  __init__.py           # Package marker
+  sessions.py           # Session tracking for scheduler expansion (get_active_sessions)
+
 scripts/                # Development utilities
   resolve_config.py     # Resolve silo references and ${ITP_ROOT} in worker configs
+  build-app.sh          # Build deployment ZIP for Loom Workshop
   audition_models.py    # Test different LLM models against worker prompts
   test_e2e_quick.py     # Quick end-to-end smoke test
+
+manifest.yaml           # App manifest for Loom Workshop deployment
 
 tests/                  # 228 unit tests (5 test files)
   test_baft_workers.py      # Worker config validation (schema, silo resolution)
@@ -174,9 +181,18 @@ All configuration and infrastructure is implemented and working:
 ## What to implement next
 
 1. **End-to-end Tier 2 validation** — Run full SP → IA → XV → DE pipeline against a real document with NATS + workers running
-2. **Scheduler condition mechanism** — Loom's scheduler doesn't implement `condition` yet; SA multi-session dispatch requires one SA task per active session
-3. **MCP progress notifications** — When Loom wires progress callbacks to MCP tokens, Tier 2 pipeline would report per-stage progress
-4. **Parallel pipeline variant** — Design a variant where classify and summarize run concurrently if summarizer doesn't need document_type
+2. **MCP progress notifications** — When Loom wires progress callbacks to MCP tokens, Tier 2 pipeline would report per-stage progress
+3. **Parallel pipeline variant** — Design a variant where classify and summarize run concurrently if summarizer doesn't need document_type
+
+## Concurrent multi-analyst sessions (v0.2.0)
+
+Baft supports multiple analysts working simultaneously:
+
+- **Pipelines** set `max_concurrent_goals: 4` (itp_standard, itp_audit) for parallel goal processing
+- **SA scheduler** uses `expand_from: baft.sessions.get_active_sessions` to dispatch one SA task per active session
+- **Session tracking** via `baft.sessions.register_session()` / `unregister_session()` — file-based markers in `~/.loom/sessions/`
+- **DuckDB writes** serialized via single DE processor instance (default `max_concurrent=1`)
+- **App bundle** built via `scripts/build-app.sh` → deploy via Loom Workshop
 
 ## Environment variables
 

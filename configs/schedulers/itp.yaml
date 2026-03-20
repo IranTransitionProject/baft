@@ -67,18 +67,19 @@ schedules:
   # ── Session advisor ───────────────────────────────────────────────────────
 
   - name: session_advisor_monitor
-    description: "SA session quality monitor — fires only during active sessions"
+    description: "SA session quality monitor — dispatches one task per active session"
     interval_seconds: 900    # Every 15 minutes
     dispatch_type: task
     task:
       worker_type: sa_session_advisor
       payload: {}             # SA reads transcript from its knowledge silo
       model_tier: local
-    condition:
-      session_active: true    # Only fires if HI-R reports an active session
-    # NOTE: For multi-session support, the scheduler should dispatch one SA
-    # task per active session, each with a distinct session_id in the payload.
-    # The condition mechanism is not yet implemented in loom's scheduler.
+    expand_from: "baft.sessions.get_active_sessions"
+    # expand_from calls the function which returns a list of dicts like:
+    #   [{"session_monitor_request": {"session_id": "s1", "transcript": "..."}}, ...]
+    # The scheduler dispatches one SA task per active session, merging
+    # each dict into the task payload. If the function returns an empty
+    # list (no active sessions), no tasks are dispatched.
     on_failure:
       action: log_and_continue
       alert: false
