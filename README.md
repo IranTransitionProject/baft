@@ -4,7 +4,8 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
-[![Built on Loom](https://img.shields.io/badge/built_on-Loom_v0.4.0-blueviolet.svg)](https://github.com/IranTransitionProject/loom)
+<!-- Keep in sync with loom pyproject.toml version -->
+[![Built on Loom](https://img.shields.io/badge/built_on-Loom_v0.6.0-blueviolet.svg)](https://github.com/IranTransitionProject/loom)
 [![Status: Active Development](https://img.shields.io/badge/status-active_development-brightgreen.svg)]()
 
 **Persian:** بافت — *woven fabric, texture, tissue*
