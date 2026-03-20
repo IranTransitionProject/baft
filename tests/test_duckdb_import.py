@@ -28,9 +28,16 @@ import yaml
 BAFT_ROOT = Path(__file__).parent.parent
 SCRIPT_PATH = BAFT_ROOT / "pipeline" / "scripts" / "itp_import_to_duckdb.py"
 
-spec = importlib.util.spec_from_file_location("itp_import_to_duckdb", SCRIPT_PATH)
-itp_import = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(itp_import)
+try:
+    spec = importlib.util.spec_from_file_location("itp_import_to_duckdb", SCRIPT_PATH)
+    itp_import = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(itp_import)
+except FileNotFoundError:
+    # CI environments don't have ITP_ROOT / framework/ — skip this module.
+    pytest.skip(
+        "ITP_ROOT not set and framework/ not found — skipping DuckDB import tests",
+        allow_module_level=True,
+    )
 
 
 @pytest.fixture
