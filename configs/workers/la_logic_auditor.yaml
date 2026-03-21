@@ -76,44 +76,8 @@ knowledge_sources:
 # CRITICAL: No ITP framework sources. No variables.yaml. No observations.yaml.
 # No module content. No analytical briefs. This list must remain minimal.
 
-input_schema:
-  type: object
-  properties:
-    audit_request:
-      type: object
-      properties:
-        neutralized_text:
-          type: string
-          description: "TN-neutralized analytical text"
-        content_type:
-          type: string
-        audit_id:
-          type: string
-      required: [neutralized_text, audit_id]
-  required: [audit_request]
-
-output_schema:
-  type: object
-  properties:
-    la_audit:
-      type: object
-      properties:
-        audit_id:      { type: string }
-        auditor:       { type: string, const: "la_logic_auditor" }
-        dimensions:
-          type: array
-          items:
-            type: object
-            properties:
-              dimension:   { type: string }
-              score:       { type: number, minimum: 1, maximum: 10 }
-              justification:{ type: string }
-              issues:      { type: array }
-        overall_score: { type: number }
-        top_issues:    { type: array }
-        recommended_revision: { type: string }
-      required: [audit_id, auditor, dimensions, overall_score]
-  required: [la_audit]
+input_schema_ref: baft.contracts.audit.AuditRequest
+output_schema_ref: baft.contracts.audit.LAaudit
 
 output_constraints:
   format: json_only

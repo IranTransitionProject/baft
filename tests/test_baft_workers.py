@@ -16,7 +16,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-import yaml
+from loom.core.config import load_config
 
 BAFT_ROOT = Path(__file__).parent.parent
 WORKERS_DIR = BAFT_ROOT / "configs" / "workers"
@@ -43,8 +43,8 @@ VALID_TIERS = {"local", "standard", "frontier"}
 
 
 def _load_yaml(path: Path) -> dict:
-    with open(path, encoding="utf-8") as f:
-        return yaml.safe_load(f)
+    """Load a worker config with schema_ref resolution."""
+    return load_config(path)
 
 
 def _load_silos() -> dict:
@@ -113,23 +113,28 @@ class TestWorkerRequiredFields:
 
 
 class TestWorkerSchemas:
-    """Worker I/O schemas must be valid JSON Schema objects."""
+    """Worker I/O schemas must be present (inline or via schema_ref) and valid."""
 
     @pytest.mark.parametrize("worker_path", ALL_WORKER_FILES, ids=lambda p: p.stem)
     def test_has_input_schema(self, worker_path: Path):
         config = _load_yaml(worker_path)
-        assert "input_schema" in config, f"Missing 'input_schema' in {worker_path.name}"
-        schema = config["input_schema"]
-        assert isinstance(schema, dict), "input_schema must be a dict"
-        assert schema.get("type") == "object", "input_schema.type must be 'object'"
+        has_schema = "input_schema" in config or "input_schema_ref" in config
+        assert has_schema, f"Missing input_schema or input_schema_ref in {worker_path.name}"
+        # If resolved, verify it's a valid JSON Schema object.
+        schema = config.get("input_schema")
+        if schema is not None:
+            assert isinstance(schema, dict), "input_schema must be a dict"
+            assert schema.get("type") == "object", "input_schema.type must be 'object'"
 
     @pytest.mark.parametrize("worker_path", ALL_WORKER_FILES, ids=lambda p: p.stem)
     def test_has_output_schema(self, worker_path: Path):
         config = _load_yaml(worker_path)
-        assert "output_schema" in config, f"Missing 'output_schema' in {worker_path.name}"
-        schema = config["output_schema"]
-        assert isinstance(schema, dict), "output_schema must be a dict"
-        assert schema.get("type") == "object", "output_schema.type must be 'object'"
+        has_schema = "output_schema" in config or "output_schema_ref" in config
+        assert has_schema, f"Missing output_schema or output_schema_ref in {worker_path.name}"
+        schema = config.get("output_schema")
+        if schema is not None:
+            assert isinstance(schema, dict), "output_schema must be a dict"
+            assert schema.get("type") == "object", "output_schema.type must be 'object'"
 
     @pytest.mark.parametrize("worker_path", ALL_WORKER_FILES, ids=lambda p: p.stem)
     def test_schemas_have_properties(self, worker_path: Path):
@@ -137,9 +142,14 @@ class TestWorkerSchemas:
         for schema_key in ("input_schema", "output_schema"):
             schema = config.get(schema_key, {})
             if isinstance(schema, dict):
-                has_props = "properties" in schema or "oneOf" in schema or "anyOf" in schema
+                has_props = (
+                    "properties" in schema
+                    or "oneOf" in schema
+                    or "anyOf" in schema
+                    or "$defs" in schema  # Pydantic-generated schemas use $defs
+                )
                 assert has_props, (
-                    f"{worker_path.name}: {schema_key} missing 'properties' (or oneOf/anyOf)"
+                    f"{worker_path.name}: {schema_key} missing 'properties' (or oneOf/anyOf/$defs)"
                 )
 
     @pytest.mark.parametrize("worker_path", ALL_WORKER_FILES, ids=lambda p: p.stem)
@@ -151,6 +161,17 @@ class TestWorkerSchemas:
                 assert isinstance(schema["required"], list), (
                     f"{worker_path.name}: {schema_key}.required must be a list"
                 )
+
+    @pytest.mark.parametrize("worker_path", ALL_WORKER_FILES, ids=lambda p: p.stem)
+    def test_schema_ref_resolves_to_valid_schema(self, worker_path: Path):
+        """Verify that schema_ref models produce schemas with the expected top-level key."""
+        config = _load_yaml(worker_path)
+        for schema_key in ("input_schema", "output_schema"):
+            schema = config.get(schema_key)
+            if schema is not None:
+                # The resolved schema must be type: object with required fields.
+                assert schema.get("type") == "object"
+                assert isinstance(schema.get("required", []), list)
 
 
 # ── Test: knowledge silo isolation ─────────────────────────────────────

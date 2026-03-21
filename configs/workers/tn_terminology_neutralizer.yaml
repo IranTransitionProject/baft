@@ -55,44 +55,8 @@ knowledge_sources:
   - path: "pipeline/config/itp_terminology_registry.yaml"
     inject_as: "terminology_registry"
 
-input_schema:
-  type: object
-  properties:
-    neutralization_request:
-      type: object
-      properties:
-        analytical_text:
-          type: string
-          description: "IA analytical output text to neutralize"
-        content_type:
-          type: string
-          enum: [analytical_output_yaml, observation_text, brief_section]
-      required: [analytical_text]
-  required: [neutralization_request]
-
-output_schema:
-  type: object
-  properties:
-    neutralization_result:
-      type: object
-      properties:
-        neutralized_text:
-          type: string
-        replacements_applied:
-          type: array
-          items:
-            type: object
-            properties:
-              original:   { type: string }
-              replacement:{ type: string }
-              count:      { type: integer }
-        reverse_map:
-          type: object
-          description: "Maps replacement → original for de-neutralization"
-        replacement_count:
-          type: integer
-      required: [neutralized_text, replacements_applied, reverse_map, replacement_count]
-  required: [neutralization_result]
+input_schema_ref: baft.contracts.audit.NeutralizationRequest
+output_schema_ref: baft.contracts.audit.NeutralizationResult
 
 output_constraints:
   format: json_only

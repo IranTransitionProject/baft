@@ -62,42 +62,8 @@ knowledge_sources:
 tools:
   - type: web_search
 
-input_schema:
-  type: object
-  properties:
-    watch_request:
-      type: object
-      properties:
-        watch_list_path: { type: string }
-        mode:
-          type: string
-          enum: [scan, agenda_assembly]
-          default: scan
-        hours_lookback:  { type: integer, default: 24 }
-      required: [watch_list_path]
-  required: [watch_request]
-
-output_schema:
-  type: object
-  oneOf:
-    - properties:
-        watch_results:
-          type: object
-          properties:
-            scan_completed_at: { type: string }
-            items_checked:     { type: integer }
-            findings:          { type: array }
-            agenda_items:      { type: array }
-          required: [scan_completed_at, items_checked, findings]
-    - properties:
-        session_agenda:
-          type: object
-          properties:
-            generated_at:    { type: string }
-            priority_items:  { type: array }
-            secondary_items: { type: array }
-            silence_alerts:  { type: array }
-          required: [generated_at, priority_items]
+input_schema_ref: baft.contracts.monitor.WatchRequest
+output_schema_ref: baft.contracts.monitor.WatchResults
 
 output_constraints:
   format: json_only

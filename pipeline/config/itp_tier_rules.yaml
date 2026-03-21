@@ -94,6 +94,11 @@ tiers:
       - "RT at Tier 3 returns strength >= 8 contradiction"
     note: "RT must use different LLM provider (Gemini or GPT-4) for genuine training-data independence"
 
+# Governance audit threshold
+# DE emits ga_notification when session_operation_count reaches this value.
+# Referenced by DE worker prompt and SA monitoring.
+governance_audit_threshold: 5
+
 # Tier selection rules for HI-R
 
 selection_rules:

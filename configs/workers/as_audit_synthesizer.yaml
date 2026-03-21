@@ -65,45 +65,8 @@ knowledge_sources:
 
 # No ITP framework content here. AS sees only audit outputs + decision history.
 
-input_schema:
-  type: object
-  properties:
-    synthesis_request:
-      type: object
-      properties:
-        audit_id:       { type: string }
-        la_audit:       { type: object }
-        pa_audit:       { type: object }
-        rt_audit:       { type: object }
-        reverse_map:    { type: object }
-        original_ia_output_summary: { type: string }
-      required: [audit_id, la_audit, pa_audit, rt_audit]
-  required: [synthesis_request]
-
-output_schema:
-  type: object
-  properties:
-    audit_report:
-      type: object
-      properties:
-        audit_id:              { type: string }
-        escalation_required:   { type: boolean }
-        escalation_trigger:    { type: string }
-        consensus_findings:    { type: array }
-        conflicts:             { type: array }
-        blind_spot_alerts:     { type: array }
-        recommended_decisions: { type: array }
-        integration_patch:     { type: object }
-        overall_quality:
-          type: object
-          properties:
-            la_score: { type: number }
-            pa_score: { type: number }
-            rt_max_challenge: { type: number }
-            composite: { type: number }
-      required: [audit_id, escalation_required, consensus_findings,
-                 conflicts, recommended_decisions]
-  required: [audit_report]
+input_schema_ref: baft.contracts.audit.SynthesisRequest
+output_schema_ref: baft.contracts.audit.AuditReport
 
 output_constraints:
   format: json_only

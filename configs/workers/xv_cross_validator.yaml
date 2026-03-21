@@ -46,40 +46,8 @@ knowledge_sources:
   - silo: constitution
   - silo: entity_id_registry
 
-input_schema:
-  type: object
-  properties:
-    validation_request:
-      type: object
-      properties:
-        integration_spec:
-          type: object
-        entity_refs:
-          type: array
-          items: { type: string }
-          description: "Flat list of entity IDs to validate"
-  required: [validation_request]
-
-output_schema:
-  type: object
-  properties:
-    validation_result:
-      type: object
-      properties:
-        overall_status:   { type: string, enum: [PASS, PASS_WITH_WARNINGS, FAIL] }
-        checked_count:    { type: integer }
-        failed_count:     { type: integer }
-        warning_count:    { type: integer }
-        details:
-          type: array
-          items:
-            type: object
-            properties:
-              entity_id:  { type: string }
-              status:     { type: string, enum: [FOUND, NOT_FOUND, WARNING] }
-              note:       { type: string }
-      required: [overall_status, checked_count, failed_count, details]
-  required: [validation_result]
+input_schema_ref: baft.contracts.core.ValidationRequest
+output_schema_ref: baft.contracts.core.ValidationResult
 
 output_constraints:
   format: json_only

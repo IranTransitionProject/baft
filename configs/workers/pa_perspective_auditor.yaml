@@ -77,32 +77,8 @@ knowledge_sources:
 
 # CRITICAL: No ITP framework sources. Silo isolation enforced.
 
-input_schema:
-  type: object
-  properties:
-    audit_request:
-      type: object
-      properties:
-        neutralized_text: { type: string }
-        content_type:     { type: string }
-        audit_id:         { type: string }
-      required: [neutralized_text, audit_id]
-  required: [audit_request]
-
-output_schema:
-  type: object
-  properties:
-    pa_audit:
-      type: object
-      properties:
-        audit_id:      { type: string }
-        auditor:       { type: string, const: "pa_perspective_auditor" }
-        dimensions:    { type: array }
-        overall_score: { type: number }
-        top_issues:    { type: array }
-        recommended_revision: { type: string }
-      required: [audit_id, auditor, dimensions, overall_score]
-  required: [pa_audit]
+input_schema_ref: baft.contracts.audit.AuditRequest
+output_schema_ref: baft.contracts.audit.PAaudit
 
 output_constraints:
   format: json_only

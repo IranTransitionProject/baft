@@ -54,16 +54,18 @@ def get_active_sessions() -> list[dict[str, Any]]:
             last_active = data.get("last_active", 0)
             if now - last_active > _STALE_THRESHOLD_SECONDS:
                 continue
-            active.append({
-                "session_monitor_request": {
-                    "session_id": data["session_id"],
-                    "transcript": data.get("transcript", ""),
-                    "session_start": data.get("session_start", ""),
-                    "session_objective": data.get("session_objective", ""),
-                    "current_tier": data.get("current_tier", 2),
-                    "operation_count": data.get("operation_count", 0),
-                },
-            })
+            active.append(
+                {
+                    "session_monitor_request": {
+                        "session_id": data["session_id"],
+                        "transcript": data.get("transcript", ""),
+                        "session_start": data.get("session_start", ""),
+                        "session_objective": data.get("session_objective", ""),
+                        "current_tier": data.get("current_tier", 2),
+                        "operation_count": data.get("operation_count", 0),
+                    },
+                }
+            )
         except (json.JSONDecodeError, KeyError) as exc:
             logger.warning(
                 "sessions.marker_read_failed",

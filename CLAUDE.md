@@ -63,6 +63,11 @@ pipeline/
 src/baft/               # Python package (v0.2.0)
   __init__.py           # Package marker
   sessions.py           # Session tracking for scheduler expansion (get_active_sessions)
+  contracts/            # Pydantic I/O models — source of truth for worker schemas
+    __init__.py         # Re-exports all contract models
+    core.py             # SP, IA, DE, XV, IN contracts (Tier 1–2 pipeline)
+    audit.py            # TN, LA, PA, RT, AS contracts (Tier 3 audit pipeline)
+    monitor.py          # SA, WT, NI contracts (background/scheduled workers)
 
 scripts/                # Development utilities
   resolve_config.py     # Resolve silo references and ${ITP_ROOT} in worker configs
@@ -72,8 +77,9 @@ scripts/                # Development utilities
 
 manifest.yaml           # App manifest for Loom Workshop deployment
 
-tests/                  # 228 unit tests (5 test files)
+tests/                  # 295 unit tests (6 test files)
   test_baft_workers.py      # Worker config validation (schema, silo resolution)
+  test_contracts.py         # Pydantic contract models (validation, schema generation)
   test_baft_pipelines.py    # Pipeline orchestration (InMemoryBus, mock backends)
   test_duckdb_import.py     # DuckDB import script validation
   test_e2e_smoke.py         # End-to-end smoke tests (@pytest.mark.e2e)
@@ -81,6 +87,7 @@ tests/                  # 228 unit tests (5 test files)
 
 docs/
   architecture/         # ITP multi-agent architecture specification
+  DESIGN_INVARIANTS.md  # Baft-specific design constraints (references loom/docs/DESIGN_INVARIANTS.md)
 ```
 
 ## Relationship to Loom
@@ -91,6 +98,7 @@ Baft depends on `loom[duckdb]` as a package. It uses:
 - `SchedulerActor` via `loom scheduler` CLI for automated tasks
 - MCP gateway via `loom mcp` CLI to expose workers as MCP tools
 - `loom.contrib.duckdb.DuckDBQueryBackend` for structured queries against ITP data
+- `loom.core.config.resolve_schema_refs()` to resolve `input_schema_ref`/`output_schema_ref` in worker configs to JSON Schema from Pydantic models in `baft.contracts`
 
 The CLI loads backends by fully qualified class path from worker configs.
 

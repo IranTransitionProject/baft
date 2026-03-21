@@ -86,51 +86,8 @@ knowledge_sources:
   - silo: epistemic_rules
   - silo: tier_rules
 
-input_schema:
-  type: object
-  properties:
-    analytical_input:
-      type: object
-      properties:
-        session_id:       { type: string }
-        extracted_claims:
-          type: object   # output from SP
-        analyst_note:     { type: string }  # optional human context
-        priority_gaps:    { type: array, items: { type: string } }  # gap IDs to focus on
-      required: [extracted_claims]
-  required: [analytical_input]
-
-output_schema:
-  type: object
-  properties:
-    analytical_output:
-      type: object
-      properties:
-        assessed_at:        { type: string }
-        claim_count:        { type: integer }
-        claims_assessed:
-          type: array
-          items:
-            type: object
-            properties:
-              claim_id:       { type: string }
-              assessment:     { type: string, enum: [corroborates, contradicts, updates_variable, fills_gap, triggers_trap, new_intelligence, noise] }
-              entity_ids:     { type: array }
-              analytical_note:{ type: string }
-        new_observations:   { type: array }
-        variable_updates:   { type: array }
-        scenario_updates:   { type: array }
-        gap_fills:          { type: array }
-        new_gaps:           { type: array }
-        publication_flag:   { type: boolean }
-        integration_spec:
-          type: object
-          properties:
-            session_id:  { type: string }
-            operations:  { type: array }
-          required: [operations]
-      required: [claims_assessed, integration_spec]
-  required: [analytical_output]
+input_schema_ref: baft.contracts.core.AnalyticalInput
+output_schema_ref: baft.contracts.core.AnalyticalOutput
 
 output_constraints:
   format: json_only

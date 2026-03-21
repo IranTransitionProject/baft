@@ -35,7 +35,7 @@ wheels = [
 
 [[package]]
 name = "baft"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -566,7 +566,7 @@ wheels = [
 
 [[package]]
 name = "loom"
-version = "0.4.0"
+version = "0.8.0"
 source = { editable = "../loom" }
 dependencies = [
     { name = "click" },
@@ -608,7 +608,11 @@ requires-dist = [
     { name = "myst-parser", marker = "extra == 'dev'", specifier = ">=3.0" },
     { name = "myst-parser", marker = "extra == 'docs'", specifier = ">=3.0" },
     { name = "nats-py", specifier = ">=2.7.0" },
+    { name = "nats-py", marker = "extra == 'tui'", specifier = ">=2.7.0" },
     { name = "ollama", marker = "extra == 'local'", specifier = ">=0.3.0" },
+    { name = "opentelemetry-api", marker = "extra == 'otel'", specifier = ">=1.20.0" },
+    { name = "opentelemetry-exporter-otlp", marker = "extra == 'otel'", specifier = ">=1.20.0" },
+    { name = "opentelemetry-sdk", marker = "extra == 'otel'", specifier = ">=1.20.0" },
     { name = "pydantic", specifier = ">=2.5.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23" },
@@ -626,11 +630,12 @@ requires-dist = [
     { name = "sphinx-rtd-theme", marker = "extra == 'dev'", specifier = ">=2.0" },
     { name = "sphinx-rtd-theme", marker = "extra == 'docs'", specifier = ">=2.0" },
     { name = "structlog", specifier = ">=24.1.0" },
+    { name = "textual", marker = "extra == 'tui'", specifier = ">=3.0.0" },
     { name = "tiktoken", specifier = ">=0.7.0" },
     { name = "uvicorn", marker = "extra == 'workshop'", specifier = ">=0.27.0" },
     { name = "zeroconf", marker = "extra == 'mdns'", specifier = ">=0.131.0" },
 ]
-provides-extras = ["redis", "local", "docproc", "duckdb", "rag", "scheduler", "mcp", "workshop", "mdns", "docs", "dev"]
+provides-extras = ["redis", "local", "docproc", "duckdb", "rag", "scheduler", "mcp", "workshop", "mdns", "otel", "tui", "docs", "dev"]
 
 [[package]]
 name = "mcp"

@@ -73,43 +73,8 @@ knowledge_sources:
 # only standing procedural rules (output format, epistemic discipline), not
 # analytical content.
 
-input_schema:
-  type: object
-  properties:
-    audit_request:
-      type: object
-      properties:
-        neutralized_text: { type: string }
-        content_type:     { type: string }
-        audit_id:         { type: string }
-      required: [neutralized_text, audit_id]
-  required: [audit_request]
-
-output_schema:
-  type: object
-  properties:
-    rt_audit:
-      type: object
-      properties:
-        audit_id:          { type: string }
-        auditor:           { type: string, const: "rt_red_teamer" }
-        escalation_required: { type: boolean }
-        max_challenge_strength: { type: number }
-        challenges:
-          type: array
-          items:
-            type: object
-            properties:
-              challenge_id:      { type: string }
-              claim_challenged:  { type: string }
-              counter_argument:  { type: string }
-              evidence_basis:    { type: string }
-              strength:          { type: number, minimum: 1, maximum: 10 }
-              requires_revision: { type: boolean }
-            required: [challenge_id, claim_challenged, counter_argument, strength]
-        summary_assessment: { type: string }
-      required: [audit_id, auditor, escalation_required, challenges, max_challenge_strength]
-  required: [rt_audit]
+input_schema_ref: baft.contracts.audit.AuditRequest
+output_schema_ref: baft.contracts.audit.RTaudit
 
 output_constraints:
   format: json_only

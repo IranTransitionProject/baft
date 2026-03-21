@@ -70,49 +70,8 @@ knowledge_sources:
   - path: "pipeline/ni_findings/ni_findings_log.yaml"
     inject_as: "prior_findings"
 
-input_schema:
-  type: object
-  properties:
-    ni_request:
-      type: object
-      properties:
-        corpus_path:    { type: string }
-        time_range:     { type: string }
-        analysis_modes:
-          type: array
-          items:
-            type: string
-            enum: [coordination, silence, divergence, velocity, tone, amplification]
-          default: [coordination, silence, divergence, velocity, tone]
-      required: [corpus_path, time_range]
-  required: [ni_request]
-
-output_schema:
-  type: object
-  properties:
-    ni_output:
-      type: object
-      properties:
-        analyzed_at:     { type: string }
-        time_range:      { type: string }
-        messages_analyzed: { type: integer }
-        channels_covered: { type: integer }
-        findings:
-          type: array
-          items:
-            type: object
-            properties:
-              finding_id:         { type: string }
-              finding_type:       { type: string }
-              channels_involved:  { type: array }
-              time_range:         { type: string }
-              description:        { type: string }
-              significance:       { type: string, enum: [low, medium-low, medium, medium-high, high] }
-              recommended_routing:{ type: string }
-            required: [finding_id, finding_type, channels_involved, description, significance]
-        no_significant_findings: { type: boolean }
-      required: [analyzed_at, findings]
-  required: [ni_output]
+input_schema_ref: baft.contracts.monitor.NIrequest
+output_schema_ref: baft.contracts.monitor.NIoutput
 
 output_constraints:
   format: json_only

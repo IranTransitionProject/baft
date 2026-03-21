@@ -74,44 +74,8 @@ knowledge_sources:
   - silo: cognitive_profile
   - silo: tier_rules
 
-input_schema:
-  type: object
-  properties:
-    session_monitor_request:
-      type: object
-      properties:
-        session_id:
-          type: string
-          description: "Unique identifier for the session being monitored"
-        transcript:
-          type: string
-          description: "Recent session transcript (last N exchanges)"
-        session_start:  { type: string }
-        session_objective: { type: string }
-        current_tier:   { type: integer }
-        operation_count:{ type: integer }
-      required: [session_id, transcript]
-  required: [session_monitor_request]
-
-output_schema:
-  type: object
-  properties:
-    sa_advisory:
-      type: object
-      properties:
-        no_flags:    { type: boolean }
-        flags:
-          type: array
-          items:
-            type: object
-            properties:
-              flag_type:   { type: string }
-              severity:    { type: string, enum: [low, medium, high, critical] }
-              evidence:    { type: string }
-              recommended_action: { type: string }
-            required: [flag_type, severity, evidence, recommended_action]
-      required: [no_flags]
-  required: [sa_advisory]
+input_schema_ref: baft.contracts.monitor.SessionMonitorRequest
+output_schema_ref: baft.contracts.monitor.SAadvisory
 
 output_constraints:
   format: json_only
