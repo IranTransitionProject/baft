@@ -60,9 +60,10 @@ pipeline/
     telegram_corpus_interleave.py   # Multi-channel corpus interleaving
     generate_entity_registry.py     # Extract entity names from framework data
 
-src/baft/               # Python package (v0.2.0)
+src/baft/               # Python package (v0.3.0)
   __init__.py           # Package marker
   sessions.py           # Session tracking for scheduler expansion (get_active_sessions)
+  tracing.py            # OTel tracing integration (wraps loom.tracing with ITP defaults)
   contracts/            # Pydantic I/O models — source of truth for worker schemas
     __init__.py         # Re-exports all contract models
     core.py             # SP, IA, DE, XV, IN contracts (Tier 1–2 pipeline)
@@ -77,28 +78,42 @@ scripts/                # Development utilities
 
 manifest.yaml           # App manifest for Loom Workshop deployment
 
-tests/                  # 295 unit tests (6 test files)
+tests/                  # 356 unit tests (7 test files)
   test_baft_workers.py      # Worker config validation (schema, silo resolution)
   test_contracts.py         # Pydantic contract models (validation, schema generation)
   test_baft_pipelines.py    # Pipeline orchestration (InMemoryBus, mock backends)
   test_duckdb_import.py     # DuckDB import script validation
   test_e2e_smoke.py         # End-to-end smoke tests (@pytest.mark.e2e)
   test_resolve_config.py    # Config resolution and silo expansion
+  test_new_loom_features.py # OTel tracing, retries, Workshop MCP, eval baselines, TUI, dead-letter
 
 docs/
+  ANALYST_GUIDE.md      # Non-technical analyst guide (tools, workflows, Workshop, TUI)
+  OPERATIONS_GUIDE.md   # Technical ops guide (tracing, retries, dead-letter, troubleshooting)
+  SETUP.md              # Local environment setup (step-by-step)
+  CLAUDE_DESKTOP_GUIDE.md  # Claude Desktop/Code connection guide
+  LOOM_BUILDERS_GUIDE.md   # Design philosophy and lessons learned
+  DESIGN_INVARIANTS.md  # Baft-specific design constraints (silo isolation, audit independence)
   architecture/         # ITP multi-agent architecture specification
-  DESIGN_INVARIANTS.md  # Baft-specific design constraints (references loom/docs/DESIGN_INVARIANTS.md)
 ```
 
 ## Relationship to Loom
 
-Baft depends on `loom[duckdb]` as a package. It uses:
+Baft depends on `loom[mcp,duckdb,rag,workshop,tui,otel]` as a package (v0.8.0+). It uses:
 - Worker YAML configs loaded by `loom worker` and `loom processor` CLI commands
 - `PipelineOrchestrator` via `loom pipeline` CLI for Tier 2 and Tier 3 pipelines
 - `SchedulerActor` via `loom scheduler` CLI for automated tasks
 - MCP gateway via `loom mcp` CLI to expose workers as MCP tools
 - `loom.contrib.duckdb.DuckDBQueryBackend` for structured queries against ITP data
 - `loom.core.config.resolve_schema_refs()` to resolve `input_schema_ref`/`output_schema_ref` in worker configs to JSON Schema from Pydantic models in `baft.contracts`
+- **OpenTelemetry tracing** — `baft.tracing` wraps `loom.tracing` for end-to-end pipeline visibility; W3C traceparent propagation through NATS messages
+- **Per-stage retry** — all pipeline stages have `max_retries` configured (2 for local tier, 1 for standard/frontier)
+- **ResultStream** — `loom.orchestrator.stream.ResultStream` for incremental result collection during audit pipeline parallel groups
+- **Workshop MCP tools** — `workshop.*` namespace tools for worker CRUD, test bench, eval, impact analysis, dead-letter inspection
+- **Config impact analysis** — `loom.workshop.config_impact.get_impact()` maps worker changes to affected pipelines/downstream stages
+- **Eval baselines** — `WorkshopDB.promote_baseline()` / `compare_against_baseline()` for golden dataset regression detection
+- **Dead-letter audit trail** — `ReplayRecord` on `DeadLetterConsumer` tracks replay history for governance
+- **TUI dashboard** — `loom ui` for real-time NATS observation of goals, tasks, pipeline stages
 
 The CLI loads backends by fully qualified class path from worker configs.
 
@@ -160,9 +175,16 @@ uv run pytest tests/ -v -m "not e2e"
 # Terminal 5: ANTHROPIC_API_KEY=sk-... uv run loom worker --config configs/workers/ia_intelligence_analyst.yaml --tier frontier --nats-url nats://localhost:4222
 # Terminal 6: uv run loom pipeline --config configs/orchestrators/itp_standard.yaml --nats-url nats://localhost:4222
 
-# MCP server
+# MCP server (includes Workshop tools: worker CRUD, test bench, eval, impact, dead-letter)
 uv run loom mcp --config configs/mcp/itp.yaml
 uv run loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765
+
+# Workshop web UI (worker testing, eval baselines, config impact analysis)
+uv run loom workshop --port 8080
+uv run loom workshop --port 8080 --nats-url nats://localhost:4222  # with live metrics
+
+# TUI dashboard (real-time NATS observation — goals, tasks, pipeline stages)
+uv run loom ui --nats-url nats://localhost:4222
 
 # Import framework data to DuckDB
 python pipeline/scripts/itp_import_to_duckdb.py
@@ -176,23 +198,36 @@ uv run ruff check scripts/ pipeline/scripts/
 
 All configuration and infrastructure is implemented and working:
 - 13 worker configs (Batch A core + Batch B audit + Batch C background/scheduled)
-- 3 orchestrator pipeline configs (quick, standard, audit)
+- 3 orchestrator pipeline configs (quick, standard, audit) — all with per-stage `max_retries`
 - Scheduler config with 5 scheduled actors
-- MCP gateway config exposing workers + DuckDB queries
+- MCP gateway config exposing workers + DuckDB queries + Workshop tools (worker/test/eval/impact/deadletter)
 - Knowledge silo index mapping silo names to file paths
 - 9 pipeline config data files (source hierarchy, epistemic rules, watch list, etc.)
 - DuckDB import script with full and incremental modes
 - Telegram-to-source-bundle converter
 - Config resolution script (silo expansion, ${ITP_ROOT} substitution)
-- Unit tests: 228 tests pass (workers, pipelines, DuckDB import, config resolution)
+- OpenTelemetry tracing integration (`baft.tracing` module)
+- Unit tests: 356 tests pass (workers, contracts, pipelines, DuckDB import, config resolution, new loom features)
 
 ## What to implement next
 
 1. **End-to-end Tier 2 validation** — Run full SP → IA → XV → DE pipeline against a real document with NATS + workers running
-2. **MCP progress notifications** — When Loom wires progress callbacks to MCP tokens, Tier 2 pipeline would report per-stage progress
-3. **Parallel pipeline variant** — Design a variant where classify and summarize run concurrently if summarizer doesn't need document_type
+2. **Parallel pipeline variant** — Design a variant where classify and summarize run concurrently if summarizer doesn't need document_type
 
-## Concurrent multi-analyst sessions (v0.2.0)
+## Worker config format
+
+All 13 worker configs follow the Loom v0.8.0 worker config schema:
+- **`name`** (str, required) — unique worker identifier, matches filename
+- **`description`** (str, required) — one-sentence purpose, shown in Workshop/MCP
+- **`system_prompt`** (str, required) — complete LLM instructions
+- **`default_model_tier`** (str, required) — `local` | `standard` | `frontier`
+- **`reset_after_task`** (bool, required) — must be `true` (workers are stateless)
+- **`timeout_seconds`** (int, required) — per-task timeout
+- **`input_schema_ref`** / **`output_schema_ref`** (str) — Pydantic model dotted path in `baft.contracts`, resolved to JSON Schema at load time by `loom.core.config.resolve_schema_refs()`
+- **`knowledge_sources`** (list) — silo references (`silo: <name>`) resolved via `itp_silos.yaml`
+- **`output_constraints`** (dict) — `{format: json_only, max_tokens: N}` for output enforcement
+
+## Concurrent multi-analyst sessions (v0.3.0)
 
 Baft supports multiple analysts working simultaneously:
 
@@ -210,7 +245,41 @@ export ITP_ROOT="/path/to/IranTransitionProject"  # parent of framework/, loom/,
 export BAFT_WORKSPACE="$ITP_ROOT/baft/itp-workspace"
 export NATS_URL="nats://localhost:4222"
 export REDIS_URL="redis://localhost:6379"
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"  # Optional: OTel collector for tracing
+export LOOM_TRACE=1  # Optional: full I/O debug logging for pipeline stages
 ```
+
+## Observability and resilience
+
+### OpenTelemetry tracing
+- `baft.tracing.init_baft_tracing()` initializes OTel with service name `baft-itp`
+- `baft.tracing.get_baft_tracer(scope)` returns a scoped tracer (real or no-op)
+- W3C traceparent propagates through NATS messages via `_trace_context` key
+- Spans on: actor message processing, router dispatch, pipeline stages, LLM calls
+- Requires `OTEL_EXPORTER_OTLP_ENDPOINT` env var (e.g. Jaeger at `http://localhost:4317`)
+- Safe to call without OTel installed — degrades to no-ops
+
+### Per-stage retry
+All pipeline stages have `max_retries` configured:
+- **Local tier** workers (SP, XV, TN, DE): `max_retries: 2` (cheap to retry)
+- **Standard tier** workers (LA, PA, AS): `max_retries: 1`
+- **Frontier tier** workers (IA, RT): `max_retries: 1` (expensive — conservative)
+- Retries only on transient errors (timeouts, worker failures), not validation errors
+
+### Workshop MCP tools
+The MCP gateway exposes Workshop tools under `workshop.*` namespace:
+- `workshop.worker.{list,get,update}` — worker config CRUD
+- `workshop.worker.test` — run worker against test payload
+- `workshop.eval.{run,compare}` — eval suite execution + baseline comparison
+- `workshop.impact.analyze` — config change impact analysis
+- `workshop.deadletter.{list,replay}` — dead-letter inspection + replay (audit trail)
+
+### TUI dashboard
+`loom ui --nats-url nats://localhost:4222` shows live pipeline state:
+- Goals panel (status, subtask count, elapsed)
+- Tasks panel (worker type, tier, model, elapsed)
+- Pipeline panel (stage execution with wall time)
+- Events panel (scrolling log of all `loom.>` messages)
 
 ## Environment
 

@@ -10,12 +10,14 @@ max_concurrent_goals: 4  # Support multiple analyst sessions simultaneously
 stages:
   - id: source_process
     worker: sp_source_processor
+    max_retries: 2          # LLM calls can timeout/malform — retry transient errors
     input_mapping:
       source_bundle: "{{input.source_bundle}}"
 
   - id: analyze
     worker: ia_intelligence_analyst
     depends_on: [source_process]
+    max_retries: 1          # Frontier-tier calls are expensive — one retry only
     input_mapping:
       analytical_input:
         session_id:       "{{input.session_id}}"
@@ -26,6 +28,7 @@ stages:
   - id: cross_validate
     worker: xv_cross_validator
     depends_on: [analyze]
+    max_retries: 2          # Local tier — cheap to retry
     input_mapping:
       validation_request:
         integration_spec: "{{stages.analyze.output.analytical_output.integration_spec}}"
@@ -34,6 +37,7 @@ stages:
   - id: db_write
     worker: de_database_engineer
     depends_on: [cross_validate]
+    max_retries: 1          # Retry once on transient DE failures
     condition: "stages.cross_validate.output.validation_result.overall_status != 'FAIL'"
     input_mapping:
       integration_request: "{{stages.analyze.output.analytical_output.integration_spec}}"

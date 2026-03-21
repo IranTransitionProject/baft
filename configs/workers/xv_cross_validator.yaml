@@ -14,7 +14,9 @@ description: >
   that cited entity IDs exist, module codes are valid, and inter-entity
   relationships are consistent. Run before any DE commit.
 
-default_tier: local
+default_model_tier: local
+reset_after_task: true
+timeout_seconds: 30
 
 system_prompt: |
   You are the ITP Cross-Validator (XV). You perform one task: validate

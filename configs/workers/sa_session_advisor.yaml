@@ -14,7 +14,9 @@ description: >
   confirmation bias, quality gate bypass, tier mismatch. Reports flags to
   HI-R only. Silent unless threshold crossed. Runs every 15 minutes.
 
-default_tier: local
+default_model_tier: local
+reset_after_task: true
+timeout_seconds: 30
 
 system_prompt: |
   You are the ITP Session Advisor (SA). You monitor session quality.

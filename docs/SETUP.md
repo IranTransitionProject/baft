@@ -219,8 +219,8 @@ Replace `/Users/YOU/IranTransitionProject` with your actual path.
 
 ## 9. Run the Workshop (optional)
 
-The Workshop is a web UI for testing workers, running evals, and managing
-pipeline configurations:
+The Workshop is a web UI for testing workers, running evaluations, comparing
+quality baselines, and managing pipeline configurations:
 
 ```bash
 cd ~/IranTransitionProject/baft
@@ -230,12 +230,57 @@ uv run loom workshop --port 8080
 uv run loom workshop --port 8080 --nats-url nats://localhost:4222
 ```
 
-Open http://localhost:8080 to access the worker test bench, eval dashboard,
-and pipeline editor.
+Open http://localhost:8080 to access:
+- **Worker list** — all 13 workers with tier and status
+- **Test bench** — run any worker against sample inputs
+- **Eval dashboard** — run test suites, compare against golden baselines
+- **Pipeline editor** — view and modify pipeline stage configurations
+- **Dead-letter inspector** — browse failed tasks with replay option
+
+Workshop tools are also available as MCP tools (`workshop.worker.test`,
+`workshop.eval.run`, etc.) — analysts can use them directly through Claude.
+See the [Analyst Guide](ANALYST_GUIDE.md) for details.
 
 ---
 
-## 10. Verify end-to-end
+## 10. Start the TUI dashboard (optional)
+
+The terminal UI shows real-time pipeline execution — goals, tasks, stages,
+and all NATS events:
+
+```bash
+uv run loom ui --nats-url nats://localhost:4222
+```
+
+This is a read-only observer. Keyboard: `q` quit, `c` clear log, `r` refresh.
+
+See the [Operations Guide](OPERATIONS_GUIDE.md) for detailed panel descriptions.
+
+---
+
+## 11. Set up tracing (optional)
+
+For end-to-end distributed tracing across pipeline stages:
+
+```bash
+# Start a Jaeger collector (Docker)
+docker run -d --name jaeger \
+  -p 16686:16686 \
+  -p 4317:4317 \
+  jaegertracing/jaeger:latest
+
+# Set the endpoint
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"
+```
+
+Traces are visible at http://localhost:16686. Search for service `baft-itp`.
+
+Tracing is fully optional — when the OTel SDK is not configured, all
+tracing calls are no-ops with zero overhead.
+
+---
+
+## 12. Verify end-to-end
 
 Run the smoke tests to confirm everything is wired correctly:
 

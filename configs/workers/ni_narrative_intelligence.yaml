@@ -14,7 +14,9 @@ description: >
   Detects coordination, silence, divergence, velocity shifts, tone shifts,
   and amplification chains. Runs on daily corpus exports. Feeds AP.
 
-default_tier: standard
+default_model_tier: standard
+reset_after_task: true
+timeout_seconds: 90
 
 system_prompt: |
   You are the ITP Narrative Intelligence analyst (NI). You analyze patterns

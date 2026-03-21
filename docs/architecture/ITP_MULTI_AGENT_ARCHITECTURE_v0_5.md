@@ -141,7 +141,7 @@ configs/orchestrators/itp_quick.yaml         # HI-R→DE direct (Tier 1)
 configs/schedulers/itp.yaml                  # WT daily, AP pre-session, GA weekly, SA every 15min
 ```
 
-Each worker config contains: `name`, `description`, `system_prompt`, `input_schema`, `output_schema`, `knowledge_sources`, `default_tier`, `output_constraints`.
+Each worker config contains: `name`, `description`, `system_prompt`, `input_schema`, `output_schema`, `knowledge_sources`, `default_model_tier`, `reset_after_task`, `timeout_seconds`, `output_constraints`.
 
 The system prompt content already exists — it's in v0.4 under each node's "System prompt core" section. The task is translating those prose definitions into Loom YAML format.
 

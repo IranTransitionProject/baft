@@ -17,7 +17,9 @@ description: >
   blind audit handoff. Preserves analytical meaning. Produces reverse map
   for de-neutralization after audit. Required step before LA/PA/RT.
 
-default_tier: local
+default_model_tier: local
+reset_after_task: true
+timeout_seconds: 30
 
 system_prompt: |
   You are the ITP Terminology Neutralizer (TN). You perform exact string

@@ -1,13 +1,16 @@
 name: baft
-version: "0.2.0"
+version: "0.3.0"
 description: "ITP analytical engine — actor-based intelligence analysis pipeline"
-loom_version: ">=0.4.0"
+loom_version: ">=0.8.0"
 
 required_extras:
   - duckdb
   - mcp
   - rag
   - scheduler
+  - workshop
+  - tui
+  - otel
 
 entry_configs:
   workers:

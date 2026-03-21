@@ -14,7 +14,9 @@ description: >
   structured factual claims with epistemic tags. Output feeds into
   analyze_intelligence. Supports Farsi, Arabic, English, Hebrew, Turkish.
 
-default_tier: local
+default_model_tier: local
+reset_after_task: true
+timeout_seconds: 60
 
 system_prompt: |
   You are the ITP Source Processor (SP). Your function is claim extraction,

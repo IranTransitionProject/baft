@@ -19,7 +19,7 @@ The metaphor: a weaving loom where each thread (worker) has a specific function,
 
 **Silo-enforced independence.** Some workers (LA, PA, RT — the audit pipeline) must be blind to the project's analytical framework. Their `knowledge_sources` are intentionally empty or limited to generic rubrics. TN (Terminology Neutralizer) sits at the firewall, stripping project-specific vocabulary before handoff to blind auditors. This is not a nicety — if auditors can pattern-match to published project content, their independence is fake.
 
-**Tier-based routing.** Workers declare a `default_tier` (local/standard/frontier). The router enforces this: mechanical extraction tasks (SP, DE, XV) run on small local models (cheap, fast), analytical work (IA) requires frontier models (expensive, slow), and audit work (LA, PA) runs on standard-tier models from a different provider than IA to ensure training-data independence.
+**Tier-based routing.** Workers declare a `default_model_tier` (local/standard/frontier). The router enforces this: mechanical extraction tasks (SP, DE, XV) run on small local models (cheap, fast), analytical work (IA) requires frontier models (expensive, slow), and audit work (LA, PA) runs on standard-tier models from a different provider than IA to ensure training-data independence.
 
 **JSON internal, YAML human-facing.** Worker configs are YAML (human-edited). Worker output is JSON (machine-reliable). Conversion between the two is trivial (`json.loads` / `yaml.dump`) and happens at the build or inspection step, not in the pipeline.
 

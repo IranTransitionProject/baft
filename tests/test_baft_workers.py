@@ -5,7 +5,7 @@ Unit tests for ITP Baft worker configurations.
 
 Validates:
   - YAML syntax for all 13 worker configs
-  - Required fields present (name, system_prompt, default_tier, input/output schemas)
+  - Required fields present (name, system_prompt, default_model_tier, input/output schemas)
   - Knowledge silo isolation rules (audit independence)
   - Silo references resolve in itp_silos.yaml
   - Schema structures are valid JSON Schema objects
@@ -80,7 +80,7 @@ class TestWorkerYAMLSyntax:
 
 
 class TestWorkerRequiredFields:
-    """Each worker config must have name, description, system_prompt, default_tier."""
+    """Each worker config must have name, description, system_prompt, default_model_tier."""
 
     @pytest.mark.parametrize("worker_path", ALL_WORKER_FILES, ids=lambda p: p.stem)
     def test_has_name(self, worker_path: Path):
@@ -103,10 +103,24 @@ class TestWorkerRequiredFields:
     @pytest.mark.parametrize("worker_path", ALL_WORKER_FILES, ids=lambda p: p.stem)
     def test_has_valid_tier(self, worker_path: Path):
         config = _load_yaml(worker_path)
-        assert "default_tier" in config, f"Missing 'default_tier' in {worker_path.name}"
-        assert config["default_tier"] in VALID_TIERS, (
-            f"Invalid tier '{config['default_tier']}' — expected one of {VALID_TIERS}"
+        assert "default_model_tier" in config, f"Missing 'default_model_tier' in {worker_path.name}"
+        assert config["default_model_tier"] in VALID_TIERS, (
+            f"Invalid tier '{config['default_model_tier']}' — expected one of {VALID_TIERS}"
         )
+
+    @pytest.mark.parametrize("worker_path", ALL_WORKER_FILES, ids=lambda p: p.stem)
+    def test_has_reset_after_task(self, worker_path: Path):
+        config = _load_yaml(worker_path)
+        assert config.get("reset_after_task") is True, (
+            f"Missing or false 'reset_after_task' in {worker_path.name} — workers must be stateless"
+        )
+
+    @pytest.mark.parametrize("worker_path", ALL_WORKER_FILES, ids=lambda p: p.stem)
+    def test_has_timeout_seconds(self, worker_path: Path):
+        config = _load_yaml(worker_path)
+        assert "timeout_seconds" in config, f"Missing 'timeout_seconds' in {worker_path.name}"
+        assert isinstance(config["timeout_seconds"], int), "timeout_seconds must be an integer"
+        assert config["timeout_seconds"] > 0, "timeout_seconds must be positive"
 
 
 # ── Test: input/output schemas ─────────────────────────────────────────

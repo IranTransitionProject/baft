@@ -18,7 +18,9 @@ description: >
   factual accuracy. Operates on terminology-neutralized text. No ITP framework
   knowledge — genuine audit independence.
 
-default_tier: standard
+default_model_tier: standard
+reset_after_task: true
+timeout_seconds: 90
 
 system_prompt: |
   You are an expert analytical quality reviewer. You evaluate geopolitical

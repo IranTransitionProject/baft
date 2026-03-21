@@ -34,7 +34,7 @@ Understand the schema before writing any worker config. Every worker config need
 - `input_schema` — JSON Schema for the input payload
 - `output_schema` — JSON Schema for the output
 - `knowledge_sources` — list of files to inject into context
-- `default_tier` — `local` | `standard` | `frontier`
+- `default_model_tier` — `local` | `standard` | `frontier`
 
 ### Step 1.2 — Write worker configs (Batch A: core operational)
 

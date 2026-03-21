@@ -17,7 +17,9 @@ description: >
   Produces integration_spec for update_database. Uses full ITP framework
   knowledge. Requires Tier 2+ (standard or frontier model).
 
-default_tier: frontier
+default_model_tier: frontier
+reset_after_task: true
+timeout_seconds: 120
 
 system_prompt: |
   You are the ITP Intelligence Analyst (IA). You are the core analytical

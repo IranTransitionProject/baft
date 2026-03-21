@@ -12,11 +12,11 @@
 
 Baft is the Iran Transition Project's analytical engine. It is an application built on the [Loom](https://github.com/IranTransitionProject/loom) actor mesh framework and the [framework](https://github.com/IranTransitionProject/framework) YAML database.
 
-Loom provides the infrastructure: worker actors, NATS message bus, MCP gateway, RAG pipeline, scheduler, DuckDB query backend.
+Loom provides the infrastructure: worker actors, NATS message bus, MCP gateway, RAG pipeline, scheduler, DuckDB query backend, Workshop web UI, TUI dashboard, distributed tracing.
 
 Baft provides the ITP-specific configuration: node system prompts, knowledge silos, inter-node schemas, terminology registry, tier rules, watch list, source channel registry, and pipeline orchestration configs.
 
-The primary interface is a Claude chat session connected to the Baft MCP gateway. The chat session operates as the HI-A (Human Interface — Analyst) node. All structured operations (source processing, intelligence analysis, database updates, audit cycles) are invoked as MCP tools.
+The primary interface is a Claude chat session connected to the Baft MCP gateway. The chat session operates as the HI-A (Human Interface — Analyst) node. All structured operations (source processing, intelligence analysis, database updates, audit cycles) are invoked as MCP tools. Workshop tools for worker testing, evaluation, impact analysis, and dead-letter management are also available as MCP tools.
 
 ## Repository structure
 
@@ -39,8 +39,8 @@ configs/
     in_input_node.yaml
     ni_narrative_intelligence.yaml
   orchestrators/
-    itp_standard.yaml           # SP → IA → DE (Tier 2)
-    itp_audit.yaml              # SP → TN → LA+PA+RT → AS (Tier 3)
+    itp_standard.yaml           # SP → IA → XV → DE (Tier 2)
+    itp_audit.yaml              # TN → [LA+PA+RT] → AS (Tier 3)
     itp_quick.yaml              # Direct DE dispatch (Tier 1)
   schedulers/
     itp.yaml                    # WT daily, AP pre-session, GA weekly, SA interval
@@ -75,9 +75,10 @@ docs/
 - Python 3.11+
 - [uv](https://docs.astral.sh/uv/) package manager
 - [Loom](https://github.com/IranTransitionProject/loom) cloned as sibling directory (`../loom`)
+- [Ollama](https://ollama.com/) for local-tier workers
 - NATS server (`brew install nats-server` or Docker)
-- Redis (`brew install redis` or Docker)
-- Anthropic API key (`export ANTHROPIC_API_KEY=sk-ant-...`)
+- Redis (`brew install redis` or Docker) — optional, for checkpoints
+- Anthropic API key (`export ANTHROPIC_API_KEY=sk-ant-...`) — for standard/frontier tier
 - `ITP_ROOT` env var set to the project root (parent of `framework/`, `loom/`, `baft/`)
 
 ## Quick start
@@ -111,10 +112,14 @@ uv run loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port
 | [loom](https://github.com/IranTransitionProject/loom) | Actor mesh framework (infrastructure) |
 | **baft** (this repo) | ITP application layer (config + scripts) |
 
-## Using with Claude Desktop
+## Documentation
 
-See **[docs/CLAUDE_DESKTOP_GUIDE.md](docs/CLAUDE_DESKTOP_GUIDE.md)** for a step-by-step guide to connecting Baft to Claude Desktop (macOS or Windows) or Claude Code as an MCP analytical engine.
-
-## Architecture
-
-See `docs/architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md` for the full 16-node pipeline design, task-tier system, knowledge silo specifications, and implementation roadmap.
+| Guide | Audience | What it covers |
+|-------|----------|---------------|
+| [Analyst Guide](docs/ANALYST_GUIDE.md) | Analysts | Day-to-day usage, tools, workflows, Workshop, TUI |
+| [Operations Guide](docs/OPERATIONS_GUIDE.md) | Tech support | Tracing, retries, dead-letter, troubleshooting, tuning |
+| [Claude Desktop Guide](docs/CLAUDE_DESKTOP_GUIDE.md) | All users | Connecting Baft to Claude Desktop or Claude Code |
+| [Setup Guide](docs/SETUP.md) | New users | Full local environment setup |
+| [Architecture v0.5](docs/architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md) | Architects | Pipeline design, gap analysis, implementation roadmap |
+| [Design Invariants](docs/DESIGN_INVARIANTS.md) | All | Silo isolation rules, audit independence constraints |
+| [Loom Builders Guide](docs/LOOM_BUILDERS_GUIDE.md) | Engineers | Design philosophy, lessons learned, extending Loom |

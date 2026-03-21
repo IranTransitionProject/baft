@@ -16,7 +16,9 @@ description: >
   anchoring, Western analytical frame contamination, and source perspective
   balance. Complements LA logic audit. No ITP framework knowledge.
 
-default_tier: standard
+default_model_tier: standard
+reset_after_task: true
+timeout_seconds: 90
 
 system_prompt: |
   You are an expert reviewer specializing in perspective bias in geopolitical

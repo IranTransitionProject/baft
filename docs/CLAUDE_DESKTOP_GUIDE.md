@@ -31,6 +31,11 @@ Claude Desktop connects to the Loom MCP server, which exposes Baft's workers and
 - `run_standard_pipeline` — Tier 2: full analytical cycle (SP → IA → XV → DE)
 - `run_audit_pipeline` — Tier 3: publication audit with blind review (TN → LA+PA+RT → AS)
 - `itp_search`, `itp_filter`, `itp_stats`, `itp_get` — DuckDB entity queries
+- `workshop.worker.list`, `workshop.worker.get`, `workshop.worker.update` — Worker config management
+- `workshop.worker.test` — Test a worker against a sample payload
+- `workshop.eval.run`, `workshop.eval.compare` — Run evaluations and compare against baselines
+- `workshop.impact.analyze` — Check which pipelines are affected by a config change
+- `workshop.deadletter.list`, `workshop.deadletter.replay` — Dead-letter queue inspection and retry
 
 **What Claude sees as resources:**
 - `variables.yaml`, `observations.yaml`, `scenarios.yaml`, `traps.yaml`, `gaps.yaml`, `modules.yaml`, `sessions.yaml` — readable ITP framework data files
@@ -464,14 +469,59 @@ ls $ITP_ROOT/framework/data/
 
 ---
 
+## Monitoring and quality tools
+
+Once connected, you also have access to tools for monitoring and quality management:
+
+### Worker testing and evaluation
+
+Ask Claude to test a worker or run evaluations:
+
+> Test the source processor with this sample text: [text]
+
+> Run the eval suite for the intelligence analyst
+
+> Compare eval results against the baseline
+
+See the [Analyst Guide](ANALYST_GUIDE.md) for detailed workflows.
+
+### Dead-letter queue
+
+Failed tasks land in the dead-letter queue. Ask Claude:
+
+> Show me the dead-letter queue
+
+> Replay dead-letter entry DL-042
+
+### TUI dashboard
+
+For real-time monitoring, open a terminal and run:
+
+```bash
+uv run loom ui --nats-url nats://localhost:4222
+```
+
+### Workshop web UI
+
+For hands-on worker management:
+
+```bash
+uv run loom workshop --port 8080
+```
+
+See the [Operations Guide](OPERATIONS_GUIDE.md) for technical details.
+
+---
+
 ## Production considerations
 
 For deployments beyond local development:
 
 - **Authentication:** The streamable-http transport currently has no authentication. For network-exposed deployments, add a reverse proxy (nginx, Caddy) with TLS and bearer token validation.
 - **Process management:** Use `systemd` (Linux), `launchd` (macOS), or a process manager like `supervisord` to keep NATS, workers, and the MCP server running.
-- **Monitoring:** NATS exposes metrics at `:8222`. Worker logs are in `.worker-logs/`. Consider forwarding to a log aggregator.
+- **Monitoring:** NATS exposes metrics at `:8222`. Worker logs are in `.worker-logs/`. Use the TUI dashboard for real-time observation. Set up OpenTelemetry tracing for end-to-end pipeline visibility.
 - **Scaling:** Workers use NATS queue groups for competing-consumer load balancing. Start multiple instances of the same worker for horizontal scaling.
+- **Quality tracking:** Use eval baselines to detect quality regressions when changing models or prompts.
 
 ---
 

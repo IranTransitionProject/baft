@@ -13,7 +13,9 @@ description: >
   channels and web. Produces watch_results with per-item findings and
   agenda_items for session planning. Web search enabled.
 
-default_tier: standard
+default_model_tier: standard
+reset_after_task: true
+timeout_seconds: 90
 
 system_prompt: |
   You are the ITP Watch Tower (WT). You run daily automated intelligence sweeps

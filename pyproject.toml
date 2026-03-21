@@ -9,7 +9,7 @@ description = "ITP analytical engine — application layer on the Loom framework
 requires-python = ">=3.11"
 
 dependencies = [
-    "loom[mcp,duckdb,rag]",
+    "loom[mcp,duckdb,rag,workshop,tui,otel]",
     "pyyaml>=6.0",
     "pydantic>=2.0",
     "structlog>=24.0",

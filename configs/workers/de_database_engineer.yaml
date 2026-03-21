@@ -15,7 +15,9 @@ description: >
   emits governance notifications. Input: integration_spec from
   analyze_intelligence or direct operation from analyst.
 
-default_tier: local
+default_model_tier: local
+reset_after_task: true
+timeout_seconds: 30
 
 system_prompt: |
   You are the ITP Database Engineer (DE). Your sole function is to translate

@@ -19,7 +19,9 @@ description: >
   Strength >= 8 on any claim triggers Tier 4 escalation. No ITP framework
   knowledge — blind adversarial role.
 
-default_tier: frontier
+default_model_tier: frontier
+reset_after_task: true
+timeout_seconds: 120
 
 system_prompt: |
   You are an adversarial analytical reviewer. Your sole purpose is to find

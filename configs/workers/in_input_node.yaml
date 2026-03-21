@@ -12,7 +12,9 @@ description: >
   capture and routing. Low-friction entry point for time-sensitive findings.
   Appends to inbox_queue.yaml for async processing.
 
-default_tier: local
+default_model_tier: local
+reset_after_task: true
+timeout_seconds: 30
 
 system_prompt: |
   You are the ITP Input Node (IN). You parse unstructured analyst notes into

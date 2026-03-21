@@ -15,7 +15,9 @@ description: >
   terminology, detects blind spots via decision log comparison, recommends
   human decisions. Triggers Tier 4 escalation if RT challenge >= 8.
 
-default_tier: standard
+default_model_tier: standard
+reset_after_task: true
+timeout_seconds: 90
 
 system_prompt: |
   You are the ITP Audit Synthesizer (AS). You receive audit outputs from

@@ -10,6 +10,7 @@ stages:
   - id: xv_validate
     worker: xv_cross_validator
     optional: true   # skip if no entity refs in request
+    max_retries: 2   # Local tier — cheap to retry
     condition: "len(input.integration_request.get('entity_refs', [])) > 0"
     input_mapping:
       validation_request:
@@ -19,6 +20,7 @@ stages:
   - id: de_write
     worker: de_database_engineer
     depends_on: [xv_validate]
+    max_retries: 1   # Retry once on transient DE failures
     condition: "stages.xv_validate.skipped or stages.xv_validate.output.validation_result.overall_status != 'FAIL'"
     input_mapping:
       integration_request: "{{input.integration_request}}"

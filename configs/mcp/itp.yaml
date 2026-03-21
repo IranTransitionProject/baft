@@ -110,6 +110,17 @@ tools:
           - "COUNT(*) AS count"
           - "COUNT(CASE WHEN status='active' THEN 1 END) AS active_count"
 
+  # Workshop tools — worker lifecycle, test bench, eval, impact analysis, dead-letter
+  workshop:
+    configs_dir: "configs/"
+    apps_dir: "~/.loom/apps/"
+    enable:
+      - worker                # workshop.worker.{list,get,update}
+      - test                  # workshop.worker.test
+      - eval                  # workshop.eval.{run,compare}
+      - impact                # workshop.impact.analyze
+      - deadletter            # workshop.deadletter.{list,replay} — audit trail for governance
+
 resources:
   # Expose framework data/ YAML files as readable MCP resources
   workspace_dir: "${ITP_ROOT}/framework/data"

@@ -15,6 +15,7 @@ max_concurrent_goals: 4  # Support multiple analyst sessions simultaneously
 stages:
   - id: neutralize
     worker: tn_terminology_neutralizer
+    max_retries: 2          # Local tier — cheap to retry
     input_mapping:
       neutralization_request:
         analytical_text: "{{input.analytical_text}}"
@@ -25,6 +26,7 @@ stages:
     worker: la_logic_auditor
     depends_on: [neutralize]
     parallel_group: audit_panel
+    max_retries: 1          # Standard tier — one retry
     input_mapping:
       audit_request:
         neutralized_text: "{{stages.neutralize.output.neutralization_result.neutralized_text}}"
@@ -35,6 +37,7 @@ stages:
     worker: pa_perspective_auditor
     depends_on: [neutralize]
     parallel_group: audit_panel
+    max_retries: 1          # Standard tier — one retry
     input_mapping:
       audit_request:
         neutralized_text: "{{stages.neutralize.output.neutralization_result.neutralized_text}}"
@@ -45,6 +48,7 @@ stages:
     worker: rt_red_teamer
     depends_on: [neutralize]
     parallel_group: audit_panel
+    max_retries: 1          # Frontier tier — one retry (expensive)
     input_mapping:
       audit_request:
         neutralized_text: "{{stages.neutralize.output.neutralization_result.neutralized_text}}"
@@ -54,6 +58,7 @@ stages:
   - id: synthesize
     worker: as_audit_synthesizer
     depends_on: [logic_audit, perspective_audit, red_team]
+    max_retries: 1          # Standard tier — one retry
     input_mapping:
       synthesis_request:
         audit_id: "{{input.audit_id}}"
