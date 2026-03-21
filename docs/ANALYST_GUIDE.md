@@ -133,6 +133,7 @@ All three reviewers run in parallel and are completely blind — they cannot see
 **Reading the audit report:**
 
 The report includes:
+
 - **Overall verdict:** Pass, Pass with Revisions, or Escalate
 - **Logic findings:** Gaps in reasoning, unsupported claims, circular arguments
 - **Perspective findings:** Bias indicators, missing viewpoints, assumptions
@@ -146,11 +147,11 @@ You can search, filter, and get statistics about entities at any time.
 **Examples:**
 
 > How many active observations do we have by epistemic tag?
-
+>
 > Show me all gaps related to nuclear program
-
+>
 > What is the current status of entity ENT-042?
-
+>
 > Find all variables with confidence below 0.5
 
 ---
@@ -174,6 +175,7 @@ An eval suite is a set of test cases with known expected outputs. Running one sh
 > Run the eval suite for the source processor
 
 Claude calls `workshop.eval.run` and returns scores for each test case. Scoring methods:
+
 - **Field match** — checks that specific output fields contain expected values
 - **Exact match** — checks for exact output equality
 - **LLM judge** — uses a separate LLM to evaluate quality on correctness, completeness, and format
@@ -207,6 +209,7 @@ uv run loom ui --nats-url nats://localhost:4222
 ```
 
 This shows four panels:
+
 - **Goals** — active pipeline goals, their status, and how long they've been running
 - **Tasks** — individual worker tasks, which model tier is handling them, elapsed time
 - **Pipeline** — stage-by-stage execution with wall time per stage
@@ -225,6 +228,7 @@ Sometimes tasks fail — a worker times out, an LLM produces invalid output, or 
 > Show me the dead-letter queue
 
 Claude calls `workshop.deadletter.list` and shows you each failed task with:
+
 - What worker it was intended for
 - Why it failed
 - When it failed
@@ -238,6 +242,7 @@ Claude calls `workshop.deadletter.replay`, which re-submits the task to the rout
 ### Pipeline reliability
 
 Baft automatically retries failed pipeline stages:
+
 - **Local tier** workers (SP, XV, TN, DE) retry up to **2 times** — these use fast local models, so retries are cheap
 - **Standard and frontier tier** workers (IA, LA, PA, RT, AS) retry up to **1 time** — these use expensive API calls, so retries are conservative
 - Only **transient failures** are retried (timeouts, temporary errors). If a worker produces output that fails schema validation, it won't be retried — that's a configuration issue, not a transient failure
@@ -251,6 +256,7 @@ uv run loom workshop --port 8080
 ```
 
 Open http://localhost:8080 in your browser. The Workshop provides:
+
 - **Worker list** — all 13 workers with their tier, description, and status
 - **Test bench** — test any worker with custom inputs and see full outputs
 - **Eval dashboard** — run evaluation suites, compare against baselines, track quality over time
@@ -293,15 +299,20 @@ These tags flow through the entire pipeline — from SP's extraction through IA'
 ### Before your session
 
 1. **Pull latest framework data** (if others have been working):
+
    ```bash
    cd ~/IranTransitionProject/framework && git pull
    ```
+
 2. **Update DuckDB** (if framework changed):
+
    ```bash
    cd ~/IranTransitionProject/baft
    uv run python pipeline/scripts/itp_import_to_duckdb.py --incremental
    ```
+
 3. **Start workers** (if not already running):
+
    ```bash
    bash scripts/run_workers.sh
    ```
@@ -309,6 +320,7 @@ These tags flow through the entire pipeline — from SP's extraction through IA'
 ### During your session
 
 Work through Claude as described above. The standard pattern:
+
 1. Process sources (Tier 2 pipeline)
 2. Review IA's output for accuracy
 3. Confirm or reject XV's validation

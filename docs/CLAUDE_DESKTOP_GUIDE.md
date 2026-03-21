@@ -4,7 +4,7 @@ This guide walks through connecting Baft's multi-agent analytical pipeline to Cl
 
 ## How it works
 
-```
+```text
 ┌─────────────────────┐     MCP (stdio or HTTP)      ┌──────────────────┐
 │   Claude Desktop    │ ◄──────────────────────────► │  Loom MCP Server │
 │   (HI-A node)       │                              │  (baft gateway)  │
@@ -22,6 +22,7 @@ This guide walks through connecting Baft's multi-agent analytical pipeline to Cl
 Claude Desktop connects to the Loom MCP server, which exposes Baft's workers and pipelines as MCP tools. When you ask Claude to process a source or run an analysis, Claude calls the appropriate tool, which routes through NATS to the right worker, and the structured result flows back into the chat.
 
 **What Claude sees as tools:**
+
 - `process_sources` — Extract claims from raw source material (SP worker)
 - `analyze_intelligence` — Analytical assessment against ITP framework (IA worker)
 - `update_database` — Persist validated changes to YAML database (DE worker)
@@ -38,6 +39,7 @@ Claude Desktop connects to the Loom MCP server, which exposes Baft's workers and
 - `workshop.deadletter.list`, `workshop.deadletter.replay` — Dead-letter queue inspection and retry
 
 **What Claude sees as resources:**
+
 - `variables.yaml`, `observations.yaml`, `scenarios.yaml`, `traps.yaml`, `gaps.yaml`, `modules.yaml`, `sessions.yaml` — readable ITP framework data files
 
 ---
@@ -64,7 +66,7 @@ Claude Desktop connects to the Loom MCP server, which exposes Baft's workers and
 
 All three repos must be siblings in the same parent directory:
 
-```
+```text
 ITP_ROOT/               # e.g. ~/Projects/ITP
 ├── framework/          # ITP YAML database
 │   └── data/
@@ -176,6 +178,7 @@ Open Claude Desktop's config file:
 4. Click **Edit Config**
 
 This opens the config file at:
+
 - **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 
@@ -246,6 +249,7 @@ Join-Path (Resolve-Path .\baft\.venv\Scripts) "loom.exe"
 ### A3. Restart Claude Desktop
 
 Fully quit Claude Desktop (don't just close the window):
+
 - **macOS:** Right-click dock icon → Quit, or Cmd+Q
 - **Windows:** Right-click system tray icon → Exit
 
@@ -264,6 +268,7 @@ Claude should call `itp_search` and return structured results from the DuckDB da
 ## Option B: Streamable HTTP transport
 
 Use this if:
+
 - You want the MCP server running independently of Claude Desktop
 - You're connecting from claude.ai (web) instead of Claude Desktop
 - You want to share the MCP server across multiple clients
@@ -375,6 +380,7 @@ Claude calls `run_quick_pipeline` → XV validates the entity ID → DE writes t
 > Process this through the standard pipeline.
 
 Claude calls `run_standard_pipeline`:
+
 1. **SP** extracts structured claims with epistemic tags
 2. **IA** interprets claims against the analytical framework, produces integration spec
 3. **XV** validates all cross-references
@@ -385,6 +391,7 @@ Claude calls `run_standard_pipeline`:
 > Run a publication audit on Brief BR-015 before we publish.
 
 Claude calls `run_audit_pipeline`:
+
 1. **TN** strips ITP-specific terminology for blind review
 2. **LA**, **PA**, **RT** run in parallel — each receives only neutralized text
 3. **AS** synthesizes findings and produces an integration patch
@@ -413,17 +420,22 @@ Claude calls `validate_cross_refs` directly with the entity list.
 
 1. **Check the config JSON is valid.** Use a JSON validator. A single trailing comma breaks it.
 2. **Verify the loom binary path.** Run the `command` + `args` manually in a terminal:
+
    ```bash
    /path/to/baft/.venv/bin/loom mcp --config /path/to/baft/configs/mcp/itp.yaml
    ```
+
    You should see no output (it's waiting on stdio). Press Ctrl-C to exit.
 3. **Check Claude Desktop logs:**
    - macOS: `~/Library/Logs/Claude/mcp*.log`
    - Windows: `%APPDATA%\Claude\logs\mcp*.log`
+
    ```bash
    tail -50 ~/Library/Logs/Claude/mcp-server-baft.log
    ```
+
 4. **Ensure NATS is running** before the MCP server starts:
+
    ```bash
    curl -s http://localhost:8222/varz
    ```
@@ -459,12 +471,14 @@ ls $ITP_ROOT/framework/data/
 
 - Use forward slashes or escaped backslashes in JSON paths: `"C:/path/to/baft"` or `"C:\\path\\to\\baft"`
 - If `loom.exe` is not found, try using `python` as the command:
+
   ```json
   {
     "command": "C:\\path\\to\\baft\\.venv\\Scripts\\python.exe",
     "args": ["-m", "loom.cli.main", "mcp", "--config", "C:\\path\\to\\baft\\configs\\mcp\\itp.yaml"]
   }
   ```
+
 - Ensure NATS is installed or running in Docker Desktop
 
 ---
@@ -478,9 +492,9 @@ Once connected, you also have access to tools for monitoring and quality managem
 Ask Claude to test a worker or run evaluations:
 
 > Test the source processor with this sample text: [text]
-
+>
 > Run the eval suite for the intelligence analyst
-
+>
 > Compare eval results against the baseline
 
 See the [Analyst Guide](ANALYST_GUIDE.md) for detailed workflows.
@@ -490,7 +504,7 @@ See the [Analyst Guide](ANALYST_GUIDE.md) for detailed workflows.
 Failed tasks land in the dead-letter queue. Ask Claude:
 
 > Show me the dead-letter queue
-
+>
 > Replay dead-letter entry DL-042
 
 ### TUI dashboard

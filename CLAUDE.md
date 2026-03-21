@@ -16,7 +16,7 @@ Source of truth for node definitions: `docs/architecture/ITP_MULTI_AGENT_ARCHITE
 
 ## Project structure
 
-```
+```text
 configs/
   workers/              # 13 worker YAML configs (system prompts, I/O schemas, tiers)
     sp_source_processor.yaml      # SP — source processing (local tier)
@@ -100,6 +100,7 @@ docs/
 ## Relationship to Loom
 
 Baft depends on `loom[mcp,duckdb,rag,workshop,tui,otel]` as a package (v0.8.0+). It uses:
+
 - Worker YAML configs loaded by `loom worker` and `loom processor` CLI commands
 - `PipelineOrchestrator` via `loom pipeline` CLI for Tier 2 and Tier 3 pipelines
 - `SchedulerActor` via `loom scheduler` CLI for automated tasks
@@ -120,13 +121,17 @@ The CLI loads backends by fully qualified class path from worker configs.
 ## Pipeline tiers
 
 ### Tier 1 — Quick (itp_quick.yaml)
+
 Direct single-worker dispatch, no orchestration. Used for:
+
 - DE database updates (validate_only, add observations)
 - XV cross-reference checks
 - IN inbox note capture
 
 ### Tier 2 — Standard (itp_standard.yaml)
+
 Sequential pipeline: SP → IA → XV → DE
+
 - **SP** extracts claims from source material
 - **IA** analyzes claims against analytical framework, produces integration spec
 - **XV** validates cross-references and epistemic tags
@@ -135,7 +140,9 @@ Sequential pipeline: SP → IA → XV → DE
 Session context flows via `session_id` through `input_mapping`.
 
 ### Tier 3 — Audit (itp_audit.yaml)
+
 Full audit cycle: TN → [LA + PA + RT parallel] → AS
+
 - **TN** neutralizes ITP-specific terminology for blind review
 - **LA**, **PA**, **RT** run in parallel (Loom auto-detects independence from input_mapping)
 - **AS** synthesizes all three audit outputs with human decision log
@@ -145,6 +152,7 @@ Audit nodes use `audit_id` (not `session_id`) and are blind to analytical framew
 ## Critical silo isolation rules
 
 These are enforced by config — audit independence depends on them:
+
 - **LA, PA, RT**: MUST NOT have any framework data in `knowledge_sources`
 - **AS**: MUST NOT have ITP framework — only audit node outputs + human_decision_log
 - **TN**: MUST ONLY have terminology_registry — nothing else
@@ -197,6 +205,7 @@ uv run ruff check scripts/ pipeline/scripts/
 ## Current state
 
 All configuration and infrastructure is implemented and working:
+
 - 13 worker configs (Batch A core + Batch B audit + Batch C background/scheduled)
 - 3 orchestrator pipeline configs (quick, standard, audit) — all with per-stage `max_retries`
 - Scheduler config with 5 scheduled actors
@@ -217,6 +226,7 @@ All configuration and infrastructure is implemented and working:
 ## Worker config format
 
 All 13 worker configs follow the Loom v0.8.0 worker config schema:
+
 - **`name`** (str, required) — unique worker identifier, matches filename
 - **`description`** (str, required) — one-sentence purpose, shown in Workshop/MCP
 - **`system_prompt`** (str, required) — complete LLM instructions
@@ -252,6 +262,7 @@ export LOOM_TRACE=1  # Optional: full I/O debug logging for pipeline stages
 ## Observability and resilience
 
 ### OpenTelemetry tracing
+
 - `baft.tracing.init_baft_tracing()` initializes OTel with service name `baft-itp`
 - `baft.tracing.get_baft_tracer(scope)` returns a scoped tracer (real or no-op)
 - W3C traceparent propagates through NATS messages via `_trace_context` key
@@ -260,14 +271,18 @@ export LOOM_TRACE=1  # Optional: full I/O debug logging for pipeline stages
 - Safe to call without OTel installed — degrades to no-ops
 
 ### Per-stage retry
+
 All pipeline stages have `max_retries` configured:
+
 - **Local tier** workers (SP, XV, TN, DE): `max_retries: 2` (cheap to retry)
 - **Standard tier** workers (LA, PA, AS): `max_retries: 1`
 - **Frontier tier** workers (IA, RT): `max_retries: 1` (expensive — conservative)
 - Retries only on transient errors (timeouts, worker failures), not validation errors
 
 ### Workshop MCP tools
+
 The MCP gateway exposes Workshop tools under `workshop.*` namespace:
+
 - `workshop.worker.{list,get,update}` — worker config CRUD
 - `workshop.worker.test` — run worker against test payload
 - `workshop.eval.{run,compare}` — eval suite execution + baseline comparison
@@ -275,7 +290,9 @@ The MCP gateway exposes Workshop tools under `workshop.*` namespace:
 - `workshop.deadletter.{list,replay}` — dead-letter inspection + replay (audit trail)
 
 ### TUI dashboard
+
 `loom ui --nats-url nats://localhost:4222` shows live pipeline state:
+
 - Goals panel (status, subtask count, elapsed)
 - Tasks panel (worker type, tier, model, elapsed)
 - Pipeline panel (stage execution with wall time)

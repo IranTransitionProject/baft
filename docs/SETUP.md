@@ -42,7 +42,7 @@ git clone git@github.com:IranTransitionProject/docman.git   # optional
 
 Expected layout:
 
-```
+```text
 ~/IranTransitionProject/          # $ITP_ROOT
 ├── framework/                    # YAML analytical database (live repo)
 ├── loom/                         # Actor-based LLM framework
@@ -231,6 +231,7 @@ uv run loom workshop --port 8080 --nats-url nats://localhost:4222
 ```
 
 Open http://localhost:8080 to access:
+
 - **Worker list** — all 13 workers with tier and status
 - **Test bench** — run any worker against sample inputs
 - **Eval dashboard** — run test suites, compare against golden baselines
@@ -323,6 +324,7 @@ The standard analytical workflow:
 4. **`update_database`** — Persist to the framework
 
 Or use the pipeline tools:
+
 - **`run_standard_pipeline`** — Full SP → IA → XV → DE cycle
 - **`run_audit_pipeline`** — Blind audit before publication
 
@@ -360,7 +362,7 @@ For framework-level troubleshooting, see
 
 ## Architecture overview
 
-```
+```text
 Claude Desktop / Cursor
        │ MCP (stdio or HTTP)
        ▼

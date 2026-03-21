@@ -198,6 +198,7 @@ auditors. It must contain ONLY:
 - Multilingual source handling rules
 
 It must NEVER contain:
+
 - Thesis statements or variable assessments
 - Scenario evaluations or entity analyses
 - "Current priorities" or "high-priority findings"

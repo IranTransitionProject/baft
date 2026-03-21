@@ -11,6 +11,7 @@
 Build the Baft repository from the skeleton provided. Baft is the ITP-specific configuration layer on top of Loom. All architectural decisions are already made — this is implementation work.
 
 **Read before starting:**
+
 1. `CLAUDE.md` — operating rules for this repo
 2. `docs/architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md` — the canonical node spec
 3. `$ITP_ROOT/loom/configs/workers/_template.yaml` — Loom worker config format
@@ -28,6 +29,7 @@ cat $ITP_ROOT/loom/configs/workers/summarizer.yaml
 ```
 
 Understand the schema before writing any worker config. Every worker config needs:
+
 - `name` — matches the tool name exposed via MCP
 - `description` — shown to MCP clients
 - `system_prompt` — full prompt text (multi-line YAML string)
@@ -39,14 +41,16 @@ Understand the schema before writing any worker config. Every worker config need
 ### Step 1.2 — Write worker configs (Batch A: core operational)
 
 Read architecture doc Section "Node Definitions" for each node. Extract:
+
 - "System prompt core" → `system_prompt` field
-- "Input spec" YAML block → `input_schema` 
+- "Input spec" YAML block → `input_schema`
 - "Output spec" YAML block → `output_schema`
 - "Knowledge silo" list → `knowledge_sources`
 
 Write in this order:
 
 **File: `configs/workers/de_database_engineer.yaml`**
+
 - Node: DE (Database Engineer), architecture doc Node 2
 - Tier: local
 - This is a `processor` (non-LLM) type if Loom supports it, otherwise LLM with strict output format
@@ -56,6 +60,7 @@ Write in this order:
 - System prompt: include the mid-session GA trigger behavior
 
 **File: `configs/workers/sp_source_processor.yaml`**
+
 - Node: SP (Source Processor), architecture doc Node 1
 - Tier: local (Haiku)
 - Knowledge: source hierarchy (`itp_source_hierarchy.yaml`), epistemic rules, entity name registry
@@ -64,6 +69,7 @@ Write in this order:
 - CRITICAL: knowledge_sources must NOT include framework module content or analytical data
 
 **File: `configs/workers/ia_intelligence_analyst.yaml`**
+
 - Node: IA (Intelligence Analyst), architecture doc Node 3
 - Tier: frontier (Opus)
 - Knowledge: full framework content (ITB + ISA outputs), full DB snapshot (variables, observations, scenarios, traps, gaps), epistemic rules, standing analytical rules
@@ -72,6 +78,7 @@ Write in this order:
 - This is the longest system prompt — include all standing rules, sophisticated actor default, factional neutrality, anti-Islamophobic framing discipline
 
 **File: `configs/workers/xv_cross_validator.yaml`**
+
 - Node: XV (Cross-Validator)
 - Tier: local (Haiku)
 - Knowledge: entity ID registry only (list of valid IDs and module codes — generate from DB)
@@ -79,6 +86,7 @@ Write in this order:
 - Output: validation result with any broken refs flagged
 
 **File: `configs/workers/in_input_node.yaml`**
+
 - Node: IN (Input Node)
 - Tier: local (Haiku)
 - Knowledge: minimal — just the inbox queue format
@@ -89,6 +97,7 @@ Write in this order:
 
 **CRITICAL SILO ISOLATION RULE:**  
 LA, PA, RT must NOT have any knowledge_sources pointing to:
+
 - `framework/` data directory (any YAML entities)
 - Framework module content (ITB/ISA)
 - ITP-specific documents
@@ -96,6 +105,7 @@ LA, PA, RT must NOT have any knowledge_sources pointing to:
 These nodes are blind. They receive only the neutralized analytical text and their evaluation rubric.
 
 **File: `configs/workers/tn_terminology_neutralizer.yaml`**
+
 - Node: TN, architecture doc Node 3.1
 - Tier: local (Haiku)
 - Knowledge: `pipeline/config/itp_terminology_registry.yaml` ONLY
@@ -104,6 +114,7 @@ These nodes are blind. They receive only the neutralized analytical text and the
 - System prompt: extremely short — it's a mechanical text transformation
 
 **File: `configs/workers/la_logic_auditor.yaml`**
+
 - Node: LA (Logic Auditor), architecture doc Node 4
 - Tier: standard (Sonnet)
 - Knowledge: ROBOTIC-LLM rubric (from repo: `docs/references/ROBOTIC-LLM.md`) — no ITP content
@@ -116,6 +127,7 @@ These nodes are blind. They receive only the neutralized analytical text and the
   - Dimension 4: ITP-specific — "Counterfactual Robustness: Does the analysis consider and explicitly rule out alternative explanations for the observed phenomena?"
 
 **File: `configs/workers/pa_perspective_auditor.yaml`**
+
 - Node: PA (Perspective Auditor), architecture doc Node 5
 - Tier: standard (Sonnet)
 - Knowledge: ROBOTIC-LLM rubric only — no ITP content
@@ -128,6 +140,7 @@ These nodes are blind. They receive only the neutralized analytical text and the
   - Dimension 4: Diaspora vs. internal perspective balance
 
 **File: `configs/workers/rt_red_teamer.yaml`**
+
 - Node: RT (Red Teamer), architecture doc Node 6
 - Tier: frontier (Opus) — or a different provider for Tier 4 (flag this in comments)
 - Knowledge: no ITP framework — adversarial from position of ignorance
@@ -136,6 +149,7 @@ These nodes are blind. They receive only the neutralized analytical text and the
 - System prompt: "You are an adversarial reviewer. Your role is to find the strongest possible objections to the provided analysis. Do not soften challenges. For each challenge, rate strength 1–10 where 10 = the analysis is fundamentally wrong on this point. Output YAML only."
 
 **File: `configs/workers/as_audit_synthesizer.yaml`**
+
 - Node: AS (Audit Synthesizer), architecture doc Node 7
 - Tier: standard (Sonnet)
 - Knowledge: `itp-workspace/human_decision_log.yaml` (for blind-spot detection) — NO ITP framework
@@ -145,6 +159,7 @@ These nodes are blind. They receive only the neutralized analytical text and the
 ### Step 1.4 — Write worker configs (Batch C: scheduled/background)
 
 **File: `configs/workers/sa_session_advisor.yaml`**
+
 - Node: SA (Session Advisor), architecture doc Node 0.1
 - Tier: local (Haiku)
 - Knowledge: `pipeline/config/itp_cognitive_profile.yaml`, tier rules, session transcript (injected at runtime)
@@ -153,6 +168,7 @@ These nodes are blind. They receive only the neutralized analytical text and the
 - Note: receives session transcript via `payload.transcript` field
 
 **File: `configs/workers/wt_watch_tower.yaml`**
+
 - Node: WT (Watch Tower)
 - Tier: standard (Sonnet)
 - Knowledge: `pipeline/config/itp_watch_list.yaml`, channel registry
@@ -161,6 +177,7 @@ These nodes are blind. They receive only the neutralized analytical text and the
 - Output: `watch_results` with per-item findings + agenda_items for AP
 
 **File: `configs/workers/ni_narrative_intelligence.yaml`**
+
 - Node: NI (Narrative Intelligence)
 - Tier: standard (Sonnet)
 - Knowledge: channel registry (faction tags, source tiers), prior analysis statistics
@@ -212,6 +229,7 @@ python pipeline/scripts/itp_import_to_duckdb.py --stats
 ```
 
 Fix any import errors. Common issues:
+
 - YAML keys don't match expected entity type names → update `ENTITY_YAML_FILES` dict in script
 - Missing `id` field on some entities → add fallback ID generation (use list index)
 - Encoding issues → ensure `encoding="utf-8"` everywhere
@@ -221,6 +239,7 @@ Fix any import errors. Common issues:
 These are short files needed by workers:
 
 **`pipeline/config/itp_source_hierarchy.yaml`** — 5-tier source taxonomy:
+
 - Tier 1: Official regime primary sources (KHAMENEI.IR, state broadcaster, official agencies)
 - Tier 2: Semi-official / regime-affiliated media with editorial function (Fars, Tasnim, ISNA, IRNA)
 - Tier 3: Independent media, diaspora outlets with transparent sourcing (Iran International, IranWire)
@@ -229,6 +248,7 @@ These are short files needed by workers:
 Include: calibration rules per tier, how epistemic_tag maps to tier
 
 **`pipeline/config/itp_epistemic_rules.yaml`** — tagging definitions:
+
 - Fact: Directly stated in Tier 1–2 source, independently corroborated
 - Inference: Logically follows from Facts with stated reasoning chain
 - Uncertain: Plausible but competing explanations exist; single source or Tier 3–4
@@ -236,6 +256,7 @@ Include: calibration rules per tier, how epistemic_tag maps to tier
 Include: confidence band definitions (High/Medium/Low/Marginal) and combination rules
 
 **`pipeline/config/itp_cognitive_profile.yaml`** — SA node input:
+
 - Session duration thresholds: flag at 90min, alert at 150min, critical at 240min
 - Hyperfocus indicators: 3+ consecutive exchanges on same sub-topic
 - Fatigue markers: increasing terseness, typo frequency, "good enough" language
@@ -244,6 +265,7 @@ Include: confidence band definitions (High/Medium/Low/Marginal) and combination 
 - Bias patterns: known tendency to dismiss RT challenges without new evidence
 
 **`pipeline/config/itp_entity_name_registry.yaml`** — generate from framework data:
+
 ```bash
 python3 -c "
 import yaml
@@ -253,6 +275,7 @@ data = yaml.safe_load(open('$ITP_ROOT/framework/data/variables.yaml'))
 # Write to pipeline/config/itp_entity_name_registry.yaml
 "
 ```
+
 At minimum: all entity IDs, module codes (ITB-A1 through ITB-A13, ISA sections), observation IDs, scenario IDs.
 
 ### Step 2.3 — Create workspace directories
@@ -283,11 +306,13 @@ Note: ROBOTIC-LLM.md path is wherever Hooman has it. Ask if unclear.
 **Function:** `run_streamable_http()`
 
 Read the current implementation first:
+
 ```bash
 cat $ITP_ROOT/loom/src/loom/mcp/server.py | grep -A 40 "def run_streamable_http"
 ```
 
 Replace the stub with a working implementation. The FastMCP library should provide an ASGI app wrapper. Check what's available:
+
 ```bash
 cd $ITP_ROOT/loom
 python3 -c "import mcp.server.fastmcp; help(mcp.server.fastmcp)" 2>/dev/null | head -50
@@ -296,6 +321,7 @@ python3 -c "import mcp.server.fastmcp; help(mcp.server.fastmcp)" 2>/dev/null | h
 If `FastMCP.from_server()` or similar exists, use it. Otherwise use the `mcp.server.streamable_http` module directly. Research the correct pattern from mcp-python documentation.
 
 After fixing, validate:
+
 ```bash
 cd $ITP_ROOT/baft
 loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765 &
@@ -305,6 +331,7 @@ kill %1
 ```
 
 Commit the fix to the Loom repo separately:
+
 ```bash
 cd $ITP_ROOT/loom
 git add src/loom/mcp/server.py

@@ -20,7 +20,7 @@ The primary interface is a Claude chat session connected to the Baft MCP gateway
 
 ## Repository structure
 
-```
+```text
 configs/
   mcp/
     itp.yaml                    # MCP gateway — exposes Baft workers as tools

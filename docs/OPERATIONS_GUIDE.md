@@ -6,7 +6,7 @@
 
 ## Architecture overview
 
-```
+```text
 Claude Desktop / Claude Code / Workshop UI
        | MCP (stdio or HTTP)
        v
@@ -31,6 +31,7 @@ Claude Desktop / Claude Code / Workshop UI
 ```
 
 All communication between components flows through NATS. The only exceptions are:
+
 - Workshop tools (direct component calls, no NATS needed)
 - DuckDB queries (direct database access)
 - MCP resources (direct file reads)
@@ -75,6 +76,7 @@ init_baft_tracing()  # reads OTEL_EXPORTER_OTLP_ENDPOINT from env
 | LLMWorker | `worker.execute_with_tools` | `model`, `round`, `tokens` |
 
 **Trace context propagation:**
+
 - W3C `traceparent` headers are injected into NATS messages under `_trace_context`
 - Spans link across actor boundaries for full pipeline traces
 - A single Tier 2 pipeline run produces ~6-8 connected spans
@@ -96,6 +98,7 @@ export LOOM_TRACE=1
 This logs the full payload for every message sent and received by actors. Large payloads are truncated by default. Useful for debugging schema mismatches and data flow issues.
 
 **When to use LOOM_TRACE vs. OTel:**
+
 - Use `LOOM_TRACE` for debugging a specific worker's input/output
 - Use OTel for understanding timing and flow across an entire pipeline
 
@@ -119,6 +122,7 @@ uv run loom ui --nats-url nats://localhost:4222
 The TUI subscribes to `loom.>` wildcard and never publishes. It's a pure observer — safe to run alongside production actors at any time.
 
 **What to look for:**
+
 - Tasks stuck in "running" for longer than `timeout_seconds` — potential LLM backend issues
 - Goals with 0 subtasks — decomposition may have failed
 - Pipeline stages showing repeated attempts — retries are firing (check the stage's max_retries)
@@ -178,11 +182,13 @@ All pipeline stages have automatic retry for transient failures.
 ### What gets retried
 
 Only transient errors trigger retries:
+
 - **Timeout** — worker didn't respond within `timeout_seconds`
 - **Worker error** — LLM returned malformed JSON, connection dropped
 - **NATS delivery failure** — message couldn't be delivered
 
 What does NOT get retried:
+
 - **Validation error** — output failed schema validation (this is a config issue)
 - **Pipeline mapping error** — input_mapping references a missing field
 - **Condition failure** — stage condition evaluated to false
@@ -199,6 +205,7 @@ stages:
 ```
 
 **Guidelines:**
+
 - Local tier (Ollama): 2-3 retries is safe — fast and free
 - Standard tier (Sonnet): 1-2 retries — moderate cost
 - Frontier tier (Opus): 1 retry only — expensive per call
@@ -213,11 +220,13 @@ Tasks that can't be routed (wrong worker_type, tier not available) or that fail 
 ### Inspecting dead letters
 
 **Via MCP tools:**
-```
+
+```text
 workshop.deadletter.list  — returns all dead-letter entries with reason and timestamp
 ```
 
 **Via CLI:**
+
 ```bash
 uv run loom dead-letter monitor --nats-url nats://localhost:4222
 ```
@@ -228,11 +237,13 @@ Navigate to http://localhost:8080/dead-letters
 ### Replaying a dead letter
 
 **Via MCP tools:**
-```
+
+```text
 workshop.deadletter.replay  — re-submits the task to the router
 ```
 
 Every replay is recorded in the audit trail (`ReplayRecord`) with:
+
 - Original task details
 - Original failure reason
 - Replay timestamp
@@ -277,22 +288,29 @@ workshop.eval.run  with worker name + test suite
 ### Baselines and regression detection
 
 **Setting a baseline:**
+
 1. Run an eval suite and confirm the results are acceptable
 2. Promote that run as the golden baseline:
-   ```
+
+   ```text
    WorkshopDB.promote_baseline(worker_name, run_id)
    ```
+
    Or use the Workshop UI "Promote to baseline" button.
 
 **Comparing against baseline:**
+
 1. Run a new eval (after changing a system prompt, switching models, etc.)
 2. Compare against the baseline:
-   ```
+
+   ```text
    workshop.eval.compare  with worker name + new run_id
    ```
+
 3. Results show per-case regression/improvement analysis
 
 **When to set a new baseline:**
+
 - After confirming that a system prompt change improves quality
 - After switching to a new LLM model (and verifying quality)
 - After the weekly governance audit confirms acceptable quality
@@ -302,11 +320,12 @@ workshop.eval.run  with worker name + test suite
 
 Before changing a worker config, check what breaks:
 
-```
+```text
 workshop.impact.analyze  with worker name
 ```
 
 Returns:
+
 - **Pipelines affected** — which pipelines use this worker
 - **Direct stages** — which pipeline stages call this worker
 - **Downstream stages** — what depends on this worker's output
@@ -411,6 +430,7 @@ uv run pytest tests/test_baft_workers.py::TestSiloIsolation -v
 ```
 
 This checks:
+
 - LA, PA, RT have NO access to framework silos
 - TN has ONLY terminology_registry + constitution
 - AS has NO framework content
@@ -434,6 +454,7 @@ If any test fails, the audit independence is compromised. Do not run publication
 ### Scaling options
 
 **Horizontal (no code changes):**
+
 ```bash
 # Run 3 SP workers for parallel source processing
 uv run loom worker --config configs/workers/sp_source_processor.yaml --tier local &
@@ -447,6 +468,7 @@ NATS queue groups ensure each task goes to exactly one worker instance.
 Pipelines support `max_concurrent_goals: 4` (already configured). Multiple analysts can work simultaneously.
 
 **Model selection:**
+
 | Model | Speed | Quality | Cost |
 |-------|-------|---------|------|
 | `llama3.2:3b` | Fastest | Good for mechanical tasks | Free |

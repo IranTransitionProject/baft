@@ -36,6 +36,7 @@ DE (Database Engineer) was the only worker with a concrete YAML/JSON example in 
 **Root cause:** The `output_schema` in the worker config is consumed by the test harness for scoring. It is never injected into the model's context. The model's only guidance is the system_prompt. For models ≤10B parameters, prose descriptions of nested structures are insufficient. They need to see the shape.
 
 **Rule:** Every system_prompt must end with an `## Output format` section containing:
+
 1. "Output ONLY valid JSON matching this exact structure. No preamble, no explanation, no code fences, no markdown."
 2. A one-line JSON example showing every required field with realistic placeholder values.
 3. The example must use the exact key names from `output_schema`.
@@ -45,6 +46,7 @@ DE (Database Engineer) was the only worker with a concrete YAML/JSON example in 
 ### 2.2 JSON over YAML for model output
 
 **Finding:** YAML is treacherous as a model output format. Problems encountered:
+
 - Indentation sensitivity: a single misaligned space makes the output unparseable.
 - Type coercion surprises: bare `yes`/`no` become `true`/`false`; bare numbers lose string type; timestamps without quotes get interpreted as datetime objects.
 - Small models frequently mix YAML and prose, or embed YAML inside code fences inconsistently.
@@ -62,6 +64,7 @@ SP has the longest system_prompt (~60 lines of extraction instructions) and the 
 **Finding:** Building the full pipeline before testing whether candidate models can even produce compliant output for each role is backwards. The audition script (`audition_models.py`) should be the first thing you build after the worker configs.
 
 **Pattern:**
+
 1. Write worker configs (system_prompt + schemas)
 2. Write test payloads for each role
 3. Run audition against local models
@@ -73,6 +76,7 @@ SP has the longest system_prompt (~60 lines of extraction instructions) and the 
 Many models prepend conversational text before their structured output ("Here is the result:", "Based on the input..."). This is the most common failure mode after wrong-key failures.
 
 **Mitigation strategies (cumulative):**
+
 - Include "No preamble, no explanation" in the output format instruction.
 - Set temperature to 0.1 (not 0.0 — some APIs reject 0.0).
 - In the audition harness, strip common preamble patterns before parsing.
@@ -197,6 +201,7 @@ To adapt Loom for a different analytical domain, you need:
 ### 5.3 What's domain-generic vs. domain-specific
 
 **Domain-generic (reusable as-is or with minor edits):**
+
 - DE (Database Engineer) — just change entity ID formats and file paths
 - XV (Cross-Validator) — just change the entity registry
 - IN (Input Node) — routing rules need customization but structure is generic
@@ -204,6 +209,7 @@ To adapt Loom for a different analytical domain, you need:
 - AS (Audit Synthesizer) — synthesis logic is generic
 
 **Domain-specific (requires full rewrite):**
+
 - SP (Source Processor) — extraction rules depend entirely on source types
 - IA (Intelligence Analyst) — the core analytical engine, fully domain-specific
 - TN (Terminology Neutralizer) — registry is 100% project-specific
@@ -211,6 +217,7 @@ To adapt Loom for a different analytical domain, you need:
 - NI (Narrative Intelligence) — corpus analysis patterns are domain-specific
 
 **Domain-generic but rubric-specific:**
+
 - LA (Logic Auditor) — generic rubric works across domains, but you may want to add domain-specific evaluation dimensions
 - PA (Perspective Auditor) — same pattern
 - RT (Red Teamer) — adversarial approach is generic; challenge targets may need domain tuning

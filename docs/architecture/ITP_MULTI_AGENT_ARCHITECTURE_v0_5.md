@@ -14,6 +14,7 @@ Loom is further along than you likely realize. The core infrastructure — actor
 The conversational UI → MCP → Loom engine design is the right call. Loom's MCP server already exists and exposes workers as tools. A Claude chat session connected to the Loom MCP gateway gives you the HI-A role with full tool access to the analytical engine. The remaining infrastructure work is small. The configuration work is larger but tractable.
 
 **Revised effort estimate:**
+
 - Code gaps to close: ~3–4 items, none large
 - Configuration gaps to fill: ~18 YAML files
 - Architecture doc gaps to resolve: 4 Open Questions can now be closed
@@ -104,6 +105,7 @@ Ordered by blocking priority.
 **Current state:** Only `docman.yaml` exists, exposing document processing workers. No ITP-specific MCP config.
 
 **What's needed:** A `configs/mcp/itp.yaml` that exposes:
+
 - Workers: SP, IA, DE, XV, TN (the core operational nodes)
 - Pipelines: SP→IA→DE (standard analytical pipeline), SP→TN→LA→PA→RT→AS (audit pipeline)
 - Queries: ITP database search (variables, observations, gaps, briefs, scenarios)
@@ -121,7 +123,7 @@ This is the single config file that turns Loom into "the ITP engine" from the ch
 
 **Required files:**
 
-```
+```text
 configs/workers/sp_source_processor.yaml
 configs/workers/ia_intelligence_analyst.yaml
 configs/workers/tn_terminology_neutralizer.yaml
@@ -242,6 +244,7 @@ HI-A sessions are the best source for new entries — EP and DE should flag term
 **Current state:** The NRM function is defined in Addendum A but has no implementation. It sits between Source Channels and the SP/WT nodes.
 
 **What's needed:** A processor (not a worker — no LLM required) that:
+
 1. Accepts `normalized_source_entry` objects from multiple SC outputs
 2. Deduplicates by content hash + timestamp window
 3. Assigns `source_tier` from the channel registry
@@ -258,8 +261,9 @@ HI-A sessions are the best source for new entries — EP and DE should flag term
 
 **Current state:** `TelegramIngestor` reads and normalizes Telegram JSON exports. But there's no script that converts its output into SP's `source_bundle` input format, and no pipeline config that routes the output to SP/WT.
 
-**What's needed:** 
-- ~100-line converter script (specified in Addendum A) 
+**What's needed:**
+
+- ~100-line converter script (specified in Addendum A)
 - A pipeline config or scheduler entry that triggers SP processing on new Telegram bundles
 - Channel registry integration so each post inherits its channel's `source_tier` and `faction_tag`
 
@@ -292,6 +296,7 @@ This is the highest-value near-term build item after the blocking gaps — it's 
 **Note:** Partially overlaps with Gap 1. Gap 1 is about completing the function. This gap is about the broader deployment consideration — running Loom as a persistent HTTP server accessible to claude.ai's MCP configuration.
 
 **Requirements:**
+
 - Persistent process (not per-request) — NATS and Redis must stay connected
 - TLS if exposed beyond localhost (claude.ai will require HTTPS for remote MCPs)
 - Authentication header support (claude.ai sends bearer tokens)
@@ -310,6 +315,7 @@ Loom's `core/contracts.py` provides JSON Schema validation for worker I/O. The I
 ### OQ #8 (ROBOTIC-LLM integration) — Closed
 
 The ROBOTIC-LLM three-dimension rubric maps directly to the LA and PA nodes:
+
 - **Factual & Historical Accuracy** → LA (Logic Auditor)
 - **Causal Logic & Second-Order Effects** → LA (Logic Auditor)  
 - **Perspective Bias** → PA (Perspective Auditor)
@@ -330,7 +336,7 @@ The MCP design eliminates the handoff friction in Phase 1. The claude.ai chat se
 
 This is the key design addition in v0.5.
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                  HUMAN INTERFACE LAYER                   │
 │                                                           │
@@ -404,7 +410,8 @@ This is the key design addition in v0.5.
 ### How the chat UI interaction works in practice
 
 **Tier 1 (Quick) — database operation:**
-```
+
+```text
 Human: "Update SV-03 trend to deteriorating"
 HI-A (Claude): Calls tool update_database({action: update, entity_id: SV-03, fields: {trend: deteriorating}})
 Loom: Routes to DE worker → validates → commits → returns result
@@ -412,7 +419,8 @@ HI-A: Reports result with validation status
 ```
 
 **Tier 2 (Standard) — new source integration:**
-```
+
+```text
 Human: "I have new Khamenei.ir content — [pastes text]"
 HI-A (Claude): Calls tool process_sources({source_bundle: [...]})
 Loom: SP worker extracts claims → returns extracted_claims
@@ -426,7 +434,8 @@ Loom: DE worker commits
 ```
 
 **Tier 3 (Publication) — new brief, full audit:**
-```
+
+```text
 Human: "Ready to run audit on the Mirbagheri analysis"
 HI-A (Claude): Calls tool run_audit({analytical_input: [IA output]})
 Loom: Orchestrator runs TN → LA + PA + RT (parallel) → AS → returns audit_report
@@ -499,7 +508,7 @@ HI-A: Logs decisions, calls update_database with any amendments
 
 After Sprint 1–2:
 
-```
+```text
 loom/
   configs/
     mcp/
