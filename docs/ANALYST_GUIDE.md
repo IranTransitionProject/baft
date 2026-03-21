@@ -255,7 +255,7 @@ For more hands-on worker management, you can use the Workshop web interface:
 uv run loom workshop --port 8080
 ```
 
-Open http://localhost:8080 in your browser. The Workshop provides:
+Open <http://localhost:8080> in your browser. The Workshop provides:
 
 - **Worker list** — all 13 workers with their tier, description, and status
 - **Test bench** — test any worker with custom inputs and see full outputs

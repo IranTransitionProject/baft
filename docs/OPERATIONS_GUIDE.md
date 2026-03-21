@@ -82,7 +82,7 @@ init_baft_tracing()  # reads OTEL_EXPORTER_OTLP_ENDPOINT from env
 - A single Tier 2 pipeline run produces ~6-8 connected spans
 
 **Viewing traces:**
-Open http://localhost:16686 and search for service `baft-itp`. Filter by operation name (e.g., `pipeline.execute_stage`) to find specific pipeline runs.
+Open <http://localhost:16686> and search for service `baft-itp`. Filter by operation name (e.g., `pipeline.execute_stage`) to find specific pipeline runs.
 
 **When OTel is not installed:**
 All tracing functions degrade to no-ops. No performance impact, no errors. You can safely leave tracing calls in production code without the OTel SDK installed.
@@ -232,7 +232,7 @@ uv run loom dead-letter monitor --nats-url nats://localhost:4222
 ```
 
 **Via Workshop UI:**
-Navigate to http://localhost:8080/dead-letters
+Navigate to <http://localhost:8080/dead-letters>
 
 ### Replaying a dead letter
 

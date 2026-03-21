@@ -230,7 +230,7 @@ uv run loom workshop --port 8080
 uv run loom workshop --port 8080 --nats-url nats://localhost:4222
 ```
 
-Open http://localhost:8080 to access:
+Open <http://localhost:8080> to access:
 
 - **Worker list** — all 13 workers with tier and status
 - **Test bench** — run any worker against sample inputs
@@ -274,7 +274,7 @@ docker run -d --name jaeger \
 export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"
 ```
 
-Traces are visible at http://localhost:16686. Search for service `baft-itp`.
+Traces are visible at <http://localhost:16686>. Search for service `baft-itp`.
 
 Tracing is fully optional — when the OTel SDK is not configured, all
 tracing calls are no-ops with zero overhead.
