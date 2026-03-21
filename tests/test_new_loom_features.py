@@ -67,7 +67,7 @@ class TestTracingIntegration:
 
         carrier: dict = {}
         inject_trace_context(carrier)
-        ctx = extract_trace_context(carrier)
+        extract_trace_context(carrier)
         # Without OTel installed: carrier unchanged, ctx is None
         # With OTel installed: carrier may have _trace_context key
         assert isinstance(carrier, dict)
@@ -98,9 +98,7 @@ class TestPerStageRetries:
                 f"Stage '{stage['id']}' in {config_name} missing max_retries"
             )
             assert isinstance(stage["max_retries"], int)
-            assert stage["max_retries"] >= 1, (
-                f"Stage '{stage['id']}' max_retries should be >= 1"
-            )
+            assert stage["max_retries"] >= 1, f"Stage '{stage['id']}' max_retries should be >= 1"
 
     def test_standard_sp_has_retries(self):
         config = _load_yaml(ORCHESTRATORS_DIR / "itp_standard.yaml")
@@ -169,9 +167,7 @@ class TestWorkshopMCPTools:
         workshop = config["tools"]["workshop"]
         enabled = set(workshop.get("enable", []))
         required = {"worker", "test", "eval", "impact"}
-        assert required.issubset(enabled), (
-            f"Workshop must enable {required}, found {enabled}"
-        )
+        assert required.issubset(enabled), f"Workshop must enable {required}, found {enabled}"
 
     def test_workshop_enables_deadletter(self, config):
         """Dead-letter tools are enabled for governance audit trail."""
@@ -228,8 +224,16 @@ class TestConfigImpactAnalysis:
         # Simulate a pipeline with stages in get_impact's expected format
         stages = [
             {"name": "sp", "worker_type": "sp_source_processor", "input_mapping": {"x": "goal.x"}},
-            {"name": "ia", "worker_type": "ia_intelligence_analyst", "input_mapping": {"y": "sp.output"}},
-            {"name": "de", "worker_type": "de_database_engineer", "input_mapping": {"z": "ia.result"}},
+            {
+                "name": "ia",
+                "worker_type": "ia_intelligence_analyst",
+                "input_mapping": {"y": "sp.output"},
+            },
+            {
+                "name": "de",
+                "worker_type": "de_database_engineer",
+                "input_mapping": {"z": "ia.result"},
+            },
         ]
         deps = _infer_dependencies(stages)
         assert "sp" in deps["ia"]
