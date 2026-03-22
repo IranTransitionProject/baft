@@ -8,24 +8,29 @@ the quality of baft analytical pipeline outputs. They require:
 Run: uv run pytest tests/test_deepeval_analysis.py -v
 Skip: uv run pytest tests/ -m "not deepeval"
 """
+
 import pytest
 
 from tests.conftest import skip_no_deepeval
 
 pytestmark = [pytest.mark.deepeval, skip_no_deepeval]
 
+
 @pytest.fixture(scope="module")
 def judge_model():
     from deepeval.models import OllamaModel
+
     return OllamaModel(
         model="command-r7b:latest",
         base_url="http://localhost:11434",
     )
 
+
 @pytest.fixture(scope="module")
 def claim_extraction_quality(judge_model):
     from deepeval.metrics import GEval
     from deepeval.test_case import LLMTestCaseParams
+
     return GEval(
         name="Claim Extraction Quality",
         criteria=(
@@ -46,10 +51,12 @@ def claim_extraction_quality(judge_model):
         threshold=0.6,
     )
 
+
 @pytest.fixture(scope="module")
 def synthesis_faithfulness(judge_model):
     from deepeval.metrics import GEval
     from deepeval.test_case import LLMTestCaseParams
+
     return GEval(
         name="Synthesis Faithfulness",
         criteria=(
@@ -68,6 +75,7 @@ def synthesis_faithfulness(judge_model):
         model=judge_model,
         threshold=0.6,
     )
+
 
 def test_sp_claim_extraction(judge_model, claim_extraction_quality):
     """SP worker should extract relevant claims with proper epistemic tagging."""
@@ -89,10 +97,11 @@ def test_sp_claim_extraction(judge_model, claim_extraction_quality):
             '   "epistemic_tag": "inference", "source_tier": 3},'
             '  {"text": "Some economists skeptical about effectiveness", '
             '   "epistemic_tag": "uncertain", "source_tier": 3}'
-            ']}'
+            "]}"
         ),
     )
     assert_test(test_case, [claim_extraction_quality])
+
 
 def test_as_synthesis_faithfulness(judge_model, synthesis_faithfulness):
     """AS synthesis should faithfully represent audit node outputs."""
