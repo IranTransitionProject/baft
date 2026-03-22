@@ -66,6 +66,9 @@ uv sync --all-extras
 cd ~/IranTransitionProject/baft
 uv sync --extra dev
 
+# Optional: install DeepEval for LLM output quality evaluation tests
+uv sync --extra eval
+
 # Verify
 uv run python -c "import loom; print(f'Loom {loom.__version__}')"
 uv run python -c "import baft; print('Baft OK')"

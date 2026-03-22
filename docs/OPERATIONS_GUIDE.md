@@ -481,6 +481,58 @@ Pipelines support `max_concurrent_goals: 4` (already configured). Multiple analy
 
 ---
 
+## LLM quality evaluation tests (DeepEval)
+
+### Purpose
+
+DeepEval tests provide standardized, repeatable quality metrics for analytical outputs. They use a local Ollama model as judge to evaluate whether pipeline outputs meet quality criteria -- complementing (not replacing) the operational eval baselines in Workshop.
+
+### Setup
+
+```bash
+# Install the eval extra
+uv sync --extra eval
+
+# Ensure Ollama is running with the judge model
+ollama pull command-r7b:latest
+ollama serve
+```
+
+DeepEval telemetry is disabled by default via `tests/conftest.py`.
+
+### Running eval tests
+
+```bash
+# Run only DeepEval tests
+uv run pytest tests/ -m deepeval -v
+
+# Skip DeepEval tests (default for CI / quick iteration)
+uv run pytest tests/ -m "not deepeval"
+
+# Run the specific eval test file
+uv run pytest tests/test_deepeval_analysis.py -v
+```
+
+Tests are automatically skipped if `deepeval` is not installed or Ollama is not reachable.
+
+### Available metrics
+
+| Metric | Tests | What it measures |
+|--------|-------|------------------|
+| Claim Extraction Quality | `test_sp_claim_extraction` | SP extracts factual claims with correct epistemic tags and source attribution |
+| Synthesis Faithfulness | `test_as_synthesis_faithfulness` | AS synthesis faithfully represents audit inputs without hallucination |
+
+### Writing new eval tests
+
+1. Add a `GEval` metric fixture with criteria, evaluation steps, and threshold
+2. Create a test case with `input` (source material) and `actual_output` (pipeline output)
+3. Use `assert_test(test_case, [metric])` to run the evaluation
+4. Mark with `pytestmark = [pytest.mark.deepeval, skip_no_deepeval]`
+
+All eval tests use `command-r7b:latest` via Ollama as judge -- no cloud API keys required.
+
+---
+
 *For analyst-facing guidance, see the [Analyst Guide](ANALYST_GUIDE.md).*
 *For initial setup, see the [Setup Guide](SETUP.md).*
 *For Claude Desktop connection, see the [Claude Desktop Guide](CLAUDE_DESKTOP_GUIDE.md).*

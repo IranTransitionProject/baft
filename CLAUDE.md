@@ -172,8 +172,18 @@ These are enforced by config — audit independence depends on them:
 # Loom is resolved from ../loom via [tool.uv.sources] in pyproject.toml
 uv sync --extra dev
 
+# Optional: install DeepEval for LLM output quality evaluation tests
+# Uses Ollama as judge model (no cloud API needed)
+uv sync --extra eval
+
 # Run unit tests (no infrastructure needed)
-uv run pytest tests/ -v -m "not e2e"
+uv run pytest tests/ -v -m "not e2e and not deepeval"
+
+# Run DeepEval quality evaluation tests (needs Ollama with command-r7b)
+uv run pytest tests/ -m deepeval -v
+
+# Skip DeepEval tests explicitly
+uv run pytest tests/ -m "not deepeval"
 
 # Run with infrastructure (needs NATS + Loom installed)
 # Terminal 1: docker run -p 4222:4222 nats:latest
