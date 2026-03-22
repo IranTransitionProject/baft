@@ -297,7 +297,7 @@ This is the highest-value near-term build item after the blocking gaps — it's 
 
 **Requirements:**
 
-- Persistent process (not per-request) — NATS and Redis must stay connected
+- Persistent process (not per-request) — NATS and Valkey must stay connected
 - TLS if exposed beyond localhost (claude.ai will require HTTPS for remote MCPs)
 - Authentication header support (claude.ai sends bearer tokens)
 - For local use (Claude Code on same machine), stdio is fine indefinitely
@@ -484,7 +484,7 @@ HI-A: Logs decisions, calls update_database with any amendments
 
 ### Newly opened
 
-**OQ #17 (Knowledge silo update frequency):** The IA worker loads framework YAML at task time. As the database changes (DE commits), the silo content becomes stale mid-session. Solution options: (a) DuckDB live query instead of file load, (b) worker reads current file at each invocation (default Loom behavior — acceptable for YAML files), (c) Redis-cached snapshot with TTL. Recommendation: (b) is fine for Phase 1. Evaluate (a) when DuckDB import is operational.
+**OQ #17 (Knowledge silo update frequency):** The IA worker loads framework YAML at task time. As the database changes (DE commits), the silo content becomes stale mid-session. Solution options: (a) DuckDB live query instead of file load, (b) worker reads current file at each invocation (default Loom behavior — acceptable for YAML files), (c) Valkey-cached snapshot with TTL. Recommendation: (b) is fine for Phase 1. Evaluate (a) when DuckDB import is operational.
 
 **OQ #18 (Streamable HTTP auth for claude.ai MCP):** When claude.ai connects to a custom MCP server, it sends an OAuth bearer token. Loom's HTTP transport (when completed) needs to validate this. The mcp-python library handles token verification in its streamable HTTP transport layer — this is handled by the library, not custom code. But it needs a secret configured. Track when Gap 1 is resolved.
 

@@ -389,7 +389,7 @@ Returns:
 | `OLLAMA_URL` | For local tier | `http://localhost:11434` | Ollama endpoint |
 | `OLLAMA_MODEL` | No | `llama3.2:3b` | Default local model |
 | `NATS_URL` | Yes | `nats://localhost:4222` | NATS server |
-| `REDIS_URL` | No | `redis://localhost:6379` | Redis (for checkpoints) |
+| `REDIS_URL` | No | `redis://localhost:6379` | Valkey (for checkpoints) |
 | `BAFT_WORKSPACE` | No | `$ITP_ROOT/baft/itp-workspace` | Working directory |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | No | — | OTel collector (e.g., `http://localhost:4317`) |
 | `LOOM_TRACE` | No | — | Set to `1` for full I/O debug logging |

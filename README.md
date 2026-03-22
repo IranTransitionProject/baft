@@ -1,6 +1,7 @@
 # Baft — ITP Analytical Engine
 
 [![CI](https://github.com/IranTransitionProject/baft/actions/workflows/ci.yml/badge.svg)](https://github.com/IranTransitionProject/baft/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/IranTransitionProject/baft/graph/badge.svg)](https://codecov.io/github/IranTransitionProject/baft)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
@@ -77,7 +78,7 @@ docs/
 - [Loom](https://github.com/IranTransitionProject/loom) cloned as sibling directory (`../loom`)
 - [Ollama](https://ollama.com/) for local-tier workers
 - NATS server (`brew install nats-server` or Docker)
-- Redis (`brew install redis` or Docker) — optional, for checkpoints
+- Valkey (`brew install valkey` or Docker) — optional, for checkpoints
 - Anthropic API key (`export ANTHROPIC_API_KEY=sk-ant-...`) — for standard/frontier tier
 - `ITP_ROOT` env var set to the project root (parent of `framework/`, `loom/`, `baft/`)
 
