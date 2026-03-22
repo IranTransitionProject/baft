@@ -267,8 +267,15 @@ export LOOM_TRACE=1  # Optional: full I/O debug logging for pipeline stages
 - `baft.tracing.get_baft_tracer(scope)` returns a scoped tracer (real or no-op)
 - W3C traceparent propagates through NATS messages via `_trace_context` key
 - Spans on: actor message processing, router dispatch, pipeline stages, LLM calls
+- LLM call spans include `gen_ai.*` attributes per OTel GenAI semantic conventions (`gen_ai.system`, `gen_ai.request.model`, `gen_ai.response.model`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens`)
+- `LOOM_TRACE_CONTENT=1` records prompt/completion text as OTel span events
 - Requires `OTEL_EXPORTER_OTLP_ENDPOINT` env var (e.g. Jaeger at `http://localhost:4317`)
 - Safe to call without OTel installed — degrades to no-ops
+
+### Code coverage
+
+- CI uploads coverage to Codecov; badge displayed on README
+- Run locally: `uv run pytest --cov=baft --cov-report=term-missing`
 
 ### Per-stage retry
 

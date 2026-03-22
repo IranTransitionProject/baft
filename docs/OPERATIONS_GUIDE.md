@@ -73,7 +73,7 @@ init_baft_tracing()  # reads OTEL_EXPORTER_OTLP_ENDPOINT from env
 | PipelineOrchestrator | `pipeline.execute_stage` | `stage_id`, `worker_type`, `attempt` |
 | MCPBridge | `mcp.dispatch_and_wait` | `tool_name`, `timeout` |
 | OrchestratorActor | `orchestrator.decompose`, `.dispatch`, `.collect`, `.synthesize` | `goal_id` |
-| LLMWorker | `worker.execute_with_tools` | `model`, `round`, `tokens` |
+| LLMWorker | `worker.execute_with_tools` | `model`, `round`, `tokens`, `gen_ai.system`, `gen_ai.request.model`, `gen_ai.response.model`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens` |
 
 **Trace context propagation:**
 
@@ -100,6 +100,7 @@ This logs the full payload for every message sent and received by actors. Large 
 **When to use LOOM_TRACE vs. OTel:**
 
 - Use `LOOM_TRACE` for debugging a specific worker's input/output
+- Use `LOOM_TRACE_CONTENT=1` to record prompt/completion text as OTel span events (pairs with full OTel tracing)
 - Use OTel for understanding timing and flow across an entire pipeline
 
 ### 3. TUI dashboard (real-time monitoring)
@@ -393,6 +394,7 @@ Returns:
 | `BAFT_WORKSPACE` | No | `$ITP_ROOT/baft/itp-workspace` | Working directory |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | No | — | OTel collector (e.g., `http://localhost:4317`) |
 | `LOOM_TRACE` | No | — | Set to `1` for full I/O debug logging |
+| `LOOM_TRACE_CONTENT` | No | — | Set to `1` to record prompt/completion text in OTel span events |
 
 ### Key configuration files
 

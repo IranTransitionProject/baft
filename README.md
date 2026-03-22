@@ -90,7 +90,7 @@ uv sync --extra dev
 
 # 2. Infrastructure
 nats-server &
-redis-server &
+valkey-server &
 
 # 3. Import ITP data to DuckDB (first run)
 uv run python pipeline/scripts/itp_import_to_duckdb.py

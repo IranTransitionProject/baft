@@ -345,7 +345,7 @@ cd $ITP_ROOT/baft
 
 # Start infrastructure
 nats-server &
-redis-server &
+valkey-server &
 sleep 1
 
 # Start DE worker only (Tier 1 test)
