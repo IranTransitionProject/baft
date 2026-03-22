@@ -9,6 +9,7 @@ Run: uv run pytest tests/test_deepeval_analysis.py -v
 Skip: uv run pytest tests/ -m "not deepeval"
 """
 import pytest
+
 from tests.conftest import skip_no_deepeval
 
 pytestmark = [pytest.mark.deepeval, skip_no_deepeval]

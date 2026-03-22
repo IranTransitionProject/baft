@@ -1,5 +1,6 @@
 """Shared test fixtures and markers for baft tests."""
 import os
+
 import pytest
 
 os.environ.setdefault("DEEPEVAL_TELEMETRY_OPT_OUT", "YES")
@@ -14,7 +15,7 @@ def _ollama_available() -> bool:
 
 def _deepeval_available() -> bool:
     try:
-        import deepeval
+        import deepeval  # noqa: F401
         return True
     except ImportError:
         return False
