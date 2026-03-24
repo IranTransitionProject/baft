@@ -29,10 +29,12 @@ jobs:
         uses: astral-sh/setup-uv@v4
 
       - name: Install docs tooling
-        run: uv pip install mkdocs-material mkdocstrings[python] --system
+        run: |
+          uv venv .docs-venv
+          uv pip install mkdocs-material "mkdocstrings[python]" --python .docs-venv/bin/python
 
       - name: Build docs
-        run: mkdocs build
+        run: .docs-venv/bin/mkdocs build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
