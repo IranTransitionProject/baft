@@ -1,0 +1,27 @@
+name: Helm lint
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "charts/**"
+      - ".github/workflows/helm.yml"
+  pull_request:
+    paths:
+      - "charts/**"
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Lint chart
+        run: helm lint charts/baft/
+
+      - name: Template dry-run
+        run: helm template baft charts/baft/ > /dev/null
