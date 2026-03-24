@@ -62,6 +62,7 @@ pipeline/
 
 src/baft/               # Python package (v0.3.0)
   __init__.py           # Package marker
+  cli.py                # Click CLI: preflight, session start/end/status/sync-check/sync
   sessions.py           # Session tracking for scheduler expansion (get_active_sessions)
   tracing.py            # OTel tracing integration (wraps loom.tracing with ITP defaults)
   contracts/            # Pydantic I/O models — source of truth for worker schemas
@@ -78,10 +79,11 @@ scripts/                # Development utilities
 
 manifest.yaml           # App manifest for Loom Workshop deployment
 
-tests/                  # 356 unit tests (7 test files)
+tests/                  # 378 unit tests (8 test files)
   test_baft_workers.py      # Worker config validation (schema, silo resolution)
   test_contracts.py         # Pydantic contract models (validation, schema generation)
   test_baft_pipelines.py    # Pipeline orchestration (InMemoryBus, mock backends)
+  test_session_cli.py       # Session CLI commands and preflight checks (22 tests)
   test_duckdb_import.py     # DuckDB import script validation
   test_e2e_smoke.py         # End-to-end smoke tests (@pytest.mark.e2e)
   test_resolve_config.py    # Config resolution and silo expansion
@@ -210,7 +212,30 @@ python pipeline/scripts/itp_import_to_duckdb.py --incremental
 
 # Lint
 uv run ruff check scripts/ pipeline/scripts/
+
+# Session management CLI
+uv run baft preflight                          # Run environment checks
+uv run baft session start                      # Start session (auto-generated ID)
+uv run baft session start --session-id my-run  # Start with explicit ID
+uv run baft session status                     # Show active sessions + service health
+uv run baft session sync-check                 # Check if framework remote has new commits
+uv run baft session sync                       # Pull framework + incremental DuckDB import
+uv run baft session end                        # End session (commit + push framework)
+uv run baft session end -m "added new entity"  # End with commit message
 ```
+
+## Session management
+
+The `baft` CLI provides session lifecycle automation:
+
+- **`baft preflight`** — Validates the entire environment: Python, uv, repos, deps, env vars, NATS, Ollama, DuckDB, framework git status (10 checks)
+- **`baft session start`** — Pulls framework, runs incremental DuckDB import, checks services, registers session marker
+- **`baft session end`** — Unregisters session, commits framework changes, pushes to remote
+- **`baft session status`** — Shows active sessions, framework git state, service health
+- **`baft session sync-check`** — Fetches remote, reports ahead/behind/diverged status
+- **`baft session sync`** — Fast-forward pulls framework and runs incremental DuckDB import
+
+Session markers are stored in `~/.loom/sessions/` as JSON files (reuses `baft.sessions` module). Git operations use `subprocess.run(["git", ...])` — no gitpython dependency.
 
 ## Current state
 
