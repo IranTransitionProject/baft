@@ -1,0 +1,6 @@
+FROM alpine/git:latest
+
+COPY docker/commit-agent.sh /usr/local/bin/commit-agent.sh
+RUN chmod +x /usr/local/bin/commit-agent.sh
+
+ENTRYPOINT ["/usr/local/bin/commit-agent.sh"]

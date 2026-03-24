@@ -1,0 +1,21 @@
+FROM python:3.12-slim
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+WORKDIR /app
+
+# Copy loom source and install
+COPY loom/ /app/loom/
+RUN cd /app/loom && uv sync --no-dev --extra mcp --extra duckdb --extra rag --extra otel
+
+# Copy baft source and install
+COPY baft/pyproject.toml baft/uv.lock /app/baft/
+COPY baft/src/ /app/baft/src/
+COPY baft/configs/ /app/baft/configs/
+COPY baft/pipeline/ /app/baft/pipeline/
+RUN cd /app/baft && uv sync --no-dev
+
+WORKDIR /app/baft
+
+ENTRYPOINT ["uv", "run", "loom"]

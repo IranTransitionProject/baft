@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: baft-env
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "baft.labels" . | nindent 4 }}
+data:
+  ITP_ROOT: {{ .Values.env.ITP_ROOT | quote }}
+  BAFT_WORKSPACE: {{ .Values.env.BAFT_WORKSPACE | quote }}
+  NATS_URL: {{ .Values.env.NATS_URL | quote }}

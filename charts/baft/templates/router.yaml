@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: router
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "baft.labels" . | nindent 4 }}
+    app.kubernetes.io/name: router
+spec:
+  replicas: {{ .Values.router.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: router
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: router
+    spec:
+      containers:
+        - name: router
+          image: {{ .Values.image.registry }}/baft-router:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "router"
+            - "--nats-url"
+            - "$(NATS_URL)"
+          env:
+            {{- include "baft.envVars" . | nindent 12 }}

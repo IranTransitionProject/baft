@@ -1,0 +1,121 @@
+# -- Global settings
+namespace: baft
+image:
+  registry: ghcr.io/irantransitionproject
+  tag: v0.3.0
+  pullPolicy: IfNotPresent
+
+# -- Framework git sync
+framework:
+  repo: "https://github.com/IranTransitionProject/framework.git"
+  branch: main
+  sshKeySecret: ""              # K8s Secret name containing id_rsa
+  gitTokenSecret: ""            # K8s Secret name containing GITHUB_TOKEN
+  syncInterval: 60              # Seconds between git pull
+  storage: 2Gi
+  commitAgent:
+    enabled: true
+    interval: 900               # Seconds between commit+push (15 min)
+    message: "Auto-commit: analytical session updates"
+
+# -- DuckDB import
+duckdb:
+  importSchedule: "*/30 * * * *"  # Incremental import every 30 min
+  storage: 5Gi
+
+# -- LLM backends
+anthropic:
+  apiKeySecret: baft-api-keys     # K8s Secret name
+  apiKeyField: ANTHROPIC_API_KEY
+
+ollama:
+  enabled: true
+  model: "llama3.2:3b"
+  image: ollama/ollama:latest
+  gpu:
+    enabled: false
+    type: nvidia                  # nvidia or amd
+    count: 1
+  storage: 10Gi
+  externalUrl: ""                 # Use when enabled: false
+
+# -- NATS
+nats:
+  image: nats:2.10-alpine
+  monitoring: true
+
+# -- Valkey (Redis-compatible checkpoint store)
+valkey:
+  enabled: true
+  image: valkey/valkey:8-alpine
+  storage: 1Gi
+
+# -- Workers
+workers:
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  # Per-worker settings (replicas only — DE must be 1)
+  sp: { replicas: 1 }
+  ia: { replicas: 1 }
+  de: { replicas: 1 }             # MUST be 1 (serialize_writes)
+  xv: { replicas: 1 }
+  in: { replicas: 1 }
+  tn: { replicas: 1 }
+  la: { replicas: 1 }
+  pa: { replicas: 1 }
+  rt: { replicas: 1 }
+  as: { replicas: 1 }
+  sa: { replicas: 1 }
+  wt: { replicas: 1 }
+  ni: { replicas: 1 }
+
+# -- Router
+router:
+  replicas: 1
+
+# -- Pipeline orchestrators
+pipelines:
+  quick: { enabled: true, replicas: 1 }
+  standard: { enabled: true, replicas: 1 }
+  audit: { enabled: true, replicas: 1 }
+
+# -- Scheduler
+scheduler:
+  enabled: true
+
+# -- Workshop UI
+workshop:
+  enabled: true
+  replicas: 1
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30080
+  ingress:
+    enabled: false
+    host: workshop.local
+    tls: false
+
+# -- MCP Gateway
+mcp:
+  enabled: true
+  transport: streamable-http
+  port: 8765
+  service:
+    type: ClusterIP
+
+# -- Observability
+jaeger:
+  enabled: false
+  image: jaegertracing/jaeger:latest
+
+# -- Environment (injected into all pods)
+env:
+  ITP_ROOT: /data/framework
+  BAFT_WORKSPACE: /data/workspace
+  NATS_URL: nats://nats:4222

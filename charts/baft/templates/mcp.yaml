@@ -1,0 +1,68 @@
+{{- if .Values.mcp.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "baft.labels" . | nindent 4 }}
+    app.kubernetes.io/name: mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mcp
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mcp
+    spec:
+      containers:
+        - name: mcp
+          image: {{ .Values.image.registry }}/baft-mcp:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "mcp"
+            - "--config"
+            - "configs/mcp/itp.yaml"
+            - "--transport"
+            - {{ .Values.mcp.transport | quote }}
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - {{ .Values.mcp.port | quote }}
+          ports:
+            - containerPort: {{ .Values.mcp.port }}
+          env:
+            {{- include "baft.envVars" . | nindent 12 }}
+          volumeMounts:
+            {{- include "baft.frameworkVolumeMount" . | nindent 12 }}
+            {{- include "baft.duckdbVolumeMount" . | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.mcp.port }}
+            initialDelaySeconds: 5
+      volumes:
+        - name: framework-data
+          persistentVolumeClaim:
+            claimName: framework-data
+        - name: duckdb-data
+          persistentVolumeClaim:
+            claimName: duckdb-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "baft.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.mcp.service.type }}
+  selector:
+    app.kubernetes.io/name: mcp
+  ports:
+    - port: {{ .Values.mcp.port }}
+      targetPort: {{ .Values.mcp.port }}
+{{- end }}

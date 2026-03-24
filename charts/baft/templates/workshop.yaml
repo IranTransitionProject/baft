@@ -1,0 +1,69 @@
+{{- if .Values.workshop.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workshop
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "baft.labels" . | nindent 4 }}
+    app.kubernetes.io/name: workshop
+spec:
+  replicas: {{ .Values.workshop.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: workshop
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: workshop
+    spec:
+      containers:
+        - name: workshop
+          image: {{ .Values.image.registry }}/baft-workshop:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "workshop"
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - {{ .Values.workshop.service.port | quote }}
+            - "--nats-url"
+            - "$(NATS_URL)"
+          ports:
+            - containerPort: {{ .Values.workshop.service.port }}
+          env:
+            {{- include "baft.envVars" . | nindent 12 }}
+          volumeMounts:
+            {{- include "baft.frameworkVolumeMount" . | nindent 12 }}
+            {{- include "baft.duckdbVolumeMount" . | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.workshop.service.port }}
+            initialDelaySeconds: 5
+      volumes:
+        - name: framework-data
+          persistentVolumeClaim:
+            claimName: framework-data
+        - name: duckdb-data
+          persistentVolumeClaim:
+            claimName: duckdb-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: workshop
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "baft.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.workshop.service.type }}
+  selector:
+    app.kubernetes.io/name: workshop
+  ports:
+    - port: {{ .Values.workshop.service.port }}
+      targetPort: {{ .Values.workshop.service.port }}
+      {{- if eq .Values.workshop.service.type "NodePort" }}
+      nodePort: {{ .Values.workshop.service.nodePort }}
+      {{- end }}
+{{- end }}

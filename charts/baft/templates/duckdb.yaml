@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: duckdb-data
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "baft.labels" . | nindent 4 }}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: {{ .Values.duckdb.storage }}
+---
+# Initial full import (runs once on install)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: duckdb-import-initial
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "baft.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install
+    helm.sh/hook-weight: "10"
+    helm.sh/hook-delete-policy: hook-succeeded
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: import
+          image: {{ .Values.image.registry }}/baft-import:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- include "baft.envVars" . | nindent 12 }}
+          volumeMounts:
+            {{- include "baft.frameworkVolumeMount" . | nindent 12 }}
+            {{- include "baft.duckdbVolumeMount" . | nindent 12 }}
+      volumes:
+        - name: framework-data
+          persistentVolumeClaim:
+            claimName: framework-data
+        - name: duckdb-data
+          persistentVolumeClaim:
+            claimName: duckdb-data
+---
+# Periodic incremental import
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: duckdb-import
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "baft.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.duckdb.importSchedule | quote }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: import
+              image: {{ .Values.image.registry }}/baft-import:{{ .Values.image.tag }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              args: ["--incremental"]
+              env:
+                {{- include "baft.envVars" . | nindent 16 }}
+              volumeMounts:
+                {{- include "baft.frameworkVolumeMount" . | nindent 16 }}
+                {{- include "baft.duckdbVolumeMount" . | nindent 16 }}
+          volumes:
+            - name: framework-data
+              persistentVolumeClaim:
+                claimName: framework-data
+            - name: duckdb-data
+              persistentVolumeClaim:
+                claimName: duckdb-data

@@ -1,0 +1,42 @@
+{{- $root := . -}}
+{{- $pipelineDefs := dict
+  "quick" "itp_quick"
+  "standard" "itp_standard"
+  "audit" "itp_audit"
+-}}
+{{- range $name, $config := $pipelineDefs }}
+{{- $pValues := index $root.Values.pipelines $name }}
+{{- if $pValues.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pipeline-{{ $name }}
+  namespace: {{ $root.Values.namespace }}
+  labels:
+    {{- include "baft.labels" $root | nindent 4 }}
+    app.kubernetes.io/name: pipeline-{{ $name }}
+spec:
+  replicas: {{ $pValues.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pipeline-{{ $name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pipeline-{{ $name }}
+    spec:
+      containers:
+        - name: pipeline
+          image: {{ $root.Values.image.registry }}/baft-pipeline:{{ $root.Values.image.tag }}
+          imagePullPolicy: {{ $root.Values.image.pullPolicy }}
+          args:
+            - "pipeline"
+            - "--config"
+            - "configs/orchestrators/{{ $config }}.yaml"
+            - "--nats-url"
+            - "$(NATS_URL)"
+          env:
+            {{- include "baft.envVars" $root | nindent 12 }}
+{{- end }}
+{{- end }}

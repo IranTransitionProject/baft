@@ -1,0 +1,68 @@
+{{- $root := . -}}
+{{- $workerDefs := dict
+  "sp" (dict "config" "sp_source_processor" "tier" "local" "cmd" "worker")
+  "ia" (dict "config" "ia_intelligence_analyst" "tier" "frontier" "cmd" "worker")
+  "de" (dict "config" "de_database_engineer" "tier" "local" "cmd" "processor")
+  "xv" (dict "config" "xv_cross_validator" "tier" "local" "cmd" "worker")
+  "in" (dict "config" "in_input_node" "tier" "local" "cmd" "worker")
+  "tn" (dict "config" "tn_terminology_neutralizer" "tier" "local" "cmd" "worker")
+  "la" (dict "config" "la_logic_auditor" "tier" "standard" "cmd" "worker")
+  "pa" (dict "config" "pa_perspective_auditor" "tier" "standard" "cmd" "worker")
+  "rt" (dict "config" "rt_red_teamer" "tier" "frontier" "cmd" "worker")
+  "as" (dict "config" "as_audit_synthesizer" "tier" "standard" "cmd" "worker")
+  "sa" (dict "config" "sa_session_advisor" "tier" "local" "cmd" "worker")
+  "wt" (dict "config" "wt_watch_tower" "tier" "standard" "cmd" "worker")
+  "ni" (dict "config" "ni_narrative_intelligence" "tier" "standard" "cmd" "worker")
+-}}
+{{- range $id, $def := $workerDefs }}
+{{- $workerValues := index $root.Values.workers $id }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-{{ $id }}
+  namespace: {{ $root.Values.namespace }}
+  labels:
+    {{- include "baft.labels" $root | nindent 4 }}
+    app.kubernetes.io/name: worker-{{ $id }}
+    app.kubernetes.io/component: worker
+spec:
+  replicas: {{ $workerValues.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: worker-{{ $id }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: worker-{{ $id }}
+        app.kubernetes.io/component: worker
+        baft/worker-id: {{ $id }}
+        baft/tier: {{ $def.tier }}
+    spec:
+      containers:
+        - name: {{ $id }}
+          image: {{ $root.Values.image.registry }}/baft-worker:{{ $root.Values.image.tag }}
+          imagePullPolicy: {{ $root.Values.image.pullPolicy }}
+          args:
+            - {{ $def.cmd }}
+            - "--config"
+            - "configs/workers/{{ $def.config }}.yaml"
+            - "--tier"
+            - {{ $def.tier | quote }}
+            - "--nats-url"
+            - "$(NATS_URL)"
+          env:
+            {{- include "baft.envVars" $root | nindent 12 }}
+          volumeMounts:
+            {{- include "baft.frameworkVolumeMount" $root | nindent 12 }}
+            {{- include "baft.duckdbVolumeMount" $root | nindent 12 }}
+          resources:
+            {{- toYaml $root.Values.workers.resources | nindent 12 }}
+      volumes:
+        - name: framework-data
+          persistentVolumeClaim:
+            claimName: framework-data
+        - name: duckdb-data
+          persistentVolumeClaim:
+            claimName: duckdb-data
+{{- end }}
