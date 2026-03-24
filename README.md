@@ -23,6 +23,9 @@ The primary interface is a Claude chat session connected to the Baft MCP gateway
 ## Repository structure
 
 ```text
+charts/
+  baft/                             # Helm chart for Kubernetes deployment
+
 configs/
   mcp/
     itp.yaml                    # MCP gateway — exposes Baft workers as tools
@@ -49,6 +52,8 @@ configs/
   knowledge/
     itp_silos.yaml              # Silo path map referenced by worker configs
 
+docker/                             # Dockerfiles for container builds
+
 pipeline/
   config/
     itp_terminology_registry.yaml   # TN node vocabulary
@@ -67,10 +72,36 @@ scripts/
   run_workers.sh                  # Start all worker processes
   run_scheduler.sh                # Start scheduled actors
 
+src/baft/
+  cli.py                          # Click CLI: preflight, session lifecycle
+
 docs/
   architecture/
     ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md
 ```
+
+## Session management
+
+```bash
+# Check environment readiness
+uv run baft preflight
+
+# Session lifecycle
+uv run baft session start                      # Pull framework, import DuckDB, check services
+uv run baft session status                     # Active sessions + service health
+uv run baft session sync-check                 # Check for remote framework updates
+uv run baft session end -m "description"       # Commit framework changes, push
+```
+
+## Deployment
+
+| Method | Command | Use case |
+|--------|---------|----------|
+| **Local dev** | `bash scripts/baft.sh start` | Single machine, Claude Desktop |
+| **Helm (K8s)** | `helm install baft ./charts/baft` | Kubernetes cluster |
+| **Docker images** | See `docker/` | Custom container orchestration |
+
+See [Helm Deployment Guide](docs/HELM_DEPLOYMENT.md) for full Kubernetes setup.
 
 ## Prerequisites
 

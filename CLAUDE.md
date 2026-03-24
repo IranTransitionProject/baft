@@ -97,6 +97,12 @@ docs/
   LOOM_BUILDERS_GUIDE.md   # Design philosophy and lessons learned
   DESIGN_INVARIANTS.md  # Baft-specific design constraints (silo isolation, audit independence)
   architecture/         # ITP multi-agent architecture specification
+
+charts/baft/            # Helm chart for K8s deployment (Chart.yaml, values.yaml, 17 templates)
+
+docker/                 # 7 Dockerfiles (worker, router, pipeline, workshop, mcp, import, commit-agent)
+
+.github/workflows/      # CI: ci.yml, docs.yml, helm.yml, docker.yml
 ```
 
 ## Relationship to Loom
@@ -252,11 +258,18 @@ All configuration and infrastructure is implemented and working:
 - Config resolution script (silo expansion, ${ITP_ROOT} substitution)
 - OpenTelemetry tracing integration (`baft.tracing` module)
 - Unit tests: 356 tests pass (workers, contracts, pipelines, DuckDB import, config resolution, new loom features)
+- Helm chart with 24 deployments (13 workers + infra + services), helm lint clean
+- 7 Dockerfiles for container images (worker, router, pipeline, workshop, mcp, import, commit-agent)
+- CI: docs deploy, helm lint, container image build on tag push
+- Session CLI: `baft preflight` + `baft session start/end/status/sync-check/sync`
+- Session MCP tools: `session.*` namespace (5 tools via loom session bridge)
+- Claude Chat integration: session instructions doc + project setup guide
 
 ## What to implement next
 
-1. **End-to-end Tier 2 validation** — Run full SP → IA → XV → DE pipeline against a real document with NATS + workers running
-2. **Parallel pipeline variant** — Design a variant where classify and summarize run concurrently if summarizer doesn't need document_type
+1. **End-to-end Tier 2 validation** — Run full SP → IA → XV → DE pipeline against a real document with live NATS + workers running
+2. **Test Helm chart deployment** — Deploy on local k8s (minikube / Docker Desktop K8s) and validate service connectivity
+3. **Framework CLAUDE.md rewrite** — Update framework repo's CLAUDE.md to reflect current architecture
 
 ## Worker config format
 

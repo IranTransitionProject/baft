@@ -79,7 +79,9 @@ nav:
     - Claude Code Build: CLAUDE_CODE_BUILD_INSTRUCTIONS.md
     - Design Invariants: DESIGN_INVARIANTS.md
     - Loom Builders Guide: LOOM_BUILDERS_GUIDE.md
-    - Track B — Helm & Sessions: TRACK_B_HELM_AND_SESSION_AUTOMATION.md
+  - Deployment:
+    - Helm Chart: HELM_DEPLOYMENT.md
+    - Track B Spec: TRACK_B_HELM_AND_SESSION_AUTOMATION.md
   - Architecture:
     - Multi-Agent Architecture: architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md
   - API Reference:
