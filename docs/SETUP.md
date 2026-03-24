@@ -300,21 +300,21 @@ uv run pytest tests/test_e2e_smoke.py -v
 
 ---
 
-## Daily workflow
+## Daily workflow (automated)
+
+The `baft` CLI automates the repetitive parts of session lifecycle:
 
 ### Before a session
 
 ```bash
-# Pull latest framework data
-cd ~/IranTransitionProject/framework && git pull
+# One command: pull framework, import DuckDB, check services, register
+uv run baft session start
 
-# Re-import if framework changed
-cd ~/IranTransitionProject/baft
-uv run python pipeline/scripts/itp_import_to_duckdb.py --incremental
-
-# Start workers (if not already running)
-bash scripts/run_workers.sh
+# Or with a custom session ID
+uv run baft session start --session-id "iran-nuclear-review"
 ```
+
+This replaces the manual git pull + DuckDB import + service checks.
 
 ### During a session
 
@@ -331,19 +331,52 @@ Or use the pipeline tools:
 - **`run_standard_pipeline`** — Full SP → IA → XV → DE cycle
 - **`run_audit_pipeline`** — Blind audit before publication
 
+Periodically check for remote updates:
+
+```bash
+uv run baft session sync-check
+# If behind: uv run baft session sync
+```
+
 ### After a session
 
 ```bash
-# Commit framework changes
-cd ~/IranTransitionProject/framework
-git add -A
-git commit -m "Session: [date] — [brief description]"
-git push
+# One command: commit framework, push, unregister
+uv run baft session end -m "Reviewed IRGC command structure updates"
 ```
 
-The framework repository is the analytical source of truth. Every
-observation, variable assessment, and scenario update should be committed
-and pushed after each session.
+This replaces manual git add + commit + push.
+
+### Quick reference
+
+```bash
+uv run baft preflight          # Check entire environment
+uv run baft session start      # Start session
+uv run baft session status     # Show sessions + health
+uv run baft session sync-check # Check for remote updates
+uv run baft session sync       # Pull + re-import
+uv run baft session end -m "…" # End session
+```
+
+---
+
+## Claude Chat integration (optional)
+
+Claude Chat (claude.ai) can connect to the baft MCP gateway over HTTP
+for browser-based analytical sessions with full session management.
+
+See [CLAUDE_CHAT_PROJECT.md](CLAUDE_CHAT_PROJECT.md) for setup
+instructions.
+
+### Session management via MCP tools
+
+When connected via Claude Chat, session operations are available as
+MCP tools (`session.start`, `session.end`, `session.status`,
+`session.sync_check`, `session.sync`). Claude can call these
+automatically based on the session instructions.
+
+See [CLAUDE_CHAT_SESSION_INSTRUCTIONS.md](CLAUDE_CHAT_SESSION_INSTRUCTIONS.md)
+for the full instruction set that Claude follows.
 
 ---
 

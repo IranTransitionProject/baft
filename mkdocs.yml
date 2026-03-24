@@ -74,6 +74,8 @@ nav:
     - Analyst Guide: ANALYST_GUIDE.md
     - Operations Guide: OPERATIONS_GUIDE.md
     - Claude Desktop: CLAUDE_DESKTOP_GUIDE.md
+    - Claude Chat Project: CLAUDE_CHAT_PROJECT.md
+    - Claude Chat Sessions: CLAUDE_CHAT_SESSION_INSTRUCTIONS.md
     - Claude Code Build: CLAUDE_CODE_BUILD_INSTRUCTIONS.md
     - Design Invariants: DESIGN_INVARIANTS.md
     - Loom Builders Guide: LOOM_BUILDERS_GUIDE.md
