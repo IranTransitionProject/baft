@@ -38,6 +38,9 @@ theme:
 plugins:
   - search
   - mkdocstrings:
+      enabled: !ENV [MKDOCSTRINGS_ENABLED, true]
+      default_handler: python
+      enable_inventory: false
       handlers:
         python:
           options:
