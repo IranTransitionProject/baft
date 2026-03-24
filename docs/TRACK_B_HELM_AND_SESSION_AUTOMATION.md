@@ -243,7 +243,7 @@ Use the official `registry.k8s.io/git-sync/git-sync:v4` container image.
 
 **Deployment: framework-sync**
 
-```
+```text
 Pod:
   initContainer: git-sync (one-shot clone)
   containers:
@@ -292,6 +292,7 @@ baft/docker/
 ```
 
 All application images should:
+
 1. Start from `python:3.12-slim`
 2. Install uv
 3. Copy loom source and install it
@@ -672,6 +673,7 @@ ITP Preflight Check
 ### Session CLI tests
 
 Test with `click.testing.CliRunner`. Mock:
+
 - `subprocess.run` for git commands
 - `baft.sessions` for register/unregister
 - Network checks (NATS, Ollama) with socket mocks
@@ -679,6 +681,7 @@ Test with `click.testing.CliRunner`. Mock:
 ### Session MCP tool tests
 
 Follow the pattern in `tests/test_mcp_workshop_bridge.py`:
+
 - Mock the session bridge components
 - Test each tool action
 - Test error paths (NATS down, git conflict, etc.)

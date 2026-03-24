@@ -47,6 +47,7 @@ Follow the instructions in the connected knowledge file
 (start, sync, end) and error handling.
 
 Available tool namespaces:
+
 - `process_sources`, `analyze_intelligence`, `validate_cross_refs`,
   `update_database`, `submit_input` — Core analytical tools
 - `run_standard_pipeline`, `run_quick_pipeline`, `run_audit_pipeline` — Pipelines

@@ -180,6 +180,7 @@ The chart deploys a git-sync sidecar alongside a shared PVC:
 4. **Commit agent** (when `commitAgent.enabled: true`) runs in a separate container, periodically staging changes, committing, and pushing back to the remote.
 
 Authentication priority:
+
 - `sshKeySecret` -- mounts the Secret as `/root/.ssh/id_rsa` in the sync container
 - `gitTokenSecret` -- injects `GITHUB_TOKEN` env var; the sync rewrites the repo URL to `https://x-access-token:$GITHUB_TOKEN@github.com/...`
 
@@ -245,7 +246,7 @@ kubectl port-forward -n baft svc/nats 8222:8222
 
 ### Secret not found
 
-```
+```text
 Error: secret "baft-api-keys" not found
 ```
 
@@ -258,7 +259,7 @@ kubectl create secret generic baft-api-keys -n baft \
 
 ### PVC stuck in Pending
 
-```
+```text
 PersistentVolumeClaim is stuck in Pending
 ```
 
@@ -273,7 +274,7 @@ For local development clusters (minikube, kind), ensure the default provisioner 
 
 ### Image pull errors
 
-```
+```text
 ErrImagePull / ImagePullBackOff
 ```
 
@@ -297,6 +298,7 @@ kubectl logs -n baft deployment/worker-ia --tail=50
 ```
 
 Common causes:
+
 - Missing `ANTHROPIC_API_KEY` -- frontier/standard tier workers need it
 - NATS not ready -- workers retry connection but crash after exhausting backoff
 - Framework PVC not mounted -- check `kubectl describe pod` for volume mount errors

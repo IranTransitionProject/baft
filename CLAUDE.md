@@ -230,7 +230,7 @@ uv run baft session end                        # End session (commit + push fram
 uv run baft session end -m "added new entity"  # End with commit message
 ```
 
-## Session management
+## Session CLI details
 
 The `baft` CLI provides session lifecycle automation:
 
