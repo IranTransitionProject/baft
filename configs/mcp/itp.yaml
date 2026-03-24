@@ -121,6 +121,14 @@ tools:
       - impact                # workshop.impact.analyze
       - deadletter            # workshop.deadletter.{list,replay} — audit trail for governance
 
+  session:
+    enable:
+      - start                 # session.start — pull framework, import DuckDB, check services
+      - end                   # session.end — commit framework, push, unregister
+      - status                # session.status — active sessions, git state, service health
+      - sync_check            # session.sync_check — check remote for new commits
+      - sync                  # session.sync — pull + incremental DuckDB import
+
 resources:
   # Expose framework data/ YAML files as readable MCP resources
   workspace_dir: "${ITP_ROOT}/framework/data"
