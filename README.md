@@ -1,6 +1,7 @@
 # Baft — ITP Analytical Engine
 
 [![CI](https://github.com/IranTransitionProject/baft/actions/workflows/ci.yml/badge.svg)](https://github.com/IranTransitionProject/baft/actions/workflows/ci.yml)
+[![Docs](https://github.com/IranTransitionProject/baft/actions/workflows/docs.yml/badge.svg)](https://irantransitionproject.github.io/baft/)
 [![codecov](https://codecov.io/github/IranTransitionProject/baft/graph/badge.svg)](https://codecov.io/github/IranTransitionProject/baft)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](LICENSE)

@@ -36,5 +36,6 @@ Baft configures 13 workers across three batches:
 
 ## Project links
 
-- [Loom framework](https://irantransitionproject.github.io/loom/)
+- [📘 Baft documentation](https://irantransitionproject.github.io/baft/) (this site)
+- [Loom framework docs](https://irantransitionproject.github.io/loom/)
 - [GitHub repository](https://github.com/IranTransitionProject/baft)
