@@ -1,0 +1,90 @@
+site_name: Baft
+site_description: ITP analytical engine — application layer on the Loom framework
+site_url: https://irantransitionproject.github.io/baft/
+repo_url: https://github.com/IranTransitionProject/baft
+repo_name: IranTransitionProject/baft
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            members_order: source
+            docstring_style: google
+            merge_init_into_class: true
+            show_signature_annotations: true
+            separate_signature: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+  - attr_list
+  - md_in_html
+  - def_list
+
+nav:
+  - Home: index.md
+  - User Guide:
+    - Setup: SETUP.md
+    - Analyst Guide: ANALYST_GUIDE.md
+    - Operations Guide: OPERATIONS_GUIDE.md
+    - Claude Desktop: CLAUDE_DESKTOP_GUIDE.md
+    - Claude Code Build: CLAUDE_CODE_BUILD_INSTRUCTIONS.md
+    - Design Invariants: DESIGN_INVARIANTS.md
+    - Loom Builders Guide: LOOM_BUILDERS_GUIDE.md
+    - Track B — Helm & Sessions: TRACK_B_HELM_AND_SESSION_AUTOMATION.md
+  - Architecture:
+    - Multi-Agent Architecture: architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md
+  - API Reference:
+    - Contracts — Core: api/contracts-core.md
+    - Contracts — Audit: api/contracts-audit.md
+    - Contracts — Monitor: api/contracts-monitor.md
+    - Sessions: api/sessions.md
+    - Tracing: api/tracing.md
+  - References:
+    - Robotic LLM: references/ROBOTIC-LLM.md

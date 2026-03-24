@@ -28,6 +28,10 @@ dev = [
     "deepeval>=3.8.0",
 ]
 eval = ["deepeval>=3.8.0"]
+docs = [
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.24",
+]
 
 [project.scripts]
 baft = "baft.cli:main"

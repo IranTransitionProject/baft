@@ -32,6 +32,9 @@ htmlcov/
 .idea/
 .vscode/
 
+# MkDocs build output
+site/
+
 # Loom runtime
 watcher.lock
 watcher.log
