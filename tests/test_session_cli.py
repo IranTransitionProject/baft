@@ -321,11 +321,13 @@ class TestSessionSorting:
 
         now = time.time()
         # Write markers with different timestamps (older first in filesystem)
-        for i, (sid, offset) in enumerate([
-            ("old-session", -600),
-            ("newest-session", -10),
-            ("middle-session", -300),
-        ]):
+        for i, (sid, offset) in enumerate(
+            [
+                ("old-session", -600),
+                ("newest-session", -10),
+                ("middle-session", -300),
+            ]
+        ):
             marker = {"session_id": sid, "last_active": now + offset}
             (session_dir / f"{sid}.json").write_text(json.dumps(marker))
 
