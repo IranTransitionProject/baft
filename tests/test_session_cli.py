@@ -313,7 +313,7 @@ class TestSessionSorting:
         import json
         import time
 
-        from baft.sessions import _SESSION_DIR, get_active_sessions
+        from baft.sessions import get_active_sessions
 
         # Create temp session dir
         session_dir = tmp_path / "sessions"
