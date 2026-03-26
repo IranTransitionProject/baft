@@ -107,7 +107,7 @@ docker/                 # 7 Dockerfiles (worker, router, pipeline, workshop, mcp
 
 ## Relationship to Loom
 
-Baft depends on `loom[mcp,duckdb,rag,workshop,tui,otel]` as a package (v0.8.0+). It uses:
+Baft depends on `loom-ai[mcp,duckdb,rag,workshop,tui,otel]` as a package (v0.9.0+). It uses:
 
 - Worker YAML configs loaded by `loom worker` and `loom processor` CLI commands
 - `PipelineOrchestrator` via `loom pipeline` CLI for Tier 2 and Tier 3 pipelines

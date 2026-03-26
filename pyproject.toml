@@ -9,7 +9,7 @@ description = "ITP analytical engine — application layer on the Loom framework
 requires-python = ">=3.11"
 
 dependencies = [
-    "loom[mcp,duckdb,rag,workshop,tui,otel]",
+    "loom-ai[mcp,duckdb,rag,workshop,tui,otel]",
     "pyyaml>=6.0",
     "pydantic>=2.0",
     "structlog>=24.0",
@@ -40,7 +40,7 @@ baft = "baft.cli:main"
 packages = ["src/baft"]
 
 [tool.uv.sources]
-loom = { path = "../loom", editable = true }
+loom-ai = { path = "../loom", editable = true }
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
