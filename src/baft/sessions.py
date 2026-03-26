@@ -46,7 +46,7 @@ def get_active_sessions() -> list[dict[str, Any]]:
         return []
 
     now = time.time()
-    active: list[dict[str, Any]] = []
+    raw: list[dict[str, Any]] = []
 
     for marker_path in _SESSION_DIR.glob("*.json"):
         try:
@@ -54,24 +54,30 @@ def get_active_sessions() -> list[dict[str, Any]]:
             last_active = data.get("last_active", 0)
             if now - last_active > _STALE_THRESHOLD_SECONDS:
                 continue
-            active.append(
-                {
-                    "session_monitor_request": {
-                        "session_id": data["session_id"],
-                        "transcript": data.get("transcript", ""),
-                        "session_start": data.get("session_start", ""),
-                        "session_objective": data.get("session_objective", ""),
-                        "current_tier": data.get("current_tier", 2),
-                        "operation_count": data.get("operation_count", 0),
-                    },
-                }
-            )
+            raw.append(data)
         except (json.JSONDecodeError, KeyError) as exc:
             logger.warning(
                 "sessions.marker_read_failed",
                 path=str(marker_path),
                 error=str(exc),
             )
+
+    # Sort by last_active descending so [0] is genuinely most recent.
+    raw.sort(key=lambda d: d.get("last_active", 0), reverse=True)
+
+    active: list[dict[str, Any]] = [
+        {
+            "session_monitor_request": {
+                "session_id": d["session_id"],
+                "transcript": d.get("transcript", ""),
+                "session_start": d.get("session_start", ""),
+                "session_objective": d.get("session_objective", ""),
+                "current_tier": d.get("current_tier", 2),
+                "operation_count": d.get("operation_count", 0),
+            },
+        }
+        for d in raw
+    ]
 
     logger.info("sessions.active_count", count=len(active))
     return active

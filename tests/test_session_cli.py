@@ -185,7 +185,7 @@ class TestSessionEnd:
     """Tests for `baft session end`."""
 
     def test_end_commits_and_pushes(self, runner, tmp_path):
-        """Session end commits dirty framework and pushes."""
+        """Session end with --yes commits dirty framework and pushes."""
         fw = tmp_path / "framework"
         fw.mkdir()
         (fw / ".git").mkdir()
@@ -208,7 +208,7 @@ class TestSessionEnd:
                 return_value=[{"session_monitor_request": {"session_id": "test-session"}}],
             ),
         ):
-            result = runner.invoke(main, ["session", "end"])
+            result = runner.invoke(main, ["session", "end", "--yes"])
 
         assert result.exit_code == 0
         assert "committed and pushed" in result.output.lower() or "ended" in result.output.lower()
@@ -233,7 +233,7 @@ class TestSessionEnd:
                 return_value=[{"session_monitor_request": {"session_id": "test-session"}}],
             ),
         ):
-            result = runner.invoke(main, ["session", "end"])
+            result = runner.invoke(main, ["session", "end", "--yes"])
 
         assert result.exit_code == 0
         assert "No framework changes" in result.output
@@ -245,6 +245,96 @@ class TestSessionEnd:
 
         assert result.exit_code == 0
         assert "No active sessions" in result.output
+
+    def test_end_prompts_confirmation(self, runner, tmp_path):
+        """Session end without --yes shows dirty files and prompts."""
+        fw = tmp_path / "framework"
+        fw.mkdir()
+        (fw / ".git").mkdir()
+
+        def mock_git_fn(args, cwd, **_kwargs):
+            mock = MagicMock(returncode=0, stdout="", stderr="")
+            if args[0] == "status":
+                mock.stdout = "M data/variables.yaml\nM data/observations.yaml\n"
+            return mock
+
+        with (
+            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._git", side_effect=mock_git_fn),
+            patch("baft.sessions.unregister_session"),
+            patch(
+                "baft.sessions.get_active_sessions",
+                return_value=[{"session_monitor_request": {"session_id": "test-session"}}],
+            ),
+        ):
+            # User declines — session should remain active
+            result = runner.invoke(main, ["session", "end"], input="n\n")
+
+        assert result.exit_code == 0
+        assert "Aborted" in result.output
+
+    def test_end_confirmation_yes(self, runner, tmp_path):
+        """Session end with interactive confirmation proceeds on yes."""
+        fw = tmp_path / "framework"
+        fw.mkdir()
+        (fw / ".git").mkdir()
+
+        def mock_git_fn(args, cwd, **_kwargs):
+            mock = MagicMock(returncode=0, stdout="", stderr="")
+            if args[0] == "status":
+                mock.stdout = "M data/variables.yaml\n"
+            return mock
+
+        with (
+            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._git", side_effect=mock_git_fn),
+            patch("baft.sessions.unregister_session"),
+            patch(
+                "baft.sessions.get_active_sessions",
+                return_value=[{"session_monitor_request": {"session_id": "test-session"}}],
+            ),
+        ):
+            result = runner.invoke(main, ["session", "end"], input="y\n")
+
+        assert result.exit_code == 0
+        assert "ended" in result.output.lower()
+
+
+# ---------------------------------------------------------------------------
+# Session sorting
+# ---------------------------------------------------------------------------
+
+
+class TestSessionSorting:
+    """Tests that get_active_sessions returns sessions sorted by last_active."""
+
+    def test_sessions_sorted_most_recent_first(self, tmp_path):
+        """Active sessions are sorted by last_active descending."""
+        import json
+        import time
+
+        from baft.sessions import _SESSION_DIR, get_active_sessions
+
+        # Create temp session dir
+        session_dir = tmp_path / "sessions"
+        session_dir.mkdir()
+
+        now = time.time()
+        # Write markers with different timestamps (older first in filesystem)
+        for i, (sid, offset) in enumerate([
+            ("old-session", -600),
+            ("newest-session", -10),
+            ("middle-session", -300),
+        ]):
+            marker = {"session_id": sid, "last_active": now + offset}
+            (session_dir / f"{sid}.json").write_text(json.dumps(marker))
+
+        with patch("baft.sessions._SESSION_DIR", session_dir):
+            active = get_active_sessions()
+
+        assert len(active) == 3
+        ids = [s["session_monitor_request"]["session_id"] for s in active]
+        assert ids == ["newest-session", "middle-session", "old-session"]
 
 
 # ---------------------------------------------------------------------------

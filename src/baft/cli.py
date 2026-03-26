@@ -390,7 +390,8 @@ def start(session_id: str | None) -> None:
 @session.command()
 @click.option("--session-id", default=None, help="Session to end (uses most recent if omitted)")
 @click.option("--message", "-m", default="", help="Commit message describing session work")
-def end(session_id: str | None, message: str) -> None:
+@click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt")
+def end(session_id: str | None, message: str, yes: bool) -> None:
     """End an analytical session (commit framework, push, unregister)."""
     from baft.sessions import get_active_sessions, unregister_session
 
@@ -400,24 +401,49 @@ def end(session_id: str | None, message: str) -> None:
         if not active:
             click.echo("No active sessions found.")
             return
-        # Pick the most recent
+        # Pick the most recent (list is sorted by last_active descending)
         sid = active[0]["session_monitor_request"]["session_id"]
+        if len(active) > 1 and not yes:
+            click.echo(f"  Multiple active sessions ({len(active)}). Ending most recent: {sid}")
     else:
         sid = session_id
 
-    # 1. Unregister
-    unregister_session(sid)
-
-    # 2. Commit framework changes
+    # 1. Check framework state before unregistering
     fw = _framework_dir()
+    dirty_files: list[str] = []
     if (fw / ".git").is_dir():
         status = _git(["status", "--porcelain"], cwd=fw)
         if status.stdout.strip():
+            dirty_files = [
+                line.strip() for line in status.stdout.strip().split("\n") if line.strip()
+            ]
+
+    # 2. Show what will happen and confirm
+    if dirty_files and not yes:
+        click.echo(f"\n  Session {click.style(sid, bold=True)} — {len(dirty_files)} changed file(s):")
+        for f in dirty_files[:20]:
+            click.echo(f"    {f}")
+        if len(dirty_files) > 20:
+            click.echo(f"    ... and {len(dirty_files) - 20} more")
+        click.echo()
+        if not click.confirm("  Commit and push these changes?", default=True):
+            click.echo("  Aborted. Session still active.")
+            return
+
+    # 3. Unregister
+    unregister_session(sid)
+
+    # 4. Commit framework changes (only data/ directory, not everything)
+    if (fw / ".git").is_dir():
+        if dirty_files:
             date_str = dt.datetime.now(tz=dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
             desc = message or "analytical session updates"
             commit_msg = f"Session {sid}: {desc} — {date_str}"
 
-            _git(["add", "-A"], cwd=fw)
+            # Stage only the data/ directory (analytical content), not repo config
+            _git(["add", "data/"], cwd=fw)
+            # Also stage any other tracked-file changes (but not untracked junk)
+            _git(["add", "-u"], cwd=fw)
             commit = _git(["commit", "-m", commit_msg], cwd=fw)
             if commit.returncode != 0:
                 click.echo(f"  {_FAIL} Commit failed: {commit.stderr.strip()}")
