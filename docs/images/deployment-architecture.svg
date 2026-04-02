@@ -1,7 +1,7 @@
-        <?xml version="1.0" encoding="UTF-8"?>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 550" width="1100" height="550">
-        <defs></defs>
-        <rect width="1100" height="550" rx="12" fill="#fafafb"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 550" width="1100" height="550">
+<defs></defs>
+<rect width="1100" height="550" rx="12" fill="#fafafb"/>
 <text x="40" y="38" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="700" fill="#1e1e26" text-anchor="start" dominant-baseline="central">Baft — Deployment Architecture</text>
 <text x="40" y="62" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="central">Kubernetes deployment via Helm chart  ·  24 deployments  ·  NATS + DuckDB + Workshop</text>
 <rect x="30" y="95" width="1040" height="90" rx="10" fill="#e0e8ff"/>
@@ -56,4 +56,4 @@
 <text x="55" y="452" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="500" fill="#999" text-anchor="start" dominant-baseline="central">Tier 3 (audit) + Scheduled</text>
 <rect x="30" y="485" width="1040" height="40" rx="6" fill="#f1f5f9"/>
 <text x="550" y="505" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="400" fill="#475569" text-anchor="middle" dominant-baseline="central">Horizontal scaling: kubectl scale deployment/loom-worker-sp --replicas=N  |  NATS queue groups auto-balance  |  HPA supported</text>
-        </svg>
+</svg>

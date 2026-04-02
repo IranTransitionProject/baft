@@ -1,8 +1,8 @@
-        <?xml version="1.0" encoding="UTF-8"?>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 550" width="1200" height="550">
-        <defs><marker id="arrow_1" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#ec4899"/></marker>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 550" width="1200" height="550">
+<defs><marker id="arrow_1" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#ec4899"/></marker>
 <marker id="arrow_2" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#f59e0b"/></marker></defs>
-        <rect width="1200" height="550" rx="12" fill="#fafafb"/>
+<rect width="1200" height="550" rx="12" fill="#fafafb"/>
 <text x="40" y="38" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="700" fill="#1e1e26" text-anchor="start" dominant-baseline="central">Baft — System Architecture</text>
 <text x="40" y="62" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="central">Three-repo design: framework (data)  +  loom (runtime)  +  baft (application)</text>
 <rect x="40" y="100" width="320" height="300" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
@@ -63,4 +63,4 @@
 <text x="813.0" y="477.5" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">Workshop UI</text>
 <rect x="932" y="460" width="198" height="35" rx="8" fill="#64748b"/>
 <text x="1031.0" y="477.5" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">MCP Server</text>
-        </svg>
+</svg>

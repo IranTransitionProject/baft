@@ -1,10 +1,10 @@
-        <?xml version="1.0" encoding="UTF-8"?>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
-        <defs><marker id="arrow_1" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#dc2626"/></marker>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+<defs><marker id="arrow_1" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#dc2626"/></marker>
 <marker id="arrow_2" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#dc2626"/></marker>
 <marker id="arrow_3" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#dc2626"/></marker>
 <marker id="arrow_4" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#dc2626"/></marker></defs>
-        <rect width="1200" height="800" rx="12" fill="#fafafb"/>
+<rect width="1200" height="800" rx="12" fill="#fafafb"/>
 <text x="40" y="38" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="700" fill="#1e1e26" text-anchor="start" dominant-baseline="central">Baft — Knowledge Silo Isolation</text>
 <text x="40" y="62" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="central">Epistemic quarantine: who sees what — the foundation of audit independence</text>
 <rect x="30" y="95" width="360" height="260" rx="10" fill="#fef2f2"/>
@@ -113,4 +113,4 @@
 <text x="890" y="658" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#92400e" text-anchor="start" dominant-baseline="central">source_hierarchy</text>
 <rect x="55" y="690" width="400" height="20" rx="4" fill="#fffbeb" stroke="#fde68a" stroke-width="1"/>
 <text x="255.0" y="700.0" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#92400e" text-anchor="middle" dominant-baseline="central">SA is isolated from analytical framework — monitors behavior, not content</text>
-        </svg>
+</svg>

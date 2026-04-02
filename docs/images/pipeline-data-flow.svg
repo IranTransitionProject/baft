@@ -1,11 +1,11 @@
-        <?xml version="1.0" encoding="UTF-8"?>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
-        <defs><marker id="arrow_1" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#d97520"/></marker>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+<defs><marker id="arrow_1" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#d97520"/></marker>
 <marker id="arrow_2" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#b5332e"/></marker>
 <marker id="arrow_3" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#4278d9"/></marker>
 <marker id="arrow_4" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#8b5cf6"/></marker>
 <marker id="arrow_5" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#7c3aed"/></marker></defs>
-        <rect width="1200" height="900" rx="12" fill="#fafafb"/>
+<rect width="1200" height="900" rx="12" fill="#fafafb"/>
 <text x="40" y="38" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="700" fill="#1e1e26" text-anchor="start" dominant-baseline="central">Baft — Pipeline Data Flow</text>
 <text x="40" y="62" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="central">Tier 2 (standard) and Tier 3 (audit) pipeline stages with data schemas</text>
 <rect x="30" y="95" width="1140" height="310" rx="10" fill="#fff7ed"/>
@@ -91,4 +91,4 @@
 <rect x="50" y="665" width="1070" height="45" rx="6" fill="#fff" stroke="#c4b5fd" stroke-width="1"/>
 <text x="585" y="680" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#7c3aed" text-anchor="middle" dominant-baseline="central">PUBLICATION GATE</text>
 <text x="585" y="697" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#666" text-anchor="middle" dominant-baseline="central">RT escalation (vulnerability_score >= threshold) blocks publication and requires human review</text>
-        </svg>
+</svg>
