@@ -33,11 +33,18 @@ When the analyst says they're done or wants to end the session:
 1. Ask: "Would you like me to commit the framework changes from this
    session? If so, please provide a brief description."
 2. Call `session.end` with their message
-3. Confirm the result:
+3. The CLI will:
+   - Show the list of changed files for review
+   - Ask for confirmation before committing (use `--yes` to skip)
+   - Commit only the `data/` directory and tracked changes (prevents
+     accidental staging of untracked files)
+   - Push to remote
+4. Confirm the result:
    - If committed + pushed: "Changes committed and pushed."
    - If committed but push failed: "Committed locally but push failed.
      Run `baft session sync-check` to diagnose."
    - If no changes: "No framework changes to commit. Session ended."
+   - If analyst cancels at confirmation: "Aborted. Session still active."
 
 ## Available tool namespaces
 

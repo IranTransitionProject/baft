@@ -226,8 +226,9 @@ uv run baft session start --session-id my-run  # Start with explicit ID
 uv run baft session status                     # Show active sessions + service health
 uv run baft session sync-check                 # Check if framework remote has new commits
 uv run baft session sync                       # Pull framework + incremental DuckDB import
-uv run baft session end                        # End session (commit + push framework)
+uv run baft session end                        # End session (shows changes, confirms, commits + pushes)
 uv run baft session end -m "added new entity"  # End with commit message
+uv run baft session end --yes                  # Skip confirmation prompt
 ```
 
 ## Session CLI details
@@ -236,7 +237,7 @@ The `baft` CLI provides session lifecycle automation:
 
 - **`baft preflight`** — Validates the entire environment: Python, uv, repos, deps, env vars, NATS, Ollama, DuckDB, framework git status (10 checks)
 - **`baft session start`** — Pulls framework, runs incremental DuckDB import, checks services, registers session marker
-- **`baft session end`** — Unregisters session, commits framework changes, pushes to remote
+- **`baft session end`** — Shows changed files, asks for confirmation, commits only `data/` directory + tracked changes, pushes to remote. Use `--yes/-y` to skip confirmation
 - **`baft session status`** — Shows active sessions, framework git state, service health
 - **`baft session sync-check`** — Fetches remote, reports ahead/behind/diverged status
 - **`baft session sync`** — Fast-forward pulls framework and runs incremental DuckDB import
@@ -257,7 +258,7 @@ All configuration and infrastructure is implemented and working:
 - Telegram-to-source-bundle converter
 - Config resolution script (silo expansion, ${ITP_ROOT} substitution)
 - OpenTelemetry tracing integration (`baft.tracing` module)
-- Unit tests: 356 tests pass (workers, contracts, pipelines, DuckDB import, config resolution, new loom features)
+- Unit tests: 381 tests pass (workers, contracts, pipelines, DuckDB import, config resolution, sessions, new loom features)
 - Helm chart with 24 deployments (13 workers + infra + services), helm lint clean
 - 7 Dockerfiles for container images (worker, router, pipeline, workshop, mcp, import, commit-agent)
 - CI: docs deploy, helm lint, container image build on tag push
