@@ -7,6 +7,8 @@ instantiate the generic patterns defined in the Loom framework reference.
 — all Loom invariants apply here. This document only covers the Baft-specific
 bindings.
 
+![Silo Isolation](images/silo-isolation.svg)
+
 ---
 
 ## Silo Isolation Map

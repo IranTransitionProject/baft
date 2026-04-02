@@ -2,6 +2,8 @@
 
 **Audience:** ITP analysts using Baft through Claude Desktop, Claude Code, or the Workshop web UI. No programming knowledge required.
 
+![Analyst Workflow](images/analyst-workflow.svg)
+
 ---
 
 ## What Baft does for you

@@ -1,0 +1,74 @@
+        <?xml version="1.0" encoding="UTF-8"?>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 600" width="1100" height="600">
+        <defs><marker id="arrow_1" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#ccc"/></marker>
+<marker id="arrow_2" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#ccc"/></marker>
+<marker id="arrow_3" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#ccc"/></marker>
+<marker id="arrow_4" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#ccc"/></marker>
+<marker id="arrow_5" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#ccc"/></marker>
+<marker id="arrow_6" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#ccc"/></marker></defs>
+        <rect width="1100" height="600" rx="12" fill="#fafafb"/>
+<text x="40" y="38" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="700" fill="#1e1e26" text-anchor="start" dominant-baseline="central">Baft — Analyst Session Workflow</text>
+<text x="40" y="62" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="central">Session lifecycle from start to publication via MCP tools and CLI</text>
+<circle cx="56" cy="116" r="16" fill="#059669"/>
+<text x="56" y="116" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="80" y="110" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#059669" text-anchor="start" dominant-baseline="hanging">SESSION START</text>
+<text x="80" y="130" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="hanging">baft session start  (pull framework, import DuckDB, register)</text>
+<line x1="56" y1="150" x2="56" y2="195" stroke="#ccc" stroke-width="2" marker-end="url(#arrow_1)"/>
+<circle cx="56" cy="216" r="16" fill="#d97520"/>
+<text x="56" y="216" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="80" y="210" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#d97520" text-anchor="start" dominant-baseline="hanging">INGEST SOURCE</text>
+<text x="80" y="230" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="hanging">SP processes raw Telegram/document → claims with epistemic tags</text>
+<line x1="56" y1="250" x2="56" y2="295" stroke="#ccc" stroke-width="2" marker-end="url(#arrow_2)"/>
+<circle cx="56" cy="316" r="16" fill="#b5332e"/>
+<text x="56" y="316" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="80" y="310" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#b5332e" text-anchor="start" dominant-baseline="hanging">ANALYZE</text>
+<text x="80" y="330" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="hanging">IA integrates claims into analytical framework (session_id scoped)</text>
+<line x1="56" y1="350" x2="56" y2="395" stroke="#ccc" stroke-width="2" marker-end="url(#arrow_3)"/>
+<circle cx="56" cy="416" r="16" fill="#4278d9"/>
+<text x="56" y="416" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">4</text>
+<text x="80" y="410" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#4278d9" text-anchor="start" dominant-baseline="hanging">VALIDATE</text>
+<text x="80" y="430" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="hanging">XV cross-references entity IDs + integration spec</text>
+<line x1="56" y1="450" x2="56" y2="495" stroke="#ccc" stroke-width="2" marker-end="url(#arrow_4)"/>
+<circle cx="56" cy="516" r="16" fill="#6b7280"/>
+<text x="56" y="516" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">5</text>
+<text x="80" y="510" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#6b7280" text-anchor="start" dominant-baseline="hanging">PERSIST</text>
+<text x="80" y="530" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="hanging">DE writes to DuckDB (serialized, session_operation_count tracked)</text>
+<line x1="56" y1="550" x2="56" y2="595" stroke="#ccc" stroke-width="2" marker-end="url(#arrow_5)"/>
+<circle cx="56" cy="616" r="16" fill="#7c3aed"/>
+<text x="56" y="616" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">6</text>
+<text x="80" y="610" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#7c3aed" text-anchor="start" dominant-baseline="hanging">AUDIT</text>
+<text x="80" y="630" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="hanging">Tier 3: TN neutralizes → [LA+PA+RT blind review] → AS synthesizes</text>
+<line x1="56" y1="650" x2="56" y2="695" stroke="#ccc" stroke-width="2" marker-end="url(#arrow_6)"/>
+<circle cx="56" cy="716" r="16" fill="#059669"/>
+<text x="56" y="716" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">7</text>
+<text x="80" y="710" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#059669" text-anchor="start" dominant-baseline="hanging">SESSION END</text>
+<text x="80" y="730" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="hanging">baft session end  (commit framework, push, unregister)</text>
+<rect x="680" y="100" width="380" height="200" rx="10" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+<text x="870" y="120" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#166534" text-anchor="middle" dominant-baseline="central">Concurrent Sessions</text>
+<text x="700" y="145" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="400" fill="#166534" text-anchor="start">
+  <tspan x="700" dy="0">Multiple analysts can work simultaneously:</tspan>
+  <tspan x="700" dy="15.0"></tspan>
+  <tspan x="700" dy="15.0">- Pipelines: max_concurrent_goals=4</tspan>
+  <tspan x="700" dy="15.0">- SA: expand_from dispatches per active session</tspan>
+  <tspan x="700" dy="15.0">- DE: serialize_writes (single writer)</tspan>
+  <tspan x="700" dy="15.0">- Session markers: ~/.loom/sessions/*.json</tspan>
+  <tspan x="700" dy="15.0"></tspan>
+  <tspan x="700" dy="15.0">Each session_id is isolated — no cross-talk</tspan>
+</text>
+<rect x="680" y="330" width="380" height="130" rx="10" fill="#fffbeb" stroke="#fde68a" stroke-width="1"/>
+<text x="870" y="350" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#92400e" text-anchor="middle" dominant-baseline="central">SA — Continuous Monitoring</text>
+<text x="700" y="375" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="400" fill="#92400e" text-anchor="start">
+  <tspan x="700" dy="0">Runs every 15 minutes per active session</tspan>
+  <tspan x="700" dy="15.0"></tspan>
+  <tspan x="700" dy="15.0">Checks: cognitive load, confirmation bias,</tspan>
+  <tspan x="700" dy="15.0">epistemic discipline, analysis quality</tspan>
+  <tspan x="700" dy="15.0"></tspan>
+  <tspan x="700" dy="15.0">Uses cognitive_profile — NOT framework data</tspan>
+</text>
+<rect x="680" y="490" width="380" height="75" rx="10" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+<text x="870" y="510" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#475569" text-anchor="middle" dominant-baseline="central">Access Methods</text>
+<text x="700" y="530" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="400" fill="#475569" text-anchor="start">
+  <tspan x="700" dy="0">MCP tools (Claude Desktop/Code) | Workshop UI | CLI</tspan>
+  <tspan x="700" dy="15.0">loom ui (TUI dashboard) | Direct NATS submission</tspan>
+</text>
+        </svg>

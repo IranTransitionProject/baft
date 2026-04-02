@@ -14,6 +14,8 @@
 
 Baft is the Iran Transition Project's analytical engine. It is an application built on the [Loom](https://github.com/IranTransitionProject/loom) actor mesh framework and the [framework](https://github.com/IranTransitionProject/framework) YAML database.
 
+![Three-Repo Architecture](docs/images/three-repo-architecture.svg)
+
 Loom provides the infrastructure: worker actors, NATS message bus, MCP gateway, RAG pipeline, scheduler, DuckDB query backend, Workshop web UI, TUI dashboard, distributed tracing.
 
 Baft provides the ITP-specific configuration: node system prompts, knowledge silos, inter-node schemas, terminology registry, tier rules, watch list, source channel registry, and pipeline orchestration configs.

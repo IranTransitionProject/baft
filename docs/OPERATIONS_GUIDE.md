@@ -2,6 +2,12 @@
 
 **Audience:** Technical staff supporting ITP analysts. Covers observability, troubleshooting, performance tuning, and advanced configuration.
 
+![Worker Map](images/worker-map.svg)
+
+![Pipeline Data Flow](images/pipeline-data-flow.svg)
+
+![Deployment Architecture](images/deployment-architecture.svg)
+
 ---
 
 ## Architecture overview

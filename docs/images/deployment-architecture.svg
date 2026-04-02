@@ -1,0 +1,59 @@
+        <?xml version="1.0" encoding="UTF-8"?>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 550" width="1100" height="550">
+        <defs></defs>
+        <rect width="1100" height="550" rx="12" fill="#fafafb"/>
+<text x="40" y="38" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="700" fill="#1e1e26" text-anchor="start" dominant-baseline="central">Baft — Deployment Architecture</text>
+<text x="40" y="62" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="central">Kubernetes deployment via Helm chart  ·  24 deployments  ·  NATS + DuckDB + Workshop</text>
+<rect x="30" y="95" width="1040" height="90" rx="10" fill="#e0e8ff"/>
+<text x="44" y="109" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="500" fill="#888" text-anchor="start" dominant-baseline="hanging">INFRASTRUCTURE</text>
+<rect x="55" y="125" width="225" height="40" rx="8" fill="#3b82f6"/>
+<text x="167.5" y="145.0" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">NATS Server</text>
+<rect x="305" y="125" width="225" height="40" rx="8" fill="#6b7280"/>
+<text x="417.5" y="145.0" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">DuckDB (volume)</text>
+<rect x="555" y="125" width="225" height="40" rx="8" fill="#34d399"/>
+<text x="667.5" y="145.0" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">Ollama (local)</text>
+<rect x="805" y="125" width="225" height="40" rx="8" fill="#8b5cf6"/>
+<text x="917.5" y="145.0" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">Jaeger (OTel)</text>
+<rect x="30" y="210" width="1040" height="90" rx="10" fill="#ddf4de"/>
+<text x="44" y="224" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="500" fill="#888" text-anchor="start" dominant-baseline="hanging">SERVICES</text>
+<rect x="55" y="240" width="225" height="40" rx="8" fill="#555c70"/>
+<text x="167.5" y="260.0" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">Router</text>
+<rect x="305" y="240" width="225" height="40" rx="8" fill="#d97520"/>
+<text x="417.5" y="260.0" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">Workshop UI</text>
+<rect x="555" y="240" width="225" height="40" rx="8" fill="#3b82f6"/>
+<text x="667.5" y="260.0" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">MCP Gateway</text>
+<rect x="805" y="240" width="225" height="40" rx="8" fill="#d97706"/>
+<text x="917.5" y="260.0" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">Scheduler</text>
+<rect x="30" y="325" width="1040" height="140" rx="10" fill="#fff7ed"/>
+<text x="44" y="339" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="500" fill="#888" text-anchor="start" dominant-baseline="hanging">WORKERS  (13 deployments, each scalable via replicas)</text>
+<rect x="55" y="355" width="80" height="35" rx="8" fill="#d97520"/>
+<text x="95.0" y="372.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">SP</text>
+<rect x="255" y="355" width="80" height="35" rx="8" fill="#b5332e"/>
+<text x="295.0" y="372.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">IA</text>
+<rect x="455" y="355" width="80" height="35" rx="8" fill="#4278d9"/>
+<text x="495.0" y="372.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">XV</text>
+<rect x="655" y="355" width="80" height="35" rx="8" fill="#6b7280"/>
+<text x="695.0" y="372.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">DE</text>
+<rect x="855" y="355" width="80" height="35" rx="8" fill="#2e9e57"/>
+<text x="895.0" y="372.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">IN</text>
+<text x="1055" y="372" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="500" fill="#999" text-anchor="start" dominant-baseline="central">Tier 1-2</text>
+<rect x="55" y="405" width="105" height="35" rx="8" fill="#8b5cf6"/>
+<text x="107.5" y="422.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">TN</text>
+<rect x="177" y="405" width="105" height="35" rx="8" fill="#0891b2"/>
+<text x="229.5" y="422.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">LA</text>
+<rect x="299" y="405" width="105" height="35" rx="8" fill="#0891b2"/>
+<text x="351.5" y="422.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">PA</text>
+<rect x="421" y="405" width="105" height="35" rx="8" fill="#dc2626"/>
+<text x="473.5" y="422.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">RT</text>
+<rect x="543" y="405" width="105" height="35" rx="8" fill="#7c3aed"/>
+<text x="595.5" y="422.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">AS</text>
+<rect x="665" y="405" width="105" height="35" rx="8" fill="#059669"/>
+<text x="717.5" y="422.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">SA</text>
+<rect x="787" y="405" width="105" height="35" rx="8" fill="#d97706"/>
+<text x="839.5" y="422.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">WT</text>
+<rect x="909" y="405" width="105" height="35" rx="8" fill="#ca8a04"/>
+<text x="961.5" y="422.5" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">NI</text>
+<text x="55" y="452" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="500" fill="#999" text-anchor="start" dominant-baseline="central">Tier 3 (audit) + Scheduled</text>
+<rect x="30" y="485" width="1040" height="40" rx="6" fill="#f1f5f9"/>
+<text x="550" y="505" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="400" fill="#475569" text-anchor="middle" dominant-baseline="central">Horizontal scaling: kubectl scale deployment/loom-worker-sp --replicas=N  |  NATS queue groups auto-balance  |  HPA supported</text>
+        </svg>

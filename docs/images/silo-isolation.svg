@@ -1,0 +1,116 @@
+        <?xml version="1.0" encoding="UTF-8"?>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+        <defs><marker id="arrow_1" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#dc2626"/></marker>
+<marker id="arrow_2" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#dc2626"/></marker>
+<marker id="arrow_3" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#dc2626"/></marker>
+<marker id="arrow_4" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 3 L 0 6 z" fill="#dc2626"/></marker></defs>
+        <rect width="1200" height="800" rx="12" fill="#fafafb"/>
+<text x="40" y="38" font-family="Inter, system-ui, sans-serif" font-size="26" font-weight="700" fill="#1e1e26" text-anchor="start" dominant-baseline="central">Baft — Knowledge Silo Isolation</text>
+<text x="40" y="62" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="400" fill="#888" text-anchor="start" dominant-baseline="central">Epistemic quarantine: who sees what — the foundation of audit independence</text>
+<rect x="30" y="95" width="360" height="260" rx="10" fill="#fef2f2"/>
+<text x="44" y="109" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="500" fill="#888" text-anchor="start" dominant-baseline="hanging">ISOLATED SILOS  (strict access control)</text>
+<rect x="50" y="130" width="210" height="55" rx="6" fill="#fff" stroke="#dc2626" stroke-width="2"/>
+<text x="60" y="150" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#dc2626" text-anchor="start" dominant-baseline="central">framework_full</text>
+<text x="60" y="168" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">Full ITB + ISA</text>
+<line x1="260" y1="157" x2="290" y2="157" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrow_1)"/>
+<rect x="290" y="144" width="36" height="26" rx="4" fill="#dc2626"/>
+<text x="308" y="157" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">IA</text>
+<rect x="50" y="202" width="210" height="55" rx="6" fill="#fff" stroke="#dc2626" stroke-width="2"/>
+<text x="60" y="222" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#dc2626" text-anchor="start" dominant-baseline="central">database_current</text>
+<text x="60" y="240" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">Entity state</text>
+<line x1="260" y1="229" x2="290" y2="229" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrow_2)"/>
+<rect x="290" y="216" width="36" height="26" rx="4" fill="#dc2626"/>
+<text x="308" y="229" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">IA</text>
+<line x1="260" y1="229" x2="340" y2="229" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrow_3)"/>
+<rect x="340" y="216" width="36" height="26" rx="4" fill="#dc2626"/>
+<text x="358" y="229" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">DE</text>
+<rect x="50" y="274" width="210" height="55" rx="6" fill="#fff" stroke="#dc2626" stroke-width="2"/>
+<text x="60" y="294" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#dc2626" text-anchor="start" dominant-baseline="central">cognitive_profile</text>
+<text x="60" y="312" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">Analyst profile</text>
+<line x1="260" y1="301" x2="290" y2="301" stroke="#dc2626" stroke-width="1.5" marker-end="url(#arrow_4)"/>
+<rect x="290" y="288" width="36" height="26" rx="4" fill="#dc2626"/>
+<text x="308" y="301" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">SA</text>
+<rect x="30" y="365" width="1140" height="30" rx="0" fill="#fef2f2"/>
+<text x="600" y="380" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#dc2626" text-anchor="middle" dominant-baseline="central">RED LINE: framework_full and database_current MUST NEVER reach blind workers (LA, PA, RT, AS) or SA</text>
+<rect x="420" y="95" width="750" height="260" rx="10" fill="#f0fdf4"/>
+<text x="434" y="109" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="500" fill="#888" text-anchor="start" dominant-baseline="hanging">SHARED SILOS</text>
+<rect x="440" y="125" width="220" height="42" rx="5" fill="#fff" stroke="#86efac" stroke-width="1"/>
+<text x="450" y="141" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#166534" text-anchor="start" dominant-baseline="central">framework_schemas</text>
+<text x="450" y="157" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">DE, XV</text>
+<rect x="680" y="125" width="220" height="42" rx="5" fill="#fff" stroke="#86efac" stroke-width="1"/>
+<text x="690" y="141" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#166534" text-anchor="start" dominant-baseline="central">entity_id_registry</text>
+<text x="690" y="157" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">XV, SP, DE</text>
+<rect x="920" y="125" width="220" height="42" rx="5" fill="#fff" stroke="#86efac" stroke-width="1"/>
+<text x="930" y="141" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#166534" text-anchor="start" dominant-baseline="central">source_hierarchy</text>
+<text x="930" y="157" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">SP, WT, NI</text>
+<rect x="440" y="180" width="220" height="42" rx="5" fill="#fff" stroke="#86efac" stroke-width="1"/>
+<text x="450" y="196" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#166534" text-anchor="start" dominant-baseline="central">epistemic_rules</text>
+<text x="450" y="212" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">SP, IA</text>
+<rect x="680" y="180" width="220" height="42" rx="5" fill="#fff" stroke="#86efac" stroke-width="1"/>
+<text x="690" y="196" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#166534" text-anchor="start" dominant-baseline="central">entity_name_registry</text>
+<text x="690" y="212" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">SP</text>
+<rect x="920" y="180" width="220" height="42" rx="5" fill="#fff" stroke="#86efac" stroke-width="1"/>
+<text x="930" y="196" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#166534" text-anchor="start" dominant-baseline="central">terminology_registry</text>
+<text x="930" y="212" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">TN only</text>
+<rect x="440" y="235" width="220" height="42" rx="5" fill="#fff" stroke="#86efac" stroke-width="1"/>
+<text x="450" y="251" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#166534" text-anchor="start" dominant-baseline="central">tier_rules</text>
+<text x="450" y="267" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">SA</text>
+<rect x="680" y="235" width="220" height="42" rx="5" fill="#fff" stroke="#86efac" stroke-width="1"/>
+<text x="690" y="251" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#166534" text-anchor="start" dominant-baseline="central">watch_list</text>
+<text x="690" y="267" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">WT</text>
+<rect x="920" y="235" width="220" height="42" rx="5" fill="#fff" stroke="#86efac" stroke-width="1"/>
+<text x="930" y="251" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#166534" text-anchor="start" dominant-baseline="central">constitution</text>
+<text x="930" y="267" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">All workers</text>
+<rect x="440" y="290" width="220" height="42" rx="5" fill="#fff" stroke="#86efac" stroke-width="1"/>
+<text x="450" y="306" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#166534" text-anchor="start" dominant-baseline="central">evaluation_rubric</text>
+<text x="450" y="322" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#999" text-anchor="start" dominant-baseline="central">LA, PA</text>
+<rect x="30" y="420" width="560" height="170" rx="10" fill="#eff6ff"/>
+<text x="44" y="434" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="500" fill="#888" text-anchor="start" dominant-baseline="hanging">SIGHTED WORKERS  (access analytical framework)</text>
+<rect x="55" y="455" width="85" height="45" rx="8" fill="#d97520"/>
+<text x="97.5" y="477.5" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">SP</text>
+<rect x="160" y="455" width="85" height="45" rx="8" fill="#b5332e"/>
+<text x="202.5" y="477.5" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">IA</text>
+<rect x="265" y="455" width="85" height="45" rx="8" fill="#4278d9"/>
+<text x="307.5" y="477.5" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">XV</text>
+<rect x="370" y="455" width="85" height="45" rx="8" fill="#6b7280"/>
+<text x="412.5" y="477.5" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">DE</text>
+<rect x="475" y="455" width="85" height="45" rx="8" fill="#2e9e57"/>
+<text x="517.5" y="477.5" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">IN</text>
+<text x="55" y="515" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#1e40af" text-anchor="start">
+  <tspan x="55" dy="0">Can see: framework_full (IA), database_current (IA, DE),</tspan>
+  <tspan x="55" dy="12.6">framework_schemas, entity registries, epistemic rules, constitution</tspan>
+</text>
+<rect x="55" y="555" width="280" height="22" rx="4" fill="#dbeafe" stroke="#93c5fd" stroke-width="1"/>
+<text x="195.0" y="566.0" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#1e40af" text-anchor="middle" dominant-baseline="central">SP has no session_id — processes raw source only</text>
+<rect x="620" y="420" width="550" height="170" rx="10" fill="#faf5ff"/>
+<text x="634" y="434" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="500" fill="#888" text-anchor="start" dominant-baseline="hanging">BLIND WORKERS  (no framework data)</text>
+<rect x="645" y="455" width="85" height="45" rx="8" fill="#8b5cf6"/>
+<text x="687.5" y="477.5" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">TN</text>
+<rect x="750" y="455" width="85" height="45" rx="8" fill="#0891b2"/>
+<text x="792.5" y="477.5" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">LA</text>
+<rect x="855" y="455" width="85" height="45" rx="8" fill="#0891b2"/>
+<text x="897.5" y="477.5" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">PA</text>
+<rect x="960" y="455" width="85" height="45" rx="8" fill="#dc2626"/>
+<text x="1002.5" y="477.5" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">RT</text>
+<rect x="1065" y="455" width="85" height="45" rx="8" fill="#7c3aed"/>
+<text x="1107.5" y="477.5" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">AS</text>
+<text x="645" y="515" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#6b21a8" text-anchor="start">
+  <tspan x="645" dy="0">Can see: constitution only (+ evaluation_rubric for LA, PA)</tspan>
+  <tspan x="645" dy="12.6">TN: terminology_registry only (neutralization firewall)</tspan>
+</text>
+<rect x="645" y="555" width="280" height="22" rx="4" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="1"/>
+<text x="785.0" y="566.0" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#6b21a8" text-anchor="middle" dominant-baseline="central">TN output is the ONLY input to blind auditors</text>
+<rect x="30" y="615" width="1140" height="90" rx="10" fill="#fffbeb"/>
+<text x="44" y="629" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="500" fill="#888" text-anchor="start" dominant-baseline="hanging">BACKGROUND / SCHEDULED WORKERS</text>
+<rect x="55" y="645" width="60" height="40" rx="8" fill="#059669"/>
+<text x="85.0" y="665.0" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">SA</text>
+<text x="130" y="658" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#92400e" text-anchor="start" dominant-baseline="central">cognitive_profile, tier_rules, constitution</text>
+<rect x="435" y="645" width="60" height="40" rx="8" fill="#d97706"/>
+<text x="465.0" y="665.0" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">WT</text>
+<text x="510" y="658" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#92400e" text-anchor="start" dominant-baseline="central">source_hierarchy, watch_list</text>
+<rect x="815" y="645" width="60" height="40" rx="8" fill="#ca8a04"/>
+<text x="845.0" y="665.0" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="600" fill="#fff" text-anchor="middle" dominant-baseline="central">NI</text>
+<text x="890" y="658" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#92400e" text-anchor="start" dominant-baseline="central">source_hierarchy</text>
+<rect x="55" y="690" width="400" height="20" rx="4" fill="#fffbeb" stroke="#fde68a" stroke-width="1"/>
+<text x="255.0" y="700.0" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="400" fill="#92400e" text-anchor="middle" dominant-baseline="central">SA is isolated from analytical framework — monitors behavior, not content</text>
+        </svg>
