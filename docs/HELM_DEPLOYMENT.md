@@ -12,7 +12,7 @@ The Baft Helm chart deploys the full ITP analytical engine onto Kubernetes. A si
 - **Valkey** -- Redis-compatible checkpoint store
 - **Ollama** -- local LLM backend (optional GPU acceleration)
 - **DuckDB import CronJob** -- incremental YAML-to-DuckDB import
-- **Framework git-sync sidecar** -- keeps the framework repo current on a shared PVC
+- **Baseline git-sync sidecar** -- keeps the baseline repo current on a shared PVC
 - **Commit agent** -- auto-commits analytical session changes back to git
 - **Workshop UI** -- web interface for worker testing, eval, and config management
 - **MCP gateway** -- exposes workers and DuckDB queries as MCP tools
@@ -40,7 +40,7 @@ kubectl create secret generic baft-api-keys \
 If using SSH-based git sync, also create:
 
 ```bash
-kubectl create secret generic framework-ssh-key \
+kubectl create secret generic baseline-ssh-key \
   --namespace baft \
   --from-file=id_rsa=$HOME/.ssh/id_rsa_deploy
 ```
@@ -72,13 +72,13 @@ All options live in `charts/baft/values.yaml`. Override with `--set` flags or a 
 ### Framework Git Sync
 
 ```yaml
-framework:
-  repo: "https://github.com/IranTransitionProject/framework.git"
+baseline:
+  repo: "https://github.com/IranTransitionProject/baseline.git"
   branch: main
   sshKeySecret: ""          # Secret name with id_rsa key (SSH auth)
   gitTokenSecret: ""        # Secret name with GITHUB_TOKEN (HTTPS auth)
   syncInterval: 60          # Seconds between pulls
-  storage: 2Gi              # PVC size for framework checkout
+  storage: 2Gi              # PVC size for baseline checkout
   commitAgent:
     enabled: true
     interval: 900            # 15 min between auto-commits
@@ -174,9 +174,9 @@ When enabled, the `OTEL_EXPORTER_OTLP_ENDPOINT` env var is automatically set on 
 
 The chart deploys a git-sync sidecar alongside a shared PVC:
 
-1. **PVC** (`framework-pvc`, size from `framework.storage`) holds the checked-out framework repo.
-2. **git-sync container** pulls from `framework.repo` / `framework.branch` every `syncInterval` seconds.
-3. **All worker and pipeline pods** mount the PVC at `/data/framework` (the `ITP_ROOT` path).
+1. **PVC** (`baseline-pvc`, size from `baseline.storage`) holds the checked-out baseline repo.
+2. **git-sync container** pulls from `baseline.repo` / `baseline.branch` every `syncInterval` seconds.
+3. **All worker and pipeline pods** mount the PVC at `/data/baseline` (the `ITP_ROOT` path).
 4. **Commit agent** (when `commitAgent.enabled: true`) runs in a separate container, periodically staging changes, committing, and pushing back to the remote.
 
 Authentication priority:
@@ -317,4 +317,4 @@ If the model download hangs, the Ollama PVC may be too small. Increase `ollama.s
 kubectl logs -n baft job/<latest-import-job> --tail=30
 ```
 
-The import script needs the framework PVC mounted and readable. Verify the CronJob's volume mounts match the git-sync PVC name.
+The import script needs the baseline PVC mounted and readable. Verify the CronJob's volume mounts match the git-sync PVC name.

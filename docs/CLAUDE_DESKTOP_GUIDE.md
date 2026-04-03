@@ -19,7 +19,7 @@ This guide walks through connecting Baft's multi-agent analytical pipeline to Cl
                                          └─────────┘   └──────────┘   └──────────┘
 ```
 
-Claude Desktop connects to the Loom MCP server, which exposes Baft's workers and pipelines as MCP tools. When you ask Claude to process a source or run an analysis, Claude calls the appropriate tool, which routes through NATS to the right worker, and the structured result flows back into the chat.
+Claude Desktop connects to the Heddle MCP server, which exposes Baft's workers and pipelines as MCP tools. When you ask Claude to process a source or run an analysis, Claude calls the appropriate tool, which routes through NATS to the right worker, and the structured result flows back into the chat.
 
 **What Claude sees as tools:**
 
@@ -40,7 +40,7 @@ Claude Desktop connects to the Loom MCP server, which exposes Baft's workers and
 
 **What Claude sees as resources:**
 
-- `variables.yaml`, `observations.yaml`, `scenarios.yaml`, `traps.yaml`, `gaps.yaml`, `modules.yaml`, `sessions.yaml` — readable ITP framework data files
+- `variables.yaml`, `observations.yaml`, `scenarios.yaml`, `traps.yaml`, `gaps.yaml`, `modules.yaml`, `sessions.yaml` — readable ITP baseline data files
 
 ---
 
@@ -68,12 +68,12 @@ All three repos must be siblings in the same parent directory:
 
 ```text
 ITP_ROOT/               # e.g. ~/Projects/ITP
-├── framework/          # ITP YAML database
+├── baseline/           # ITP YAML database
 │   └── data/
 │       ├── variables.yaml
 │       ├── observations.yaml
 │       └── ...
-├── loom/               # Actor mesh framework
+├── heddle/               # Actor mesh framework
 └── baft/               # This repo — ITP application layer
 ```
 
@@ -84,7 +84,7 @@ ITP_ROOT/               # e.g. ~/Projects/ITP
 ```bash
 cd /path/to/baft
 
-# Install baft + loom (loom resolved from ../loom automatically)
+# Install baft + heddle (heddle resolved from ../heddle automatically)
 uv sync --extra dev
 ```
 
@@ -111,12 +111,12 @@ To test which models work best for each role, use the audition script:
 uv run python scripts/audition_models.py --role de --all-providers
 ```
 
-## Step 3: Import framework data to DuckDB
+## Step 3: Import baseline data to DuckDB
 
 This creates the queryable entity database used by the `itp_search`, `itp_filter`, `itp_stats`, and `itp_get` tools:
 
 ```bash
-export ITP_ROOT="/path/to/ITP"   # parent of framework/, loom/, baft/
+export ITP_ROOT="/path/to/ITP"   # parent of baseline/, heddle/, baft/
 uv run python pipeline/scripts/itp_import_to_duckdb.py
 ```
 
@@ -190,7 +190,7 @@ Add the Baft MCP server configuration:
 {
   "mcpServers": {
     "baft": {
-      "command": "/path/to/baft/.venv/bin/loom",
+      "command": "/path/to/baft/.venv/bin/heddle",
       "args": [
         "mcp",
         "--config",
@@ -214,7 +214,7 @@ Add the Baft MCP server configuration:
 {
   "mcpServers": {
     "baft": {
-      "command": "C:\\path\\to\\baft\\.venv\\Scripts\\loom.exe",
+      "command": "C:\\path\\to\\baft\\.venv\\Scripts\\heddle.exe",
       "args": [
         "mcp",
         "--config",
@@ -232,18 +232,18 @@ Add the Baft MCP server configuration:
 }
 ```
 
-**Finding the loom binary path:**
+**Finding the heddle binary path:**
 
 ```bash
 # macOS / Linux
-which loom                              # if installed globally
+which heddle                              # if installed globally
 # or use the venv path directly:
-echo "$(cd /path/to/baft && pwd)/.venv/bin/loom"
+echo "$(cd /path/to/baft && pwd)/.venv/bin/heddle"
 
 # Windows (PowerShell)
-(Get-Command loom).Source
+(Get-Command heddle).Source
 # or:
-Join-Path (Resolve-Path .\baft\.venv\Scripts) "loom.exe"
+Join-Path (Resolve-Path .\baft\.venv\Scripts) "heddle.exe"
 ```
 
 ### A3. Restart Claude Desktop
@@ -334,7 +334,7 @@ bash scripts/baft.sh stop       # Stop everything
 Claude Code connects to MCP servers via stdio. Add the server to your Claude Code MCP config:
 
 ```bash
-claude mcp add baft -- /path/to/baft/.venv/bin/loom mcp --config /path/to/baft/configs/mcp/itp.yaml
+claude mcp add baft -- /path/to/baft/.venv/bin/heddle mcp --config /path/to/baft/configs/mcp/itp.yaml
 ```
 
 Or manually in `~/.claude/settings.json`:
@@ -343,7 +343,7 @@ Or manually in `~/.claude/settings.json`:
 {
   "mcpServers": {
     "baft": {
-      "command": "/path/to/baft/.venv/bin/loom",
+      "command": "/path/to/baft/.venv/bin/heddle",
       "args": ["mcp", "--config", "/path/to/baft/configs/mcp/itp.yaml"],
       "env": {
         "ANTHROPIC_API_KEY": "sk-ant-...",
@@ -419,10 +419,10 @@ Claude calls `validate_cross_refs` directly with the entity list.
 ### Tools not appearing in Claude Desktop
 
 1. **Check the config JSON is valid.** Use a JSON validator. A single trailing comma breaks it.
-2. **Verify the loom binary path.** Run the `command` + `args` manually in a terminal:
+2. **Verify the heddle binary path.** Run the `command` + `args` manually in a terminal:
 
    ```bash
-   /path/to/baft/.venv/bin/loom mcp --config /path/to/baft/configs/mcp/itp.yaml
+   /path/to/baft/.venv/bin/heddle mcp --config /path/to/baft/configs/mcp/itp.yaml
    ```
 
    You should see no output (it's waiting on stdio). Press Ctrl-C to exit.
@@ -461,21 +461,21 @@ docker run -d --name nats-baft -p 4222:4222 -p 8222:8222 nats:latest --http_port
 
 ### "Silo not found" warnings
 
-The `resolve_config.py` script expands `silo:` references in worker configs. Ensure `ITP_ROOT` points to the correct directory and that `framework/data/` exists:
+The `resolve_config.py` script expands `silo:` references in worker configs. Ensure `ITP_ROOT` points to the correct directory and that `baseline/data/` exists:
 
 ```bash
-ls $ITP_ROOT/framework/data/
+ls $ITP_ROOT/baseline/data/
 ```
 
 ### Windows-specific issues
 
 - Use forward slashes or escaped backslashes in JSON paths: `"C:/path/to/baft"` or `"C:\\path\\to\\baft"`
-- If `loom.exe` is not found, try using `python` as the command:
+- If `heddle.exe` is not found, try using `python` as the command:
 
   ```json
   {
     "command": "C:\\path\\to\\baft\\.venv\\Scripts\\python.exe",
-    "args": ["-m", "loom.cli.main", "mcp", "--config", "C:\\path\\to\\baft\\configs\\mcp\\itp.yaml"]
+    "args": ["-m", "heddle.cli.main", "mcp", "--config", "C:\\path\\to\\baft\\configs\\mcp\\itp.yaml"]
   }
   ```
 
@@ -512,7 +512,7 @@ Failed tasks land in the dead-letter queue. Ask Claude:
 For real-time monitoring, open a terminal and run:
 
 ```bash
-uv run loom ui --nats-url nats://localhost:4222
+uv run heddle ui --nats-url nats://localhost:4222
 ```
 
 ### Workshop web UI
@@ -520,7 +520,7 @@ uv run loom ui --nats-url nats://localhost:4222
 For hands-on worker management:
 
 ```bash
-uv run loom workshop --port 8080
+uv run heddle workshop --port 8080
 ```
 
 See the [Operations Guide](OPERATIONS_GUIDE.md) for technical details.

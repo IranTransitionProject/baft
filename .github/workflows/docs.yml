@@ -37,7 +37,7 @@ jobs:
         run: .docs-venv/bin/mkdocs build
         env:
           MKDOCSTRINGS_ENABLED: "false"
-          # API reference pages require baft importable (needs ../loom).
+          # API reference pages require baft importable (needs ../heddle).
           # Disable mkdocstrings in CI; API docs render locally.
 
       - name: Upload artifact

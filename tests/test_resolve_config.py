@@ -33,9 +33,9 @@ import resolve_config
 
 @pytest.fixture
 def fake_itp_root(tmp_path):
-    """Create a fake ITP project root with framework/data directory."""
+    """Create a fake ITP project root with baseline/data directory."""
     itp_root = tmp_path / "itp_project"
-    (itp_root / "framework" / "data").mkdir(parents=True)
+    (itp_root / "baseline" / "data").mkdir(parents=True)
     return itp_root
 
 
@@ -47,11 +47,11 @@ def silo_index_file(tmp_path):
             "framework_full": {
                 "sources": [
                     {
-                        "path": "${ITP_ROOT}/framework/output/itb_full.md",
+                        "path": "${ITP_ROOT}/baseline/output/itb_full.md",
                         "inject_as": "analytical_framework",
                     },
                     {
-                        "path": "${ITP_ROOT}/framework/output/isa_full.md",
+                        "path": "${ITP_ROOT}/baseline/output/isa_full.md",
                         "inject_as": "stress_architecture",
                     },
                 ]
@@ -161,8 +161,8 @@ class TestResolveItpRoot:
         """When ITP_ROOT is not set and auto-detection fails, raise FileNotFoundError."""
         monkeypatch.delenv("ITP_ROOT", raising=False)
 
-        # Point BAFT_DIR to a directory whose parent lacks framework/data.
-        empty_dir = tmp_path / "no_framework" / "baft"
+        # Point BAFT_DIR to a directory whose parent lacks baseline/data.
+        empty_dir = tmp_path / "no_baseline" / "baft"
         empty_dir.mkdir(parents=True)
         monkeypatch.setattr(resolve_config, "BAFT_DIR", empty_dir)
 
@@ -175,7 +175,7 @@ class TestResolveItpRoot:
         custom_root.mkdir()
         monkeypatch.setenv("ITP_ROOT", str(custom_root))
 
-        # BAFT_DIR.parent has framework/data, but env var should override.
+        # BAFT_DIR.parent has baseline/data, but env var should override.
         fake_baft = fake_itp_root / "baft"
         fake_baft.mkdir(exist_ok=True)
         monkeypatch.setattr(resolve_config, "BAFT_DIR", fake_baft)

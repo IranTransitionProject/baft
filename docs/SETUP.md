@@ -34,8 +34,8 @@ All four repos live side-by-side under a common parent directory:
 ```bash
 mkdir -p ~/IranTransitionProject && cd ~/IranTransitionProject
 
-git clone git@github.com:IranTransitionProject/framework.git
-git clone git@github.com:IranTransitionProject/loom.git
+git clone git@github.com:IranTransitionProject/baseline.git
+git clone git@github.com:getheddle/heddle.git
 git clone git@github.com:IranTransitionProject/baft.git
 git clone git@github.com:IranTransitionProject/docman.git   # optional
 ```
@@ -44,8 +44,8 @@ Expected layout:
 
 ```text
 ~/IranTransitionProject/          # $ITP_ROOT
-├── framework/                    # YAML analytical database (live repo)
-├── loom/                         # Actor-based LLM framework
+├── baseline/                     # YAML analytical database (live repo)
+├── heddle/                         # Actor-based LLM framework
 ├── baft/                         # ITP application layer
 └── docman/                       # Document processing (optional)
 ```
@@ -54,12 +54,12 @@ Expected layout:
 
 ## 2. Install dependencies
 
-Baft resolves loom from the adjacent directory automatically via
+Baft resolves heddle from the adjacent directory automatically via
 `[tool.uv.sources]` in `pyproject.toml` — no manual linking needed.
 
 ```bash
-# Install loom with all extras
-cd ~/IranTransitionProject/loom
+# Install heddle with all extras
+cd ~/getheddle/heddle
 uv sync --all-extras
 
 # Install baft
@@ -70,7 +70,7 @@ uv sync --extra dev
 uv sync --extra eval
 
 # Verify
-uv run python -c "import loom; print(f'Loom {loom.__version__}')"
+uv run python -c "import heddle; print(f'Heddle {heddle.__version__}')"
 uv run python -c "import baft; print('Baft OK')"
 ```
 
@@ -81,7 +81,7 @@ uv run python -c "import baft; print('Baft OK')"
 Add these to your shell profile (`~/.zshrc`, `~/.bashrc`, etc.):
 
 ```bash
-# ITP project root (parent of framework/, loom/, baft/)
+# ITP project root (parent of baseline/, heddle/, baft/)
 export ITP_ROOT="$HOME/IranTransitionProject"
 
 # Workspace for DuckDB and working files
@@ -128,9 +128,9 @@ Verify: `curl -s http://localhost:8222/varz | head -5`
 
 ---
 
-## 6. Import framework data to DuckDB
+## 6. Import baseline data to DuckDB
 
-The framework repository is a collection of YAML files. The import script
+The baseline repository is a collection of YAML files. The import script
 converts them into a queryable DuckDB database:
 
 ```bash
@@ -186,10 +186,10 @@ The MCP gateway exposes all baft workers and pipelines as tools:
 
 ```bash
 # stdio transport (for Claude Desktop)
-uv run loom mcp --config configs/mcp/itp.yaml
+uv run heddle mcp --config configs/mcp/itp.yaml
 
 # HTTP transport (for Cursor, web clients)
-uv run loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765
+uv run heddle mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765
 ```
 
 ### Claude Desktop configuration
@@ -203,7 +203,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
       "command": "uv",
       "args": [
         "run", "--project", "/Users/YOU/IranTransitionProject/baft",
-        "loom", "mcp", "--config", "configs/mcp/itp.yaml"
+        "heddle", "mcp", "--config", "configs/mcp/itp.yaml"
       ],
       "env": {
         "ITP_ROOT": "/Users/YOU/IranTransitionProject",
@@ -227,10 +227,10 @@ quality baselines, and managing pipeline configurations:
 
 ```bash
 cd ~/IranTransitionProject/baft
-uv run loom workshop --port 8080
+uv run heddle workshop --port 8080
 
 # With NATS metrics (optional)
-uv run loom workshop --port 8080 --nats-url nats://localhost:4222
+uv run heddle workshop --port 8080 --nats-url nats://localhost:4222
 ```
 
 Open <http://localhost:8080> to access:
@@ -253,7 +253,7 @@ The terminal UI shows real-time pipeline execution — goals, tasks, stages,
 and all NATS events:
 
 ```bash
-uv run loom ui --nats-url nats://localhost:4222
+uv run heddle ui --nats-url nats://localhost:4222
 ```
 
 This is a read-only observer. Keyboard: `q` quit, `c` clear log, `r` refresh.
@@ -307,7 +307,7 @@ The `baft` CLI automates the repetitive parts of session lifecycle:
 ### Before a session
 
 ```bash
-# One command: pull framework, import DuckDB, check services, register
+# One command: pull baseline, import DuckDB, check services, register
 uv run baft session start
 
 # Or with a custom session ID
@@ -322,9 +322,9 @@ Use the MCP tools through Claude Desktop or the Workshop web UI.
 The standard analytical workflow:
 
 1. **`process_sources`** — Extract claims from source material
-2. **`analyze_intelligence`** — Analyze against the framework
+2. **`analyze_intelligence`** — Analyze against the baseline
 3. **`validate_cross_refs`** — Check consistency
-4. **`update_database`** — Persist to the framework
+4. **`update_database`** — Persist to the baseline
 
 Or use the pipeline tools:
 
@@ -341,7 +341,7 @@ uv run baft session sync-check
 ### After a session
 
 ```bash
-# One command: commit framework, push, unregister
+# One command: commit baseline, push, unregister
 uv run baft session end -m "Reviewed IRGC command structure updates"
 ```
 
@@ -387,12 +387,12 @@ for the full instruction set that Claude follows.
 | `NATS not reachable` | `docker start nats-itp` or re-run the docker run command |
 | `No LLM backends available` | Check `OLLAMA_URL` and `ANTHROPIC_API_KEY` are set |
 | `Worker crashed` | Check logs in `.worker-logs/` — common cause is missing env vars |
-| `DuckDB import fails` | Ensure `$ITP_ROOT/framework/data/` exists and has YAML files |
+| `DuckDB import fails` | Ensure `$ITP_ROOT/baseline/data/` exists and has YAML files |
 | `MCP connection refused` | Ensure NATS is running and workers are started first |
-| `uv sync fails` | Ensure `../loom` directory exists (baft resolves loom from adjacent dir) |
+| `uv sync fails` | Ensure `../heddle` directory exists (baft resolves heddle from adjacent dir) |
 
-For framework-level troubleshooting, see
-[loom/docs/TROUBLESHOOTING.md](../../loom/docs/TROUBLESHOOTING.md).
+For baseline-level troubleshooting, see
+[heddle/docs/TROUBLESHOOTING.md](../../heddle/docs/TROUBLESHOOTING.md).
 
 ---
 
@@ -404,7 +404,7 @@ Claude Desktop / Cursor
        ▼
 ┌─────────────────┐
 │  MCP Gateway    │──── DuckDB queries (itp_search, itp_filter, itp_stats)
-│  (loom mcp)     │──── Framework YAML as MCP resources
+│  (heddle mcp)     │──── Framework YAML as MCP resources
 └────────┬────────┘
          │ NATS
          ▼
@@ -423,6 +423,6 @@ Claude Desktop / Cursor
 
 ---
 
-*For Loom framework documentation, see [loom/docs/GETTING_STARTED.md](../../loom/docs/GETTING_STARTED.md).*
-*For Kubernetes deployment, see [loom/docs/KUBERNETES.md](../../loom/docs/KUBERNETES.md).*
+*For Heddle framework documentation, see [heddle/docs/GETTING_STARTED.md](../../heddle/docs/GETTING_STARTED.md).*
+*For Kubernetes deployment, see [heddle/docs/KUBERNETES.md](../../heddle/docs/KUBERNETES.md).*
 *For document processing, see [docman/CLAUDE.md](../../docman/CLAUDE.md).*

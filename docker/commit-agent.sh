@@ -1,13 +1,13 @@
 #!/bin/sh
-# Git commit agent sidecar — periodically commits and pushes framework changes.
+# Git commit agent sidecar — periodically commits and pushes baseline changes.
 # Environment variables:
 #   COMMIT_INTERVAL — seconds between cycles (default: 900)
 #   COMMIT_MESSAGE  — commit message prefix (default: "Auto-commit")
-#   FRAMEWORK_DIR   — path to framework repo (default: /data/framework)
+#   BASELINE_DIR    — path to baseline repo (default: /data/baseline)
 
 INTERVAL="${COMMIT_INTERVAL:-900}"
 MESSAGE="${COMMIT_MESSAGE:-Auto-commit: analytical session updates}"
-DIR="${FRAMEWORK_DIR:-/data/framework}"
+DIR="${BASELINE_DIR:-/data/baseline}"
 
 echo "Commit agent started: interval=${INTERVAL}s, dir=${DIR}"
 

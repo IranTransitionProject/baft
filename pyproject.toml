@@ -5,11 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "baft"
 version = "0.3.0"
-description = "ITP analytical engine — application layer on the Loom framework"
+description = "ITP analytical engine — application layer on the Heddle framework"
 requires-python = ">=3.11"
 
 dependencies = [
-    "loom-ai[mcp,duckdb,rag,workshop,tui,otel]",
+    "heddle-ai[mcp,duckdb,rag,workshop,tui,otel]",
     "pyyaml>=6.0",
     "pydantic>=2.0",
     "structlog>=24.0",
@@ -40,7 +40,7 @@ baft = "baft.cli:main"
 packages = ["src/baft"]
 
 [tool.uv.sources]
-loom-ai = { path = "../loom", editable = true }
+heddle-ai = { path = "../heddle", editable = true }
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

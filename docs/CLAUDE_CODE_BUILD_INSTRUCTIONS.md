@@ -14,18 +14,18 @@ Build the Baft repository from the skeleton provided. Baft is the ITP-specific c
 
 1. `CLAUDE.md` — operating rules for this repo
 2. `docs/architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md` — the canonical node spec
-3. `$ITP_ROOT/loom/configs/workers/_template.yaml` — Loom worker config format
-4. `$ITP_ROOT/loom/configs/workers/summarizer.yaml` — real example worker config
+3. `$ITP_ROOT/heddle/configs/workers/_template.yaml` — Loom worker config format
+4. `$ITP_ROOT/heddle/configs/workers/summarizer.yaml` — real example worker config
 
 ---
 
 ## Session 1: Worker configs + MCP gateway (Sprint 1, Batch A)
 
-### Step 1.1 — Read the Loom worker template format
+### Step 1.1 — Read the Heddle worker template format
 
 ```bash
-cat $ITP_ROOT/loom/configs/workers/_template.yaml
-cat $ITP_ROOT/loom/configs/workers/summarizer.yaml
+cat $ITP_ROOT/heddle/configs/workers/_template.yaml
+cat $ITP_ROOT/heddle/configs/workers/summarizer.yaml
 ```
 
 Understand the schema before writing any worker config. Every worker config needs:
@@ -98,7 +98,7 @@ Write in this order:
 **CRITICAL SILO ISOLATION RULE:**  
 LA, PA, RT must NOT have any knowledge_sources pointing to:
 
-- `framework/` data directory (any YAML entities)
+- `baseline/` data directory (any YAML entities)
 - Framework module content (ITB/ISA)
 - ITP-specific documents
 
@@ -187,7 +187,7 @@ These nodes are blind. They receive only the neutralized analytical text and the
 
 ### Step 1.5 — Write orchestrator pipeline configs
 
-Read `$ITP_ROOT/loom/configs/orchestrators/rag_pipeline.yaml` for format.
+Read `$ITP_ROOT/heddle/configs/orchestrators/rag_pipeline.yaml` for format.
 
 **File: `configs/orchestrators/itp_quick.yaml`** — single-stage, just DE
 **File: `configs/orchestrators/itp_standard.yaml`** — SP → IA → DE (sequential, pass output forward)
@@ -213,7 +213,7 @@ for f in configs/orchestrators/*.yaml; do
 done
 
 # Try starting MCP server dry run
-loom mcp --config configs/mcp/itp.yaml --dry-run 2>/dev/null || echo "Note: --dry-run may not be supported; check loom mcp --help"
+heddle mcp --config configs/mcp/itp.yaml --dry-run 2>/dev/null || echo "Note: --dry-run may not be supported; check heddle mcp --help"
 ```
 
 ---
@@ -270,7 +270,7 @@ Include: confidence band definitions (High/Medium/Low/Marginal) and combination 
 python3 -c "
 import yaml
 from pathlib import Path
-data = yaml.safe_load(open('$ITP_ROOT/framework/data/variables.yaml'))
+data = yaml.safe_load(open('$ITP_ROOT/baseline/data/variables.yaml'))
 # Extract entity names and aliases
 # Write to pipeline/config/itp_entity_name_registry.yaml
 "
@@ -302,19 +302,19 @@ Note: ROBOTIC-LLM.md path is wherever Hooman has it. Ask if unclear.
 
 ### Step 3.1 — Fix Loom streamable HTTP transport (Gap 1)
 
-**File:** `$ITP_ROOT/loom/src/loom/mcp/server.py`
+**File:** `$ITP_ROOT/heddle/src/heddle/mcp/server.py`
 **Function:** `run_streamable_http()`
 
 Read the current implementation first:
 
 ```bash
-cat $ITP_ROOT/loom/src/loom/mcp/server.py | grep -A 40 "def run_streamable_http"
+cat $ITP_ROOT/heddle/src/heddle/mcp/server.py | grep -A 40 "def run_streamable_http"
 ```
 
 Replace the stub with a working implementation. The FastMCP library should provide an ASGI app wrapper. Check what's available:
 
 ```bash
-cd $ITP_ROOT/loom
+cd $ITP_ROOT/heddle
 python3 -c "import mcp.server.fastmcp; help(mcp.server.fastmcp)" 2>/dev/null | head -50
 ```
 
@@ -324,17 +324,17 @@ After fixing, validate:
 
 ```bash
 cd $ITP_ROOT/baft
-loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765 &
+heddle mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765 &
 sleep 2
 curl http://localhost:8765/health
 kill %1
 ```
 
-Commit the fix to the Loom repo separately:
+Commit the fix to the Heddle repo separately:
 
 ```bash
-cd $ITP_ROOT/loom
-git add src/loom/mcp/server.py
+cd $ITP_ROOT/heddle
+git add src/heddle/mcp/server.py
 git commit -m "Fix streamable HTTP MCP transport (was stub, now functional)"
 ```
 
@@ -349,13 +349,13 @@ valkey-server &
 sleep 1
 
 # Start DE worker only (Tier 1 test)
-loom worker --config configs/workers/de_database_engineer.yaml --tier local --nats-url nats://localhost:4222 &
+heddle worker --config configs/workers/de_database_engineer.yaml --tier local --nats-url nats://localhost:4222 &
 
 # Start MCP gateway (stdio)
 # In another terminal, start Claude Code and connect to MCP
 
-# Test via loom CLI submit:
-loom submit '{"type": "integration_request", "operations": [{"action": "validate_only", "target": "data/variables.yaml"}]}' \
+# Test via heddle CLI submit:
+heddle submit '{"type": "integration_request", "operations": [{"action": "validate_only", "target": "data/variables.yaml"}]}' \
     --worker-type de_database_engineer \
     --nats-url nats://localhost:4222
 ```
@@ -380,7 +380,7 @@ items:
       to discuss succession arrangements following the February strikes.
 EOF
 
-loom submit "$(cat /tmp/test_source_bundle.yaml)" \
+heddle submit "$(cat /tmp/test_source_bundle.yaml)" \
     --worker-type sp_source_processor \
     --nats-url nats://localhost:4222
 ```
@@ -403,7 +403,7 @@ git commit -m "Session 1: Initial Baft repository — worker configs, MCP gatewa
 - Before every commit: `for f in configs/**/*.yaml; do python3 -c "import yaml; yaml.safe_load(open('$f'))"; done`
 - After any worker config change: restart the affected worker process
 - After any MCP config change: restart the MCP gateway
-- After framework data changes: re-run `python pipeline/scripts/itp_import_to_duckdb.py`
+- After baseline data changes: re-run `python pipeline/scripts/itp_import_to_duckdb.py`
 - Terminology registry additions: EP flags in session, Code adds entry with `first_session` and `published` fields
 - Watch list additions: Code adds from framework variables + human adds channel_routing manually
 

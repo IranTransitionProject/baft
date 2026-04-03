@@ -36,7 +36,7 @@ spec:
           env:
             {{- include "baft.envVars" . | nindent 12 }}
           volumeMounts:
-            {{- include "baft.frameworkVolumeMount" . | nindent 12 }}
+            {{- include "baft.baselineVolumeMount" . | nindent 12 }}
             {{- include "baft.duckdbVolumeMount" . | nindent 12 }}
           readinessProbe:
             httpGet:
@@ -44,9 +44,9 @@ spec:
               port: {{ .Values.mcp.port }}
             initialDelaySeconds: 5
       volumes:
-        - name: framework-data
+        - name: baseline-data
           persistentVolumeClaim:
-            claimName: framework-data
+            claimName: baseline-data
         - name: duckdb-data
           persistentVolumeClaim:
             claimName: duckdb-data

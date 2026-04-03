@@ -33,9 +33,9 @@ try:
     itp_import = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(itp_import)
 except FileNotFoundError:
-    # CI environments don't have ITP_ROOT / framework/ — skip this module.
+    # CI environments don't have ITP_ROOT / baseline/ — skip this module.
     pytest.skip(
-        "ITP_ROOT not set and framework/ not found — skipping DuckDB import tests",
+        "ITP_ROOT not set and baseline/ not found — skipping DuckDB import tests",
         allow_module_level=True,
     )
 

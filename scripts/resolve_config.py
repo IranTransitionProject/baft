@@ -23,7 +23,7 @@ def _resolve_itp_root() -> Path:
     if "ITP_ROOT" in os.environ:
         return Path(os.environ["ITP_ROOT"])
     candidate = BAFT_DIR.parent
-    if (candidate / "framework" / "data").is_dir():
+    if (candidate / "baseline" / "data").is_dir():
         return candidate
     raise FileNotFoundError("Cannot find ITP project root. Set ITP_ROOT env var.")
 

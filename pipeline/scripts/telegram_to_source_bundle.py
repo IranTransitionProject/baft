@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Convert a Telegram JSON export into SP source_bundle format.
 
-Parses Telegram JSON via loom's TelegramIngestor, enriches with channel
+Parses Telegram JSON via heddle's TelegramIngestor, enriches with channel
 metadata, applies keyword pre-filter against the WT watch list, and emits
 a ``source_bundle.yaml`` in SP input schema format.
 """
@@ -158,9 +158,9 @@ def main() -> None:
 
     # Import TelegramIngestor from Loom
     try:
-        from loom.contrib.rag.ingestion.telegram_ingestor import TelegramIngestor
+        from heddle.contrib.rag.ingestion.telegram_ingestor import TelegramIngestor
     except ImportError:
-        print("ERROR: loom package not installed. Run: pip install -e /path/to/loom[rag]")
+        print("ERROR: heddle package not installed. Run: pip install -e /path/to/heddle-ai[rag]")
         sys.exit(1)
 
     print(f"Loading {export_path}...")

@@ -26,7 +26,7 @@ echo "  Transport: $TRANSPORT"
 [[ "$TRANSPORT" == "streamable-http" ]] && echo "  Port:      $PORT"
 
 if [[ "$TRANSPORT" == "streamable-http" ]]; then
-    uv run loom mcp --config "$CONFIG" --transport streamable-http --port "$PORT"
+    uv run heddle mcp --config "$CONFIG" --transport streamable-http --port "$PORT"
 else
-    uv run loom mcp --config "$CONFIG"
+    uv run heddle mcp --config "$CONFIG"
 fi

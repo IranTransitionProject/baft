@@ -3,7 +3,7 @@
 Each submodule defines typed input/output models for a group of workers.
 These models are the source of truth for worker I/O schemas - worker YAML
 configs reference them via ``input_schema_ref`` / ``output_schema_ref``,
-and Loom resolves them to JSON Schema at load time.
+and Heddle resolves them to JSON Schema at load time.
 
 Submodules:
     core    - SP, IA, DE, XV, IN (Tier 1-2 pipeline workers)

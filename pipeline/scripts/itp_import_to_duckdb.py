@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Import ITP framework YAML entity data into DuckDB for structured querying.
+"""Import ITP baseline YAML entity data into DuckDB for structured querying.
 
 Creates a unified ``entities`` table, an FTS index, and supports full reimport,
 incremental mode, and stats-only queries.
@@ -33,20 +33,20 @@ def _resolve_itp_root() -> Path:
         return Path(os.environ["ITP_ROOT"])
     # baft is a child of ITP_ROOT
     candidate = BAFT_DIR.parent
-    if (candidate / "framework" / "data").is_dir():
+    if (candidate / "baseline" / "data").is_dir():
         return candidate
     # Legacy env var
-    if "FRAMEWORK_REPO" in os.environ:
-        return Path(os.environ["FRAMEWORK_REPO"]).parent
+    if "BASELINE_REPO" in os.environ:
+        return Path(os.environ["BASELINE_REPO"]).parent
     raise FileNotFoundError(
         "Cannot find ITP project root. Set ITP_ROOT env var to the directory "
-        "containing framework/, loom/, and baft/."
+        "containing baseline/, heddle/, and baft/."
     )
 
 
 ITP_ROOT = _resolve_itp_root()
-FRAMEWORK_REPO = ITP_ROOT / "framework"
-DATA_DIR = FRAMEWORK_REPO / "data"
+BASELINE_REPO = ITP_ROOT / "baseline"
+DATA_DIR = BASELINE_REPO / "data"
 WORKSPACE_DIR = BAFT_DIR / "itp-workspace"
 DB_PATH = WORKSPACE_DIR / "itp.duckdb"
 
@@ -198,7 +198,7 @@ def create_schema(conn: duckdb.DuckDBPyConnection) -> None:
 
 def main() -> None:
     """Run the ITP DuckDB import pipeline."""
-    parser = argparse.ArgumentParser(description="Import ITP framework YAML into DuckDB")
+    parser = argparse.ArgumentParser(description="Import ITP baseline YAML into DuckDB")
     parser.add_argument(
         "--incremental", action="store_true", help="Skip entities not modified since last import"
     )

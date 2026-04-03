@@ -40,11 +40,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Checkout loom
+      - name: Checkout heddle
         uses: actions/checkout@v4
         with:
-          repository: IranTransitionProject/loom
-          path: loom
+          repository: getheddle/heddle
+          path: heddle
 
       - name: Log in to GHCR
         uses: docker/login-action@v3

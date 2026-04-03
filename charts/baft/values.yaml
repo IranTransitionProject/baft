@@ -6,8 +6,8 @@ image:
   pullPolicy: IfNotPresent
 
 # -- Framework git sync
-framework:
-  repo: "https://github.com/IranTransitionProject/framework.git"
+baseline:
+  repo: "https://github.com/IranTransitionProject/baseline.git"
   branch: main
   sshKeySecret: ""              # K8s Secret name containing id_rsa
   gitTokenSecret: ""            # K8s Secret name containing GITHUB_TOKEN
@@ -116,6 +116,6 @@ jaeger:
 
 # -- Environment (injected into all pods)
 env:
-  ITP_ROOT: /data/framework
+  ITP_ROOT: /data/baseline
   BAFT_WORKSPACE: /data/workspace
   NATS_URL: nats://nats:4222

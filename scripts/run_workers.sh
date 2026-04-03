@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# run_workers.sh — Start Loom router + ITP workers for local development
+# run_workers.sh — Start Heddle router + ITP workers for local development
 #
 # Usage:
 #   bash scripts/run_workers.sh              # Start router + all Tier 1-2 workers
 #   bash scripts/run_workers.sh --tier1      # Router + DE only
-#   bash scripts/run_workers.sh --stop       # Kill all loom processes
+#   bash scripts/run_workers.sh --stop       # Kill all heddle processes
 #
 # Requires:
 #   - NATS running at localhost:4222
@@ -22,7 +22,7 @@ export OLLAMA_URL="${OLLAMA_URL:-http://localhost:11434}"
 export OLLAMA_MODEL="${OLLAMA_MODEL:-llama3.2:3b}"
 # ANTHROPIC_API_KEY must already be set in environment for standard/frontier tier workers
 export ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-}"
-LOOM_DIR="$ITP_ROOT/loom"
+HEDDLE_DIR="$ITP_ROOT/heddle"
 RESOLVER="$SCRIPT_DIR/resolve_config.py"
 RESOLVED_DIR="$BAFT_DIR/.resolved-configs"
 LOG_DIR="$BAFT_DIR/.worker-logs"
@@ -45,9 +45,9 @@ stop_workers() {
         done < "$PID_FILE"
         rm -f "$PID_FILE"
     else
-        warn "No PID file found. Killing any loom processes..."
-        pkill -f "loom router" 2>/dev/null || true
-        pkill -f "loom worker" 2>/dev/null || true
+        warn "No PID file found. Killing any heddle processes..."
+        pkill -f "heddle router" 2>/dev/null || true
+        pkill -f "heddle worker" 2>/dev/null || true
     fi
     info "All workers stopped."
 }
@@ -96,7 +96,7 @@ start_worker() {
     config=$(resolve_config "$name")
     local log="$LOG_DIR/${name}.log"
 
-    nohup uv run --project "$BAFT_DIR" loom worker --config "$config" --tier "$tier" --nats-url nats://localhost:4222 \
+    nohup uv run --project "$BAFT_DIR" heddle worker --config "$config" --tier "$tier" --nats-url nats://localhost:4222 \
         > "$log" 2>&1 &
     local pid=$!
     echo "$pid $name" >> "$PID_FILE"
@@ -110,7 +110,7 @@ rm -f "$PID_FILE"
 
 # --- Start router ---
 info "Starting Loom router..."
-nohup uv run --project "$BAFT_DIR" loom router --config "$LOOM_DIR/configs/router_rules.yaml" --nats-url nats://localhost:4222 \
+nohup uv run --project "$BAFT_DIR" heddle router --config "$HEDDLE_DIR/configs/router_rules.yaml" --nats-url nats://localhost:4222 \
     > "$LOG_DIR/router.log" 2>&1 &
 ROUTER_PID=$!
 echo "$ROUTER_PID router" >> "$PID_FILE"

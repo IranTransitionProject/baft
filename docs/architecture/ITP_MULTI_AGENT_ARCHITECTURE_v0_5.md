@@ -11,7 +11,7 @@
 
 Loom is further along than you likely realize. The core infrastructure — actor mesh, MCP server, Telegram ingestion, RAG pipeline, scheduler, DuckDB query backend, knowledge silo injection — is implemented and tested. The gap is not architectural plumbing. The gap is **ITP-specific configuration** (worker YAML files, knowledge silo content, MCP gateway config, terminology registry) and **two code completions** (streamable HTTP MCP transport, NRM normalizer).
 
-The conversational UI → MCP → Loom engine design is the right call. Loom's MCP server already exists and exposes workers as tools. A Claude chat session connected to the Loom MCP gateway gives you the HI-A role with full tool access to the analytical engine. The remaining infrastructure work is small. The configuration work is larger but tractable.
+The conversational UI → MCP → Loom engine design is the right call. Loom's MCP server already exists and exposes workers as tools. A Claude chat session connected to the Heddle MCP gateway gives you the HI-A role with full tool access to the analytical engine. The remaining infrastructure work is small. The configuration work is larger but tractable.
 
 **Revised effort estimate:**
 
@@ -83,7 +83,7 @@ Ordered by blocking priority.
 
 ### Gap 1 [BLOCKING]: Streamable HTTP MCP Transport
 
-**Location:** `src/loom/mcp/server.py` → `run_streamable_http()`
+**Location:** `src/heddle/mcp/server.py` → `run_streamable_http()`
 
 **Current state:** The function exists but is a stub. It creates a Starlette app with only a `/health` route. No MCP protocol messages are handled over HTTP. The stdio transport works correctly.
 
@@ -93,7 +93,7 @@ Ordered by blocking priority.
 
 **Immediate workaround for Phase 1:** Use stdio transport via Claude Code locally while building out the HTTP transport. This is the right sequence anyway — validate the pipeline locally before exposing it via HTTP.
 
-**File to modify:** `src/loom/mcp/server.py`
+**File to modify:** `src/heddle/mcp/server.py`
 **Reference:** FastMCP `streamable_http_app()` pattern in mcp-python docs
 
 ---
@@ -163,7 +163,7 @@ The system prompt content already exists — it's in v0.4 under each node's "Sys
 # In each worker config, knowledge_sources field:
 knowledge_sources:
   - type: file
-    path: "$ITP_ROOT/framework/data/variables.yaml"
+    path: "$ITP_ROOT/baseline/data/variables.yaml"
     inject_as: "current_variables_snapshot"
   - type: file  
     path: "pipeline/config/itp_terminology_registry.yaml"
@@ -239,7 +239,7 @@ HI-A sessions are the best source for new entries — EP and DE should flag term
 
 ### Gap 7 [IMPORTANT]: NRM (Normalizer/Dedup) — Not Built
 
-**Location:** New file: `src/loom/contrib/rag/ingestion/normalizer.py`
+**Location:** New file: `src/heddle/contrib/rag/ingestion/normalizer.py`
 
 **Current state:** The NRM function is defined in Addendum A but has no implementation. It sits between Source Channels and the SP/WT nodes.
 
@@ -328,7 +328,7 @@ Architecture: Only the HI-R (Loom orchestrator) writes to `CLAUDE_SESSION_LOG.md
 
 ### OQ #15 (HI-R/HI-A handoff latency) — Resolved by MCP architecture
 
-The MCP design eliminates the handoff friction in Phase 1. The claude.ai chat session IS the HI-A. It has direct tool access to the Loom engine via MCP — calling SP, IA, DE, XV as tools within the same conversation. The HI-R function (orchestration, tier selection, sequencing) is handled by the orchestrator running in Loom, invoked when the HI-A submits a multi-step goal. Single session, no context switching.
+The MCP design eliminates the handoff friction in Phase 1. The claude.ai chat session IS the HI-A. It has direct tool access to the Heddle engine via MCP — calling SP, IA, DE, XV as tools within the same conversation. The HI-R function (orchestration, tier selection, sequencing) is handled by the orchestrator running in Loom, invoked when the HI-A submits a multi-step goal. Single session, no context switching.
 
 ---
 
@@ -393,7 +393,7 @@ This is the key design addition in v0.5.
 ┌──────────────────────────────────────────────┐
 │          KNOWLEDGE + DATA LAYER               │
 │                                               │
-│  framework/data/*.yaml  → ITP entity data    │
+│  baseline/data/*.yaml  → ITP entity data    │
 │  itp.duckdb             → structured queries │
 │  itp-workspace/rag/     → vector embeddings  │
 │  Telegram exports       → SC-TG feed         │
@@ -509,7 +509,7 @@ HI-A: Logs decisions, calls update_database with any amendments
 After Sprint 1–2:
 
 ```text
-loom/
+heddle/
   configs/
     mcp/
       itp.yaml                             ← Gap 2 [new]
@@ -546,7 +546,7 @@ loom/
       itp_import_to_duckdb.py              ← Gap 5 [new]
     ni_findings/
       ni_findings_log.yaml                 ← running NI log
-  src/loom/
+  src/heddle/
     mcp/
       server.py                            ← Gap 1 [complete streamable HTTP]
     contrib/
@@ -559,7 +559,7 @@ loom/
 
 ## Decision Record: Why MCP Chat is the Right Design
 
-The alternative would be a dedicated web UI or a custom chat application built on the Loom orchestrator. Rejected because:
+The alternative would be a dedicated web UI or a custom chat application built on the Heddle orchestrator. Rejected because:
 
 1. **Claude chat IS the HI-A.** Building a custom chat app means rebuilding Claude's reasoning, multilingual capability, Farsi/Arabic text handling, epistemic discipline, and framework engagement from scratch. Claude already has all of this — the job is giving it tools, not replacing it.
 

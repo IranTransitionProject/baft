@@ -46,13 +46,13 @@ def _itp_root() -> Path:
     # Auto-detect: baft/src/baft/cli.py → baft/ → ITP root
     baft_dir = Path(__file__).resolve().parents[2]
     candidate = baft_dir.parent
-    if (candidate / "framework" / "data").is_dir():
+    if (candidate / "baseline" / "data").is_dir():
         return candidate
     return candidate
 
 
-def _framework_dir() -> Path:
-    return _itp_root() / "framework"
+def _baseline_dir() -> Path:
+    return _itp_root() / "baseline"
 
 
 def _baft_dir() -> Path:
@@ -128,7 +128,7 @@ def _check_uv() -> tuple[str, bool]:
 
 def _check_repos() -> tuple[str, bool]:
     root = _itp_root()
-    repos = ["framework", "loom", "baft"]
+    repos = ["baseline", "heddle", "baft"]
     present = [r for r in repos if (root / r).is_dir()]
     missing = [r for r in repos if r not in present]
     if not missing:
@@ -139,7 +139,7 @@ def _check_repos() -> tuple[str, bool]:
 def _check_deps() -> tuple[str, bool]:
     try:
         result = subprocess.run(
-            ["uv", "run", "python", "-c", "import loom; import baft"],
+            ["uv", "run", "python", "-c", "import heddle; import baft"],
             capture_output=True,
             text=True,
             timeout=15,
@@ -218,24 +218,24 @@ def _check_duckdb() -> tuple[str, bool]:
     return f"{_OK} DuckDB exists ({size_mb:.1f} MB, updated {age_hours:.0f}h ago)", True
 
 
-def _check_framework_git() -> tuple[str, bool]:
-    fw = _framework_dir()
+def _check_baseline_git() -> tuple[str, bool]:
+    fw = _baseline_dir()
     if not (fw / ".git").is_dir():
-        return f"{_FAIL} Framework is not a git repo", False
+        return f"{_FAIL} Baseline is not a git repo", False
     result = _git(["status", "--porcelain"], cwd=fw)
     if result.returncode != 0:
         return f"{_FAIL} git status failed: {result.stderr.strip()}", False
     if result.stdout.strip():
         lines = result.stdout.strip().split("\n")
-        return f"{_WARN} Framework has uncommitted changes ({len(lines)} files)", True
-    return f"{_OK} Framework git clean", True
+        return f"{_WARN} Baseline has uncommitted changes ({len(lines)} files)", True
+    return f"{_OK} Baseline git clean", True
 
 
-def _check_framework_remote() -> tuple[str, bool]:
-    fw = _framework_dir()
+def _check_baseline_remote() -> tuple[str, bool]:
+    fw = _baseline_dir()
     fetch = _git(["fetch", "origin", "--quiet"], cwd=fw)
     if fetch.returncode != 0:
-        return f"{_WARN} Could not fetch framework remote", True
+        return f"{_WARN} Could not fetch baseline remote", True
 
     behind = _git(["rev-list", "--count", "HEAD..origin/main"], cwd=fw)
     ahead = _git(["rev-list", "--count", "origin/main..HEAD"], cwd=fw)
@@ -244,12 +244,12 @@ def _check_framework_remote() -> tuple[str, bool]:
     ahead_n = int(ahead.stdout.strip()) if ahead.returncode == 0 else 0
 
     if behind_n > 0 and ahead_n > 0:
-        return f"{_WARN} Framework diverged ({ahead_n} ahead, {behind_n} behind)", True
+        return f"{_WARN} Baseline diverged ({ahead_n} ahead, {behind_n} behind)", True
     if behind_n > 0:
-        return f"{_WARN} Framework is {behind_n} commits behind remote", True
+        return f"{_WARN} Baseline is {behind_n} commits behind remote", True
     if ahead_n > 0:
-        return f"{_OK} Framework is {ahead_n} commits ahead of remote", True
-    return f"{_OK} Framework up-to-date with remote", True
+        return f"{_OK} Baseline is {ahead_n} commits ahead of remote", True
+    return f"{_OK} Baseline up-to-date with remote", True
 
 
 def run_preflight() -> tuple[int, int, int]:
@@ -263,8 +263,8 @@ def run_preflight() -> tuple[int, int, int]:
         _check_nats,
         _check_ollama,
         _check_duckdb,
-        _check_framework_git,
-        _check_framework_remote,
+        _check_baseline_git,
+        _check_baseline_remote,
     ]
 
     click.echo()
@@ -329,27 +329,27 @@ def session() -> None:
 @session.command()
 @click.option("--session-id", default=None, help="Session identifier (auto-generated if omitted)")
 def start(session_id: str | None) -> None:
-    """Start an analytical session (pull framework, import DuckDB, check services)."""
+    """Start an analytical session (pull baseline, import DuckDB, check services)."""
     from baft.sessions import register_session
 
     sid = session_id or _generate_session_id()
     click.echo(f"Starting session: {sid}")
 
-    # 1. Pull framework
-    fw = _framework_dir()
+    # 1. Pull baseline
+    fw = _baseline_dir()
     if (fw / ".git").is_dir():
-        click.echo("  Pulling framework...")
+        click.echo("  Pulling baseline...")
         pull = _git(["pull", "--ff-only"], cwd=fw)
         if pull.returncode != 0:
-            click.echo(f"  {_FAIL} Framework pull failed: {pull.stderr.strip()}")
+            click.echo(f"  {_FAIL} Baseline pull failed: {pull.stderr.strip()}")
             click.echo("  Resolve merge conflicts manually, then retry.")
             raise SystemExit(1)
         # Get current commit
         head = _git(["rev-parse", "--short", "HEAD"], cwd=fw)
         commit = head.stdout.strip() if head.returncode == 0 else "unknown"
-        click.echo(f"  {_OK} Framework at commit {commit}")
+        click.echo(f"  {_OK} Baseline at commit {commit}")
     else:
-        click.echo(f"  {_WARN} Framework dir not a git repo — skipping pull")
+        click.echo(f"  {_WARN} Baseline dir not a git repo — skipping pull")
 
     # 2. Incremental DuckDB import
     import_script = _baft_dir() / "pipeline" / "scripts" / "itp_import_to_duckdb.py"
@@ -392,7 +392,7 @@ def start(session_id: str | None) -> None:
 @click.option("--message", "-m", default="", help="Commit message describing session work")
 @click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt")
 def end(session_id: str | None, message: str, yes: bool) -> None:
-    """End an analytical session (commit framework, push, unregister)."""
+    """End an analytical session (commit baseline, push, unregister)."""
     from baft.sessions import get_active_sessions, unregister_session
 
     # Resolve session id
@@ -408,8 +408,8 @@ def end(session_id: str | None, message: str, yes: bool) -> None:
     else:
         sid = session_id
 
-    # 1. Check framework state before unregistering
-    fw = _framework_dir()
+    # 1. Check baseline state before unregistering
+    fw = _baseline_dir()
     dirty_files: list[str] = []
     if (fw / ".git").is_dir():
         status = _git(["status", "--porcelain"], cwd=fw)
@@ -433,7 +433,7 @@ def end(session_id: str | None, message: str, yes: bool) -> None:
     # 3. Unregister
     unregister_session(sid)
 
-    # 4. Commit framework changes (only data/ directory, not everything)
+    # 4. Commit baseline changes (only data/ directory, not everything)
     if (fw / ".git").is_dir():
         if dirty_files:
             date_str = dt.datetime.now(tz=dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -451,14 +451,14 @@ def end(session_id: str | None, message: str, yes: bool) -> None:
 
             push = _git(["push"], cwd=fw)
             if push.returncode == 0:
-                click.echo(f"  {_OK} Framework changes committed and pushed.")
+                click.echo(f"  {_OK} Baseline changes committed and pushed.")
             else:
                 click.echo(f"  {_WARN} Committed locally but push failed: {push.stderr.strip()}")
                 click.echo("  Run `baft session sync-check` then push manually.")
         else:
-            click.echo("  No framework changes to commit.")
+            click.echo("  No baseline changes to commit.")
     else:
-        click.echo(f"  {_WARN} Framework not a git repo — skipping commit")
+        click.echo(f"  {_WARN} Baseline not a git repo — skipping commit")
 
     click.echo(f"\n  Session {click.style(sid, bold=True)} ended.")
 
@@ -481,9 +481,9 @@ def status() -> None:
     else:
         click.echo("  (none)")
 
-    # Framework git
-    click.echo(click.style("\nFramework status", bold=True))
-    msg, _ = _check_framework_git()
+    # Baseline git
+    click.echo(click.style("\nBaseline status", bold=True))
+    msg, _ = _check_baseline_git()
     click.echo(f"  {msg}")
 
     # Services
@@ -499,10 +499,10 @@ def status() -> None:
 
 @session.command("sync-check")
 def sync_check() -> None:
-    """Check if the framework remote has new commits."""
-    fw = _framework_dir()
+    """Check if the baseline remote has new commits."""
+    fw = _baseline_dir()
     if not (fw / ".git").is_dir():
-        click.echo(f"{_FAIL} Framework is not a git repo")
+        click.echo(f"{_FAIL} Baseline is not a git repo")
         raise SystemExit(1)
 
     click.echo("Fetching remote...")
@@ -517,26 +517,26 @@ def sync_check() -> None:
     ahead_n = int(ahead.stdout.strip()) if ahead.returncode == 0 else 0
 
     if behind_n > 0 and ahead_n > 0:
-        click.echo(f"{_WARN} Framework has diverged ({ahead_n} ahead, {behind_n} behind).")
-        click.echo("  Manual resolution needed: cd $ITP_ROOT/framework && git status")
+        click.echo(f"{_WARN} Baseline has diverged ({ahead_n} ahead, {behind_n} behind).")
+        click.echo("  Manual resolution needed: cd $ITP_ROOT/baseline && git status")
     elif behind_n > 0:
-        click.echo(f"{_WARN} Framework has {behind_n} new commits from remote.")
+        click.echo(f"{_WARN} Baseline has {behind_n} new commits from remote.")
         click.echo("  Run `baft session sync` to pull and re-import.")
     elif ahead_n > 0:
         click.echo(f"You have {ahead_n} local commits not yet pushed.")
     else:
-        click.echo(f"{_OK} Framework is current.")
+        click.echo(f"{_OK} Baseline is current.")
 
 
 @session.command()
 def sync() -> None:
-    """Pull framework updates and run incremental DuckDB import."""
-    fw = _framework_dir()
+    """Pull baseline updates and run incremental DuckDB import."""
+    fw = _baseline_dir()
     if not (fw / ".git").is_dir():
-        click.echo(f"{_FAIL} Framework is not a git repo")
+        click.echo(f"{_FAIL} Baseline is not a git repo")
         raise SystemExit(1)
 
-    click.echo("Pulling framework...")
+    click.echo("Pulling baseline...")
     pull = _git(["pull", "--ff-only"], cwd=fw)
     if pull.returncode != 0:
         click.echo(f"{_FAIL} Pull failed (conflict?): {pull.stderr.strip()}")

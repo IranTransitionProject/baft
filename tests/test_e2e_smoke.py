@@ -49,8 +49,8 @@ skip_no_nats = pytest.mark.skipif(
 @pytest_asyncio.fixture
 async def bridge():
     """Shared async bridge fixture — single event loop for connect/test/teardown."""
-    from loom.bus.nats_adapter import NATSBus
-    from loom.mcp.bridge import MCPBridge
+    from heddle.bus.nats_adapter import NATSBus
+    from heddle.mcp.bridge import MCPBridge
 
     bus = NATSBus("nats://localhost:4222")
     br = MCPBridge(bus)
@@ -135,7 +135,7 @@ class TestMCPServerStarts:
     @pytest.mark.asyncio
     async def test_create_server_with_itp_config(self):
         """create_server succeeds with the ITP MCP config."""
-        from loom.mcp.server import create_server
+        from heddle.mcp.server import create_server
 
         server, gateway = create_server(str(BAFT_ROOT / "configs" / "mcp" / "itp.yaml"))
         assert gateway.config["name"] == "baft"
@@ -147,7 +147,7 @@ class TestMCPServerCreation:
 
     def test_create_server_discovers_tools(self):
         """create_server should discover query tools even without NATS."""
-        from loom.mcp.server import create_server
+        from heddle.mcp.server import create_server
 
         server, gateway = create_server(str(BAFT_ROOT / "configs" / "mcp" / "itp.yaml"))
         tool_names = sorted(gateway.tool_registry.keys())

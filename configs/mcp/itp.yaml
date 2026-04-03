@@ -1,8 +1,8 @@
 # Baft ITP MCP Gateway — Core operational tools (Tier 1–2)
 #
 # Run with:
-#   loom mcp --config configs/mcp/itp.yaml                              # stdio
-#   loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765  # HTTP
+#   heddle mcp --config configs/mcp/itp.yaml                              # stdio
+#   heddle mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765  # HTTP
 #
 # Requirements:
 #   NATS running at nats://localhost:4222
@@ -84,7 +84,7 @@ tools:
 
   queries:
     # DuckDB entity search across all ITP entity types
-    - backend: "loom.contrib.duckdb.query_backend.DuckDBQueryBackend"
+    - backend: "heddle.contrib.duckdb.query_backend.DuckDBQueryBackend"
       actions: ["search", "filter", "stats", "get"]
       name_prefix: "itp"
       backend_config:
@@ -113,7 +113,7 @@ tools:
   # Workshop tools — worker lifecycle, test bench, eval, impact analysis, dead-letter
   workshop:
     configs_dir: "configs/"
-    apps_dir: "~/.loom/apps/"
+    apps_dir: "~/.heddle/apps/"
     enable:
       - worker                # workshop.worker.{list,get,update}
       - test                  # workshop.worker.test
@@ -131,7 +131,7 @@ tools:
 
 resources:
   # Expose framework data/ YAML files as readable MCP resources
-  workspace_dir: "${ITP_ROOT}/framework/data"
+  workspace_dir: "${ITP_ROOT}/baseline/data"
   patterns:
     - "variables.yaml"
     - "observations.yaml"

@@ -150,7 +150,7 @@ The audition script tests schema compliance — not analytical quality. A model 
 
 ### 4.2 output_schema is metadata, not instruction
 
-The `output_schema` block in a worker config is consumed by the test harness and potentially by the Loom runner for validation. It is NOT automatically shown to the model. If you change the output_schema, you must also update the concrete example in the system_prompt. These two things can drift out of sync — and when they do, the model produces output that matches the example (what it sees) but fails schema validation (what the harness checks).
+The `output_schema` block in a worker config is consumed by the test harness and potentially by the Heddle runner for validation. It is NOT automatically shown to the model. If you change the output_schema, you must also update the concrete example in the system_prompt. These two things can drift out of sync — and when they do, the model produces output that matches the example (what it sees) but fails schema validation (what the harness checks).
 
 **Mitigation:** The audition script is the canary. Run it after every schema change.
 
@@ -230,7 +230,7 @@ To adapt Loom for a different analytical domain, you need:
 
 2. **Claim typing in SP:** Should SP sub-type extracted claims (factual assertion / stated position / quantitative metric / event report / attributed quote) for better downstream routing?
 
-3. **Silo freshness enforcement:** Should the Loom runner refuse to start if knowledge silos are older than the source database?
+3. **Silo freshness enforcement:** Should the Heddle runner refuse to start if knowledge silos are older than the source database?
 
 4. **IntentSpec-like artifact standard:** Should Loom adopt a standardized output artifact format (like Pathmode's IntentSpec) that is readable by external tools? The current output is JSON blobs — a defined schema with a `.intent.json` extension and standard fields would improve interoperability.
 

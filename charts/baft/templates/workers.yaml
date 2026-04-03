@@ -54,14 +54,14 @@ spec:
           env:
             {{- include "baft.envVars" $root | nindent 12 }}
           volumeMounts:
-            {{- include "baft.frameworkVolumeMount" $root | nindent 12 }}
+            {{- include "baft.baselineVolumeMount" $root | nindent 12 }}
             {{- include "baft.duckdbVolumeMount" $root | nindent 12 }}
           resources:
             {{- toYaml $root.Values.workers.resources | nindent 12 }}
       volumes:
-        - name: framework-data
+        - name: baseline-data
           persistentVolumeClaim:
-            claimName: framework-data
+            claimName: baseline-data
         - name: duckdb-data
           persistentVolumeClaim:
             claimName: duckdb-data

@@ -13,7 +13,7 @@ OUT.mkdir(exist_ok=True)
 
 
 # ---------------------------------------------------------------------------
-# SVG helpers (same minimal builder as loom)
+# SVG helpers (same minimal builder as heddle)
 # ---------------------------------------------------------------------------
 
 class SVG:
@@ -98,7 +98,7 @@ class SVG:
 
 
 # ===========================================================================
-# Color palette — baft uses warmer tones to distinguish from loom's blue theme
+# Color palette — baft uses warmer tones to distinguish from heddle's blue theme
 # ===========================================================================
 
 # Worker role colors
@@ -133,12 +133,12 @@ def three_repo_architecture():
     s = SVG(1200, 550)
 
     s.text(40, 38, "Baft — System Architecture", size=26, weight=700, fill=TITLE, anchor="start")
-    s.text(40, 62, "Three-repo design: framework (data)  +  loom (runtime)  +  baft (application)", size=12, weight=400, fill=SUB, anchor="start")
+    s.text(40, 62, "Three-repo design: baseline (data)  +  heddle (runtime)  +  baft (application)", size=12, weight=400, fill=SUB, anchor="start")
 
     # --- Three repos ---
     # Framework
     s.rect(40, 100, 320, 300, fill="#fef3c7", rx=12, stroke="#f59e0b", sw=2)
-    s.text(200, 125, "framework/", size=18, weight=700, fill="#92400e")
+    s.text(200, 125, "baseline/", size=18, weight=700, fill="#92400e")
     s.text(200, 148, "ITP Analytical Database", size=11, weight=400, fill="#b45309")
     s.mtext(60, 175, [
         "YAML source of truth",
@@ -154,7 +154,7 @@ def three_repo_architecture():
 
     # Loom
     s.rect(430, 100, 320, 300, fill="#dbeafe", rx=12, stroke="#3b82f6", sw=2)
-    s.text(590, 125, "loom/", size=18, weight=700, fill="#1e40af")
+    s.text(590, 125, "heddle/", size=18, weight=700, fill="#1e40af")
     s.text(590, 148, "Orchestration Framework", size=11, weight=400, fill="#2563eb")
     s.mtext(450, 175, [
         "Actor-based runtime",
@@ -184,11 +184,11 @@ def three_repo_architecture():
         "Pipeline config data files",
     ], size=11, fill="#9d174d", lh=1.5)
 
-    # Arrows: baft → loom (depends on)
+    # Arrows: baft → heddle (depends on)
     s.arrow(820, 250, 750, 250, color="#ec4899", sw=2)
     s.text(785, 240, "depends on", size=9, weight=500, fill="#be185d")
 
-    # Arrows: baft → framework (reads data from)
+    # Arrows: baft → baseline (reads data from)
     s.arrow(820, 290, 360, 290, color="#f59e0b", sw=2)
     s.text(590, 280, "reads data from", size=9, weight=500, fill="#b45309")
 
@@ -559,7 +559,7 @@ def analyst_workflow():
         "- Pipelines: max_concurrent_goals=4",
         "- SA: expand_from dispatches per active session",
         "- DE: serialize_writes (single writer)",
-        "- Session markers: ~/.loom/sessions/*.json",
+        "- Session markers: ~/.heddle/sessions/*.json",
         "",
         "Each session_id is isolated — no cross-talk",
     ], size=10, fill="#166534", lh=1.5)
@@ -581,7 +581,7 @@ def analyst_workflow():
     s.text(870, 510, "Access Methods", size=14, weight=700, fill="#475569")
     s.mtext(700, 530, [
         "MCP tools (Claude Desktop/Code) | Workshop UI | CLI",
-        "loom ui (TUI dashboard) | Direct NATS submission",
+        "heddle ui (TUI dashboard) | Direct NATS submission",
     ], size=10, fill="#475569", lh=1.5)
 
     s.save(OUT / "analyst-workflow.svg")
@@ -628,7 +628,7 @@ def deployment_architecture():
 
     # Scaling note
     s.rect(30, 485, 1040, 40, fill="#f1f5f9", rx=6)
-    s.text(550, 505, "Horizontal scaling: kubectl scale deployment/loom-worker-sp --replicas=N  |  NATS queue groups auto-balance  |  HPA supported", size=10, weight=400, fill="#475569")
+    s.text(550, 505, "Horizontal scaling: kubectl scale deployment/heddle-worker-sp --replicas=N  |  NATS queue groups auto-balance  |  HPA supported", size=10, weight=400, fill="#475569")
 
     s.save(OUT / "deployment-architecture.svg")
 

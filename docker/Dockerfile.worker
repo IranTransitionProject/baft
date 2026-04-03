@@ -5,9 +5,9 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 WORKDIR /app
 
-# Copy loom source and install
-COPY loom/ /app/loom/
-RUN cd /app/loom && uv sync --no-dev --extra mcp --extra duckdb --extra rag --extra otel
+# Copy heddle source and install
+COPY heddle/ /app/heddle/
+RUN cd /app/heddle && uv sync --no-dev --extra mcp --extra duckdb --extra rag --extra otel
 
 # Copy baft source and install
 COPY baft/pyproject.toml baft/uv.lock /app/baft/
@@ -18,4 +18,4 @@ RUN cd /app/baft && uv sync --no-dev
 
 WORKDIR /app/baft
 
-ENTRYPOINT ["uv", "run", "loom"]
+ENTRYPOINT ["uv", "run", "heddle"]

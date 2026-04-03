@@ -26,7 +26,7 @@ import structlog
 logger = structlog.get_logger()
 
 # Default workspace directory for session markers.
-_SESSION_DIR = Path("~/.loom/sessions").expanduser()
+_SESSION_DIR = Path("~/.heddle/sessions").expanduser()
 
 # Sessions inactive for more than this many seconds are considered stale.
 _STALE_THRESHOLD_SECONDS = 1800  # 30 minutes
@@ -38,7 +38,7 @@ def get_active_sessions() -> list[dict[str, Any]]:
     Each dict is merged into the SA task payload by the scheduler.
     Returns an empty list if no sessions are active.
 
-    Session markers are JSON files in ``~/.loom/sessions/`` with format::
+    Session markers are JSON files in ``~/.heddle/sessions/`` with format::
 
         {"session_id": "abc123", "last_active": 1711234567.0, "analyst": "..."}
     """

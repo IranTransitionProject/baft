@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Populate entity_ids in itp_entity_name_registry.yaml from framework YAML files.
+"""Populate entity_ids in itp_entity_name_registry.yaml from baseline YAML files.
 
 Run this after any session that adds new entity IDs.
 Updates only the entity_ids section -- preserves manual entries above.
@@ -26,19 +26,19 @@ def _resolve_itp_root() -> Path:
     if "ITP_ROOT" in os.environ:
         return Path(os.environ["ITP_ROOT"])
     candidate = BAFT_DIR.parent
-    if (candidate / "framework" / "data").is_dir():
+    if (candidate / "baseline" / "data").is_dir():
         return candidate
-    if "FRAMEWORK_REPO" in os.environ:
-        return Path(os.environ["FRAMEWORK_REPO"]).parent
+    if "BASELINE_REPO" in os.environ:
+        return Path(os.environ["BASELINE_REPO"]).parent
     raise FileNotFoundError(
         "Cannot find ITP project root. Set ITP_ROOT env var to the directory "
-        "containing framework/, loom/, and baft/."
+        "containing baseline/, heddle/, and baft/."
     )
 
 
 ITP_ROOT = _resolve_itp_root()
-FRAMEWORK_REPO = ITP_ROOT / "framework"
-DATA_DIR = FRAMEWORK_REPO / "data"
+BASELINE_REPO = ITP_ROOT / "baseline"
+DATA_DIR = BASELINE_REPO / "data"
 REGISTRY_PATH = BAFT_DIR / "pipeline" / "config" / "itp_entity_name_registry.yaml"
 
 ENTITY_FILES = {
@@ -90,7 +90,7 @@ def extract_brief_ids() -> list[str]:
 
 
 def main() -> None:
-    """Generate or check the entity name registry from framework YAML files."""
+    """Generate or check the entity name registry from baseline YAML files."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true", help="Dry run — show counts only")
     args = parser.parse_args()

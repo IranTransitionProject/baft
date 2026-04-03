@@ -4,8 +4,8 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 WORKDIR /app
 
-COPY loom/ /app/loom/
-RUN cd /app/loom && uv sync --no-dev
+COPY heddle/ /app/heddle/
+RUN cd /app/heddle && uv sync --no-dev
 
 COPY baft/pyproject.toml baft/uv.lock /app/baft/
 COPY baft/src/ /app/baft/src/
@@ -14,4 +14,4 @@ RUN cd /app/baft && uv sync --no-dev
 
 WORKDIR /app/baft
 
-ENTRYPOINT ["uv", "run", "loom", "router"]
+ENTRYPOINT ["uv", "run", "heddle", "router"]

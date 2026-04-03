@@ -32,9 +32,9 @@ def main() -> None:
     args = parser.parse_args()
 
     try:
-        from loom.contrib.rag.ingestion.telegram_ingestor import TelegramIngestor
+        from heddle.contrib.rag.ingestion.telegram_ingestor import TelegramIngestor
     except ImportError:
-        print("ERROR: loom not installed.")
+        print("ERROR: heddle not installed.")
         sys.exit(1)
 
     registry = {}

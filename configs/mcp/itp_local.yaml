@@ -4,8 +4,8 @@
 # for local Claude chat sessions without infrastructure.
 #
 # Run with:
-#   loom mcp --config configs/mcp/itp_local.yaml --skip-preflight
-#   loom mcp --config configs/mcp/itp_local.yaml --transport streamable-http --port 8765 --skip-preflight
+#   heddle mcp --config configs/mcp/itp_local.yaml --skip-preflight
+#   heddle mcp --config configs/mcp/itp_local.yaml --transport streamable-http --port 8765 --skip-preflight
 
 name: "baft-local"
 description: "ITP analytical engine — local tools (workshop, sessions, entities, council)"
@@ -13,7 +13,7 @@ description: "ITP analytical engine — local tools (workshop, sessions, entitie
 tools:
   # DuckDB entity queries — runs in-process (no NATS needed)
   queries:
-    - backend: "loom.contrib.duckdb.query_backend.DuckDBQueryBackend"
+    - backend: "heddle.contrib.duckdb.query_backend.DuckDBQueryBackend"
       actions: ["search", "filter", "stats", "get"]
       name_prefix: "entities"
       backend_config:
@@ -42,7 +42,7 @@ tools:
   # Workshop tools — worker CRUD, test bench, eval, impact analysis
   workshop:
     configs_dir: "configs/"
-    apps_dir: "~/.loom/apps/"
+    apps_dir: "~/.heddle/apps/"
     enable:
       - worker
       - test
@@ -70,7 +70,7 @@ tools:
       - stop
 
 resources:
-  workspace_dir: "${ITP_ROOT}/framework/data"
+  workspace_dir: "${ITP_ROOT}/baseline/data"
   patterns:
     - "variables.yaml"
     - "observations.yaml"

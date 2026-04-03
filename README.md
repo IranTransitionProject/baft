@@ -6,13 +6,13 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
-<!-- Keep in sync with loom pyproject.toml version -->
-[![Built on Loom](https://img.shields.io/badge/built_on-Loom_v0.9.0-blueviolet.svg)](https://github.com/IranTransitionProject/loom)
+<!-- Keep in sync with heddle pyproject.toml version -->
+[![Built on Heddle](https://img.shields.io/badge/built_on-Loom_v0.9.0-blueviolet.svg)](https://github.com/getheddle/heddle)
 [![Status: Active Development](https://img.shields.io/badge/status-active_development-brightgreen.svg)]()
 
 **Persian:** بافت — *woven fabric, texture, tissue*
 
-Baft is the Iran Transition Project's analytical engine. It is an application built on the [Loom](https://github.com/IranTransitionProject/loom) actor mesh framework and the [framework](https://github.com/IranTransitionProject/framework) YAML database.
+Baft is the Iran Transition Project's analytical engine. It is an application built on the [Loom](https://github.com/getheddle/heddle) actor mesh framework and the [framework](https://github.com/IranTransitionProject/baseline) YAML database.
 
 ![Three-Repo Architecture](docs/images/three-repo-architecture.svg)
 
@@ -109,17 +109,17 @@ See [Helm Deployment Guide](docs/HELM_DEPLOYMENT.md) for full Kubernetes setup.
 
 - Python 3.11+
 - [uv](https://docs.astral.sh/uv/) package manager
-- [Loom](https://github.com/IranTransitionProject/loom) cloned as sibling directory (`../loom`)
+- [Loom](https://github.com/getheddle/heddle) cloned as sibling directory (`../heddle`)
 - [Ollama](https://ollama.com/) for local-tier workers
 - NATS server (`brew install nats-server` or Docker)
 - Valkey (`brew install valkey` or Docker) — optional, for checkpoints
 - Anthropic API key (`export ANTHROPIC_API_KEY=sk-ant-...`) — for standard/frontier tier
-- `ITP_ROOT` env var set to the project root (parent of `framework/`, `loom/`, `baft/`)
+- `ITP_ROOT` env var set to the project root (parent of `baseline/`, `heddle/`, `baft/`)
 
 ## Quick start
 
 ```bash
-# 1. Install (resolves loom from ../loom automatically)
+# 1. Install (resolves heddle from ../heddle automatically)
 uv sync --extra dev
 
 # 2. Infrastructure
@@ -133,18 +133,18 @@ uv run python pipeline/scripts/itp_import_to_duckdb.py
 bash scripts/run_workers.sh
 
 # 5. Start MCP gateway (stdio for Claude Code)
-uv run loom mcp --config configs/mcp/itp.yaml
+uv run heddle mcp --config configs/mcp/itp.yaml
 
 # 6. Start MCP gateway (HTTP for claude.ai)
-uv run loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765
+uv run heddle mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765
 ```
 
 ## Relationship to other ITP repos
 
 | Repo | Role |
 |------|------|
-| [framework](https://github.com/IranTransitionProject/framework) | Analytical database (YAML source of truth) |
-| [loom](https://github.com/IranTransitionProject/loom) | Actor mesh framework (infrastructure) |
+| [framework](https://github.com/IranTransitionProject/baseline) | Analytical database (YAML source of truth) |
+| [heddle](https://github.com/getheddle/heddle) | Actor mesh framework (infrastructure) |
 | **baft** (this repo) | ITP application layer (config + scripts) |
 
 ## Documentation

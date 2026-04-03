@@ -24,10 +24,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
         with:
-          repository: IranTransitionProject/loom
-          path: loom
+          repository: getheddle/heddle
+          path: heddle
       - uses: astral-sh/setup-uv@v5
-      - run: ln -s $GITHUB_WORKSPACE/loom $GITHUB_WORKSPACE/../loom
+      - run: ln -s $GITHUB_WORKSPACE/heddle $GITHUB_WORKSPACE/../heddle
       - run: uv sync --extra dev
       - name: Ruff lint
         run: uv run ruff check scripts/ pipeline/scripts/ tests/
@@ -43,12 +43,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
         with:
-          repository: IranTransitionProject/loom
-          path: loom
+          repository: getheddle/heddle
+          path: heddle
       - uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: ln -s $GITHUB_WORKSPACE/loom $GITHUB_WORKSPACE/../loom
+      - run: ln -s $GITHUB_WORKSPACE/heddle $GITHUB_WORKSPACE/../heddle
       - name: Install dependencies
         run: uv sync --extra dev
       - name: Run tests with coverage

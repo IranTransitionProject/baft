@@ -13,12 +13,12 @@ import json
 import sys
 from pathlib import Path
 
-# Ensure loom is importable
+# Ensure heddle is importable
 BAFT_DIR = Path(__file__).parent.parent
-sys.path.insert(0, str(BAFT_DIR.parent / "loom" / "src"))
+sys.path.insert(0, str(BAFT_DIR.parent / "heddle" / "src"))
 
-from loom.bus.nats_adapter import NATSBus
-from loom.mcp.bridge import BridgeTimeoutError, MCPBridge
+from heddle.bus.nats_adapter import NATSBus
+from heddle.mcp.bridge import BridgeTimeoutError, MCPBridge
 
 
 async def test_tier1_de():

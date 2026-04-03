@@ -1,6 +1,6 @@
 # Baft Helm Chart
 
-Deploy the ITP analytical engine (baft + loom) on Kubernetes.
+Deploy the ITP analytical engine (baft + heddle) on Kubernetes.
 
 ## Quick start
 
@@ -58,6 +58,6 @@ mcp:
 ## Constraints
 
 - **DE worker must be replicas: 1** — serialized writes invariant
-- **Framework PVC is ReadWriteOnce** — only framework-sync writes
-- **Workers mount framework read-only**
+- **Baseline PVC is ReadWriteOnce** — only baseline-sync writes
+- **Workers mount baseline read-only**
 - **Secrets must never go in values.yaml**

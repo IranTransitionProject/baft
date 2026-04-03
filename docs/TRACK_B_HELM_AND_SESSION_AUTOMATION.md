@@ -2,8 +2,8 @@
 
 **Instruction document for Claude Code — v0.3.0 baseline**
 
-This document describes the work to be done across the loom, baft, and
-framework repositories. It is written as a specification for Claude Code
+This document describes the work to be done across the heddle, baft, and
+baseline repositories. It is written as a specification for Claude Code
 to execute, not as end-user documentation. Read it fully before starting
 any implementation.
 
@@ -15,21 +15,21 @@ any implementation.
 
 | Repo | Version | Tag | CI | Notes |
 |---|---|---|---|---|
-| loom | 0.8.0 | v0.8.0 | Green | MkDocs docs, 90% coverage, 1472 tests |
+| heddle | 0.8.0 | v0.8.0 | Green | MkDocs docs, 90% coverage, 1472 tests |
 | baft | 0.3.0 | v0.3.0 | Green | 356 tests, contracts package, DeepEval |
 | docman | 0.5.0 | v0.5.0 | Green | MarkItDown + Docling backends |
-| framework | unversioned | none | Green (validate.yml) | YAML database, 22 modules, 17 briefs |
+| baseline  | unversioned | none | Green (validate.yml) | YAML database, 22 modules, 17 briefs |
 
 ### Existing infrastructure
 
-- `loom/docker-compose.yml` — NATS + Valkey + Workshop + Router
-- `loom/docker/` — 4 Dockerfiles (orchestrator, workshop, router, worker)
-- `loom/k8s/` — 8 Kustomize manifests (namespace, NATS, Redis, orchestrator,
+- `heddle/docker-compose.yml` — NATS + Valkey + Workshop + Router
+- `heddle/docker/` — 4 Dockerfiles (orchestrator, workshop, router, worker)
+- `heddle/k8s/` — 8 Kustomize manifests (namespace, NATS, Redis, orchestrator,
   router, worker, workshop, kustomization.yaml)
 - `baft/docs/SETUP.md` — Complete local installation guide (12 steps)
 - `baft/scripts/run_workers.sh` — Worker launcher script
-- `framework/scripts/setup.sh` — Framework env setup
-- `framework/scripts/watch_session_log.sh` — File watcher for Chat integration
+- `baseline/scripts/setup.sh` — Framework env setup
+- `baseline/scripts/watch_session_log.sh` — File watcher for Chat integration
 
 ### What does NOT exist yet
 
@@ -37,7 +37,7 @@ any implementation.
 - No session start/stop automation (manual `git pull`, manual DuckDB import)
 - No framework sync checking during sessions
 - No Claude project file for Chat-based session management
-- No environment prerequisite checker beyond `loom preflight`
+- No environment prerequisite checker beyond `heddle preflight`
 
 ---
 
@@ -46,13 +46,13 @@ any implementation.
 ### Goal
 
 `helm install baft ./charts/baft` deploys the entire ITP analytical system
-including framework git sync, DuckDB import, NATS, workers, router,
+including baseline git sync, DuckDB import, NATS, workers, router,
 pipelines, Workshop, and MCP gateway.
 
 ### Where to create it
 
-Create `charts/baft/` in the **baft** repository (not loom). Baft is the
-application — loom is the framework. The chart packages the baft application
+Create `charts/baft/` in the **baft** repository (not heddle). Baft is the
+application — heddle is the framework. The chart packages the baft application
 deployment.
 
 ### Chart structure
@@ -75,8 +75,8 @@ charts/baft/
 │   ├── valkey-pvc.yaml
 │   │
 │   ├── # Framework git sync
-│   ├── framework-pvc.yaml            # PersistentVolumeClaim for framework clone
-│   ├── framework-sync-deployment.yaml # git-sync + commit-agent sidecars
+│   ├── baseline-pvc.yaml            # PersistentVolumeClaim for baseline clone
+│   ├── baseline-sync-deployment.yaml # git-sync + commit-agent sidecars
 │   │
 │   ├── # DuckDB
 │   ├── duckdb-pvc.yaml               # Persistent DuckDB storage
@@ -119,11 +119,11 @@ image:
   pullPolicy: IfNotPresent
 
 # -- Framework git sync
-framework:
-  repo: "https://github.com/IranTransitionProject/framework.git"
+baseline:
+  repo: "https://github.com/IranTransitionProject/baseline.git"
   branch: main
-  # For SSH: use "git@github.com:IranTransitionProject/framework.git"
-  # and set framework.sshKeySecret
+  # For SSH: use "git@github.com:IranTransitionProject/baseline.git"
+  # and set baseline.sshKeySecret
   sshKeySecret: ""              # K8s Secret name containing id_rsa
   gitTokenSecret: ""            # K8s Secret name containing GITHUB_TOKEN
   syncInterval: 60              # Seconds between git pull
@@ -232,7 +232,7 @@ jaeger:
 
 # -- Environment (injected into all pods)
 env:
-  ITP_ROOT: /data/framework
+  ITP_ROOT: /data/baseline
   BAFT_WORKSPACE: /data/workspace
   NATS_URL: nats://nats:4222
 ```
@@ -241,7 +241,7 @@ env:
 
 Use the official `registry.k8s.io/git-sync/git-sync:v4` container image.
 
-**Deployment: framework-sync**
+**Deployment: baseline-sync**
 
 ```text
 Pod:
@@ -250,12 +250,12 @@ Pod:
     - git-sync (continuous pull every syncInterval seconds)
     - commit-agent (cron loop: git add -A && git diff --cached --quiet || git commit && git push)
   volumes:
-    - framework-data PVC (ReadWriteOnce)
+    - baseline-data PVC (ReadWriteOnce)
 ```
 
-Workers mount the framework PVC as read-only via `subPath`. The DE worker
+Workers mount the baseline PVC as read-only via `subPath`. The DE worker
 and DuckDB import job also mount it read-only — they write to the DuckDB
-PVC, not to the framework volume.
+PVC, not to the baseline volume.
 
 **The commit-agent sidecar** is a minimal shell script:
 
@@ -263,7 +263,7 @@ PVC, not to the framework volume.
 #!/bin/sh
 while true; do
   sleep $COMMIT_INTERVAL
-  cd /data/framework
+  cd /data/baseline
   git add -A
   if ! git diff --cached --quiet; then
     git commit -m "$COMMIT_MESSAGE — $(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -272,17 +272,17 @@ while true; do
 done
 ```
 
-Mount git credentials from the Secret specified in `framework.sshKeySecret`
-or `framework.gitTokenSecret`.
+Mount git credentials from the Secret specified in `baseline.sshKeySecret`
+or `baseline.gitTokenSecret`.
 
 ### Container images needed
 
-The existing Dockerfiles in `loom/docker/` need to be adapted for baft.
+The existing Dockerfiles in `heddle/docker/` need to be adapted for baft.
 Create new Dockerfiles in `baft/docker/`:
 
 ```text
 baft/docker/
-├── Dockerfile.worker       # Base worker image (loom + baft installed)
+├── Dockerfile.worker       # Base worker image (heddle + baft installed)
 ├── Dockerfile.router       # Router image
 ├── Dockerfile.pipeline     # Pipeline orchestrator image
 ├── Dockerfile.workshop     # Workshop UI image
@@ -295,10 +295,10 @@ All application images should:
 
 1. Start from `python:3.12-slim`
 2. Install uv
-3. Copy loom source and install it
+3. Copy heddle source and install it
 4. Copy baft source and install it
 5. Copy configs/ directory
-6. Set ENTRYPOINT to the appropriate `loom` CLI command
+6. Set ENTRYPOINT to the appropriate `heddle` CLI command
 
 The commit-agent image is just `alpine/git` with the shell script above.
 
@@ -307,7 +307,7 @@ The commit-agent image is just `alpine/git` with the shell script above.
 1. Create `charts/baft/Chart.yaml` and `values.yaml`
 2. Create `templates/_helpers.tpl` with standard label/selector helpers
 3. Create infrastructure templates (NATS, Valkey, secrets, configmap)
-4. Create framework-sync templates (PVC, deployment with git-sync + commit-agent)
+4. Create baseline-sync templates (PVC, deployment with git-sync + commit-agent)
 5. Create DuckDB templates (PVC, import job, import cronjob)
 6. Create worker templates (one Deployment per worker, parameterized from values)
 7. Create router, pipeline, scheduler templates
@@ -321,8 +321,8 @@ The commit-agent image is just `alpine/git` with the shell script above.
 ### Key constraints
 
 - **DE must be replicas: 1** — serialize_writes is a hard invariant
-- **Framework PVC must be ReadWriteOnce** — only the framework-sync pod writes
-- **Workers mount framework as read-only** — via volumeMount.readOnly: true
+- **Baseline PVC must be ReadWriteOnce** — only the baseline-sync pod writes
+- **Workers mount baseline as read-only** — via volumeMount.readOnly: true
 - **DuckDB PVC is ReadWriteOnce** — only DE and import jobs write to it
 - **Ollama needs GPU scheduling** if gpu.enabled: true — use
   `nvidia.com/gpu` or `amd.com/gpu` resource requests
@@ -337,18 +337,18 @@ The commit-agent image is just `alpine/git` with the shell script above.
 
 Automate the repetitive parts of starting and ending analytical sessions:
 
-1. **Session start**: pull framework, check for upstream changes, incremental
+1. **Session start**: pull baseline, check for upstream changes, incremental
    DuckDB import, verify services, register session
-2. **Session end**: commit framework changes, push, unregister session
-3. **During session**: periodically check if framework remote has new commits
+2. **Session end**: commit baseline changes, push, unregister session
+3. **During session**: periodically check if baseline remote has new commits
    (someone else pushed), warn the analyst
 
-### Implementation: `loom session` CLI commands
+### Implementation: `heddle session` CLI commands
 
-Add to `baft/src/baft/cli.py` (new file) or extend loom's CLI via a plugin.
+Add to `baft/src/baft/cli.py` (new file) or extend heddle's CLI via a plugin.
 
-**Preferred approach**: Create a `baft` CLI that wraps loom commands and adds
-session automation. This keeps baft-specific logic out of loom.
+**Preferred approach**: Create a `baft` CLI that wraps heddle commands and adds
+session automation. This keeps baft-specific logic out of heddle.
 
 ```text
 baft session start [--session-id NAME]
@@ -359,15 +359,15 @@ baft session sync-check
 
 #### `baft session start`
 
-1. `cd $ITP_ROOT/framework && git pull --ff-only`
+1. `cd $ITP_ROOT/baseline && git pull --ff-only`
    - If pull fails (merge conflict), warn and abort
 2. `cd $ITP_ROOT/baft && uv run python pipeline/scripts/itp_import_to_duckdb.py --incremental`
-3. Run `loom preflight` equivalent checks:
+3. Run `heddle preflight` equivalent checks:
    - NATS reachable at $NATS_URL
    - Ollama reachable at $OLLAMA_URL
    - ANTHROPIC_API_KEY is set and non-empty
    - DuckDB file exists at $BAFT_WORKSPACE/itp.duckdb
-   - Framework directory exists at $ITP_ROOT/framework/data/
+   - Framework directory exists at $ITP_ROOT/baseline/data/
 4. Register session: `baft.sessions.register_session(session_id)`
 5. Print summary: "Session started. Framework at commit [hash]. DuckDB
    updated. All services reachable."
@@ -375,24 +375,24 @@ baft session sync-check
 #### `baft session end`
 
 1. Unregister session: `baft.sessions.unregister_session(session_id)`
-2. `cd $ITP_ROOT/framework`
+2. `cd $ITP_ROOT/baseline`
 3. `git add -A`
 4. If there are changes:
    - `git commit -m "Session [session_id]: [message] — [date]"`
    - `git push`
    - Print: "Framework changes committed and pushed."
 5. If no changes:
-   - Print: "No framework changes to commit."
+   - Print: "No baseline changes to commit."
 
 #### `baft session status`
 
 1. Show active sessions from `baft.sessions.get_active_sessions()`
-2. Show framework git status (clean/dirty, current commit, behind remote?)
+2. Show baseline git status (clean/dirty, current commit, behind remote?)
 3. Show service health (NATS, Ollama, DuckDB file age)
 
 #### `baft session sync-check`
 
-1. `cd $ITP_ROOT/framework && git fetch origin --quiet`
+1. `cd $ITP_ROOT/baseline && git fetch origin --quiet`
 2. Compare `HEAD` with `origin/main`:
    - If behind: warn "Framework has N new commits from remote. Run
      `baft session sync` to pull and re-import."
@@ -419,10 +419,10 @@ baft/pyproject.toml            # Add [project.scripts] baft = "baft.cli:main"
 baft/tests/test_session_cli.py # Tests for session commands
 ```
 
-The CLI should use Click (already a loom dependency). Each command should
+The CLI should use Click (already a heddle dependency). Each command should
 be testable with `click.testing.CliRunner`.
 
-Environment checks should use `loom.cli.preflight` internals where possible
+Environment checks should use `heddle.cli.preflight` internals where possible
 rather than reimplementing them.
 
 Git operations should use `subprocess.run(["git", ...])` with proper error
@@ -438,7 +438,7 @@ When an analyst opens a Claude Chat project that points at the ITP repos,
 Claude should be able to:
 
 1. Guide them through session start (or do it automatically via MCP)
-2. Periodically check for framework sync during the session
+2. Periodically check for baseline sync during the session
 3. Help them commit and push at session end
 
 ### Claude project file
@@ -462,14 +462,14 @@ tools:
     enable: [start, end, status, sync_check, sync]
 ```
 
-And implement them in loom's MCP workshop bridge or as a new session bridge:
+And implement them in heddle's MCP workshop bridge or as a new session bridge:
 
 ```text
-session.start       — Pull framework, import DuckDB, check services, register
-session.end         — Commit framework, push, unregister
+session.start       — Pull baseline, import DuckDB, check services, register
+session.end         — Commit baseline, push, unregister
 session.status      — Active sessions, git status, service health
-session.sync_check  — Check if remote framework has new commits
-session.sync        — Pull framework + incremental DuckDB import
+session.sync_check  — Check if remote baseline has new commits
+session.sync        — Pull baseline + incremental DuckDB import
 ```
 
 These tools call the same logic as the `baft session` CLI commands.
@@ -497,8 +497,8 @@ When the analyst starts a new session or says they want to begin work:
 
 Every 15 minutes (or when the analyst asks), call `session.sync_check`:
 
-- If the framework has new remote commits, tell the analyst:
-  "The framework has been updated by another session. Would you like
+- If the baseline has new remote commits, tell the analyst:
+  "The baseline has been updated by another session. Would you like
   me to sync now, or continue with the current version?"
 - If they say yes, call `session.sync`
 
@@ -506,7 +506,7 @@ Every 15 minutes (or when the analyst asks), call `session.sync_check`:
 
 When the analyst says they're done or wants to end the session:
 
-1. Ask: "Would you like me to commit the framework changes from this
+1. Ask: "Would you like me to commit the baseline changes from this
    session? If so, please provide a brief description."
 2. Call `session.end` with their message
 3. Confirm the commit hash and that push succeeded
@@ -519,7 +519,7 @@ Before any session operations, verify:
 - The `session.*` tools are available in the tool list
 - If tools are missing, tell the analyst: "The session management tools
   are not available. Please ensure the MCP server is running with
-  `uv run loom mcp --config configs/mcp/itp.yaml`"
+  `uv run heddle mcp --config configs/mcp/itp.yaml`"
 
 ## Error handling
 
@@ -529,9 +529,9 @@ Before any session operations, verify:
   running. Start it with: `ollama serve`"
 - If `session.end` push fails: "Push failed — this usually means
   the remote has new commits. Let me check..." then call sync_check
-- If framework has diverged: "The framework has diverged from remote.
+- If framework has diverged: "The baseline has diverged from remote.
   This needs manual resolution. Open a terminal and run
-  `cd $ITP_ROOT/framework && git status` to see the conflict."
+  `cd $ITP_ROOT/baseline && git status` to see the conflict."
 ```
 
 ### Claude project configuration
@@ -553,7 +553,7 @@ This project connects to the ITP analytical system via MCP.
 ## Setup
 
 Ensure the MCP server is running:
-`uv run loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765`
+`uv run heddle mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765`
 
 ## Session management
 
@@ -590,8 +590,8 @@ baft preflight
 
 1. **Python version** — >= 3.11
 2. **uv installed** — `which uv`
-3. **Repos present** — $ITP_ROOT/framework, $ITP_ROOT/loom, $ITP_ROOT/baft exist
-4. **Dependencies installed** — `uv run python -c "import loom; import baft"`
+3. **Repos present** — $ITP_ROOT/baseline, $ITP_ROOT/heddle, $ITP_ROOT/baft exist
+4. **Dependencies installed** — `uv run python -c "import heddle; import baft"`
 5. **Environment variables** — ITP_ROOT, BAFT_WORKSPACE, ANTHROPIC_API_KEY set
 6. **NATS reachable** — TCP connect to $NATS_URL
 7. **Ollama reachable** — HTTP GET $OLLAMA_URL/api/tags
@@ -608,7 +608,7 @@ ITP Preflight Check
 ───────────────────
 [OK] Python 3.12.4
 [OK] uv 0.6.3
-[OK] Repos: framework, loom, baft
+[OK] Repos: baseline, heddle, baft
 [OK] Dependencies installed
 [OK] Environment variables set
 [OK] NATS reachable (localhost:4222)
@@ -636,7 +636,7 @@ ITP Preflight Check
 
 ### Phase 2: Session MCP tools
 
-1. Create `loom/src/loom/mcp/session_bridge.py` (or extend workshop_bridge)
+1. Create `heddle/src/heddle/mcp/session_bridge.py` (or extend workshop_bridge)
 2. Add session tool discovery to `workshop_discovery.py`
 3. Wire into MCP server dispatch
 4. Write tests
@@ -652,7 +652,7 @@ ITP Preflight Check
 ### Phase 4: Helm chart
 
 1. Create `charts/baft/` structure
-2. Implement templates (infrastructure → framework-sync → workers → services)
+2. Implement templates (infrastructure → baseline-sync → workers → services)
 3. Create Dockerfiles in `baft/docker/`
 4. Test with `helm template` dry-run
 5. Test with local k8s (minikube or Docker Desktop Kubernetes)
@@ -717,10 +717,10 @@ docs/CLAUDE_CHAT_SESSION_INSTRUCTIONS.md          # Chat session management guid
 tests/test_session_cli.py                         # CLI tests
 ```
 
-### In loom/
+### In heddle/
 
 ```text
-src/loom/mcp/session_bridge.py                    # Session MCP tool dispatch
+src/heddle/mcp/session_bridge.py                    # Session MCP tool dispatch
 ```
 
 ### Files to modify
@@ -729,8 +729,8 @@ src/loom/mcp/session_bridge.py                    # Session MCP tool dispatch
 baft/pyproject.toml          # Add [project.scripts] baft = "baft.cli:main"
 baft/CLAUDE.md               # Document session CLI, Helm chart
 baft/docs/SETUP.md           # Add session automation section
-loom/src/loom/mcp/workshop_discovery.py  # Add session tool definitions
-loom/src/loom/mcp/server.py              # Wire session bridge
+heddle/src/heddle/mcp/workshop_discovery.py  # Add session tool definitions
+heddle/src/heddle/mcp/server.py              # Wire session bridge
 baft/configs/mcp/itp.yaml               # Add session tool group
 ```
 
@@ -749,13 +749,13 @@ baft/configs/mcp/itp.yaml               # Add session tool group
    This constraint must be enforced in the Helm chart values validation.
 
 4. **Audit independence is config-enforced** — LA, PA, RT, AS, TN, SA have
-   restricted knowledge_sources. The Helm chart must mount framework data
+   restricted knowledge_sources. The Helm chart must mount baseline data
    read-only and must NOT change silo mappings.
 
 5. **Session management goes through MCP** — Claude Chat cannot run CLI
    commands directly. All session operations must be available as MCP tools
    for Chat to invoke them.
 
-6. **Baft CLI wraps loom** — Session commands are baft-specific, not
-   framework-level. The `baft` CLI is a thin wrapper that calls loom
+6. **Baft CLI wraps heddle** — Session commands are baft-specific, not
+   baseline-level. The `baft` CLI is a thin wrapper that calls heddle
    internals + baft session logic.

@@ -9,7 +9,7 @@ The MCP server must be running before Claude Chat can connect:
 
 ```bash
 # From the baft directory
-uv run loom mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765
+uv run heddle mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765
 ```
 
 Or use the convenience script:

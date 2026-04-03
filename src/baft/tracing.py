@@ -1,9 +1,9 @@
 """
 Baft tracing integration — initialize OpenTelemetry for ITP pipelines.
 
-Wraps ``loom.tracing`` to provide ITP-specific service names and
+Wraps ``heddle.tracing`` to provide ITP-specific service names and
 defaults. All functions are safe to call without OTel installed
-(they degrade to no-ops via loom.tracing internals).
+(they degrade to no-ops via heddle.tracing internals).
 
 Usage::
 
@@ -22,7 +22,7 @@ import os
 
 import structlog
 
-from loom.tracing import get_tracer, init_tracing
+from heddle.tracing import get_tracer, init_tracing
 
 logger = structlog.get_logger()
 

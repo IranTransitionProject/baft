@@ -1,6 +1,6 @@
 # Baft
 
-**ITP analytical engine — application layer on the Loom framework.**
+**ITP analytical engine — application layer on the Heddle framework.**
 
 Baft provides ITP-specific worker configurations, pipeline definitions, knowledge silo mappings, and utility scripts for the multi-agent intelligence analysis system.
 
@@ -37,5 +37,5 @@ Baft configures 13 workers across three batches:
 ## Project links
 
 - [📘 Baft documentation](https://irantransitionproject.github.io/baft/) (this site)
-- [Loom framework docs](https://irantransitionproject.github.io/loom/)
+- [Heddle framework docs](https://getheddle.github.io/heddle/)
 - [GitHub repository](https://github.com/IranTransitionProject/baft)

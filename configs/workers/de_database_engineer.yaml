@@ -1,6 +1,6 @@
 # DE — Database Engineer
 # Role: Execute validated YAML operations against the ITP framework database.
-#   The only node permitted to write to framework/data/. All writes validated
+#   The only node permitted to write to baseline/data/. All writes validated
 #   against JSON schemas before commit. Emits GA notification after mid-session
 #   threshold (governance_audit_threshold in itp_tier_rules.yaml).
 #

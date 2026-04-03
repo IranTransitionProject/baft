@@ -207,7 +207,7 @@ Claude calls `workshop.impact.analyze` and shows you which pipelines use that wo
 If you have a terminal available, you can watch pipeline execution in real time:
 
 ```bash
-uv run loom ui --nats-url nats://localhost:4222
+uv run heddle ui --nats-url nats://localhost:4222
 ```
 
 This shows four panels:
@@ -254,7 +254,7 @@ Baft automatically retries failed pipeline stages:
 For more hands-on worker management, you can use the Workshop web interface:
 
 ```bash
-uv run loom workshop --port 8080
+uv run heddle workshop --port 8080
 ```
 
 Open <http://localhost:8080> in your browser. The Workshop provides:
@@ -303,7 +303,7 @@ These tags flow through the entire pipeline — from SP's extraction through IA'
 1. **Pull latest framework data** (if others have been working):
 
    ```bash
-   cd ~/IranTransitionProject/framework && git pull
+   cd ~/IranTransitionProject/baseline && git pull
    ```
 
 2. **Update DuckDB** (if framework changed):
@@ -331,7 +331,7 @@ Work through Claude as described above. The standard pattern:
 ### After your session
 
 ```bash
-cd ~/IranTransitionProject/framework
+cd ~/IranTransitionProject/baseline
 git add -A
 git commit -m "Session: [date] — [brief description]"
 git push

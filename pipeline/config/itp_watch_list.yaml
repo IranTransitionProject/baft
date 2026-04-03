@@ -3,7 +3,7 @@
 # Date: 2026-03-15
 #
 # Purpose: Items for daily WT (Watch Tower) automated monitoring.
-# Populated from framework/data/variables.yaml + gaps.yaml high-priority items.
+# Populated from baseline/data/variables.yaml + gaps.yaml high-priority items.
 # Human adds channel_routing and adjusts search terms.
 #
 # Channel routing: which Telegram channels + platforms to search for each item.

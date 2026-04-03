@@ -1,9 +1,9 @@
 # Baft Design Invariants
 
 This document describes the ITP-specific design constraints in Baft that
-instantiate the generic patterns defined in the Loom framework reference.
+instantiate the generic patterns defined in the Heddle framework reference.
 
-**Prerequisite reading:** [`loom/docs/DESIGN_INVARIANTS.md`](../../loom/docs/DESIGN_INVARIANTS.md)
+**Prerequisite reading:** [`heddle/docs/DESIGN_INVARIANTS.md`](../../heddle/docs/DESIGN_INVARIANTS.md)
 — all Loom invariants apply here. This document only covers the Baft-specific
 bindings.
 
@@ -122,7 +122,7 @@ TN implements the neutralization firewall pattern (Loom invariant #18):
 
 DE implements the single-writer pattern (Loom invariant #28):
 
-- DE is the **exclusive** writer to `framework/data/`. No other worker touches
+- DE is the **exclusive** writer to `baseline/data/`. No other worker touches
   these files.
 - DE runs as a `ProcessorWorker` — exactly one instance.
 - DE enforces a validation chain before any write: schema validation ->
@@ -212,11 +212,11 @@ architecture through the one silo that every node trusts (Loom invariant #25).
 
 ## Framework Storage
 
-Baft's analytical knowledge graph lives in `framework/data/` as YAML files in
-a git repository. There is no database engine for framework data. DuckDB is
+Baft's analytical knowledge graph lives in `baseline/data/` as YAML files in
+a git repository. There is no database engine for baseline data. DuckDB is
 used only for Workshop eval storage and document query backends.
 
-**Why YAML + git:** The framework must be human-readable, git-diffable, and
+**Why YAML + git:** The baseline must be human-readable, git-diffable, and
 editable by analysts who are not engineers. The dataset is ~200 entities —
 query performance is irrelevant. Migrating to a database engine would lose git
 history, remove direct analyst editing, and require DE to implement full CRUD

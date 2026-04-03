@@ -16,7 +16,7 @@ BAFT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 ITP_ROOT="${ITP_ROOT:-$(cd "$BAFT_DIR/.." && pwd)}"
 export ITP_ROOT
 
-LOOM_DIR="$ITP_ROOT/loom"
+HEDDLE_DIR="$ITP_ROOT/heddle"
 LOG_DIR="$BAFT_DIR/.worker-logs"
 PID_FILE="$BAFT_DIR/.worker-pids"
 RESOLVER="$SCRIPT_DIR/resolve_config.py"
@@ -91,7 +91,7 @@ start_worker() {
     config=$(resolve_config "$name")
     local log="$LOG_DIR/${name}.log"
 
-    nohup uv run --project "$BAFT_DIR" loom worker --config "$config" --tier "$tier" --nats-url "$NATS_URL" \
+    nohup uv run --project "$BAFT_DIR" heddle worker --config "$config" --tier "$tier" --nats-url "$NATS_URL" \
         > "$log" 2>&1 &
     local pid=$!
     echo "$pid $name" >> "$PID_FILE"
@@ -109,10 +109,10 @@ stop_all() {
         rm -f "$PID_FILE"
     fi
 
-    # Also kill any stray loom/nats processes we started
-    pkill -f "loom router" 2>/dev/null || true
-    pkill -f "loom worker.*resolved-configs" 2>/dev/null || true
-    pkill -f "loom mcp.*itp.yaml" 2>/dev/null || true
+    # Also kill any stray heddle/nats processes we started
+    pkill -f "heddle router" 2>/dev/null || true
+    pkill -f "heddle worker.*resolved-configs" 2>/dev/null || true
+    pkill -f "heddle mcp.*itp.yaml" 2>/dev/null || true
 
     # Stop Docker NATS if we started it
     docker rm -f nats-baft 2>/dev/null || true
@@ -191,8 +191,8 @@ do_start() {
         start_nats
 
         header "Router"
-        nohup uv run --project "$BAFT_DIR" loom router \
-            --config "$LOOM_DIR/configs/router_rules.yaml" \
+        nohup uv run --project "$BAFT_DIR" heddle router \
+            --config "$HEDDLE_DIR/configs/router_rules.yaml" \
             --nats-url "$NATS_URL" \
             > "$LOG_DIR/router.log" 2>&1 &
         echo "$! router" >> "$PID_FILE"
@@ -216,10 +216,10 @@ do_start() {
         info "Transport: stdio (for Claude Desktop / Claude Code)"
         info "The MCP server will run in foreground. Press Ctrl-C to stop."
         echo ""
-        exec uv run --project "$BAFT_DIR" loom mcp --config "$BAFT_DIR/configs/mcp/itp.yaml"
+        exec uv run --project "$BAFT_DIR" heddle mcp --config "$BAFT_DIR/configs/mcp/itp.yaml"
     else
         info "Transport: streamable-http on port $port"
-        nohup uv run --project "$BAFT_DIR" loom mcp \
+        nohup uv run --project "$BAFT_DIR" heddle mcp \
             --config "$BAFT_DIR/configs/mcp/itp.yaml" \
             --transport streamable-http --port "$port" \
             > "$LOG_DIR/mcp-server.log" 2>&1 &

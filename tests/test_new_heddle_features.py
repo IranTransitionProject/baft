@@ -1,5 +1,5 @@
 """
-test_new_loom_features.py
+test_new_heddle_features.py
 -------------------------
 Tests for newly adopted Loom features in Baft:
   1. OpenTelemetry tracing integration
@@ -61,9 +61,9 @@ class TestTracingIntegration:
             span.set_attribute("test.key", "test_value")
             # Should not raise
 
-    def test_loom_tracing_inject_extract_noop(self):
+    def test_heddle_tracing_inject_extract_noop(self):
         """Loom inject/extract are safe to call without OTel."""
-        from loom.tracing import extract_trace_context, inject_trace_context
+        from heddle.tracing import extract_trace_context, inject_trace_context
 
         carrier: dict = {}
         inject_trace_context(carrier)
@@ -127,12 +127,12 @@ class TestResultStreamAvailability:
     """ResultStream is importable and usable for audit pipeline patterns."""
 
     def test_result_stream_importable(self):
-        from loom.orchestrator.stream import ResultStream
+        from heddle.orchestrator.stream import ResultStream
 
         assert ResultStream is not None
 
     def test_result_callback_protocol_importable(self):
-        from loom.orchestrator.stream import ResultCallback
+        from heddle.orchestrator.stream import ResultCallback
 
         assert ResultCallback is not None
 
@@ -179,7 +179,7 @@ class TestWorkshopMCPTools:
 
     def test_workshop_tool_discovery(self, config):
         """Workshop tools can be discovered from the config."""
-        from loom.mcp.workshop_discovery import discover_workshop_tools
+        from heddle.mcp.workshop_discovery import discover_workshop_tools
 
         workshop_config = config["tools"]["workshop"]
         tools = discover_workshop_tools(workshop_config)
@@ -200,14 +200,14 @@ class TestConfigImpactAnalysis:
     """Config impact analysis module is available and functional."""
 
     def test_get_impact_importable(self):
-        from loom.workshop.config_impact import get_impact
+        from heddle.workshop.config_impact import get_impact
 
         assert callable(get_impact)
 
     def test_impact_returns_valid_structure(self):
         """get_impact returns a valid structure with expected keys."""
-        from loom.workshop.config_impact import get_impact
-        from loom.workshop.config_manager import ConfigManager
+        from heddle.workshop.config_impact import get_impact
+        from heddle.workshop.config_manager import ConfigManager
 
         cm = ConfigManager(configs_dir=str(BAFT_ROOT / "configs"))
         impact = get_impact("sp_source_processor", cm)
@@ -219,7 +219,7 @@ class TestConfigImpactAnalysis:
 
     def test_impact_helper_functions(self):
         """Internal dependency inference and downstream detection work."""
-        from loom.workshop.config_impact import _find_downstream, _infer_dependencies
+        from heddle.workshop.config_impact import _find_downstream, _infer_dependencies
 
         # Simulate a pipeline with stages in get_impact's expected format
         stages = [
@@ -250,24 +250,24 @@ class TestEvalBaselines:
     """Workshop DB supports eval baselines for regression detection."""
 
     def test_workshop_db_importable(self):
-        from loom.workshop.db import WorkshopDB
+        from heddle.workshop.db import WorkshopDB
 
         assert WorkshopDB is not None
 
     def test_workshop_db_has_baseline_methods(self):
-        from loom.workshop.db import WorkshopDB
+        from heddle.workshop.db import WorkshopDB
 
         assert hasattr(WorkshopDB, "promote_baseline")
         assert hasattr(WorkshopDB, "compare_against_baseline")
 
     def test_eval_runner_importable(self):
-        from loom.workshop.eval_runner import EvalRunner
+        from heddle.workshop.eval_runner import EvalRunner
 
         assert EvalRunner is not None
 
     def test_eval_runner_supports_llm_judge(self):
         """EvalRunner should accept llm_judge scoring mode."""
-        from loom.workshop.eval_runner import EvalRunner
+        from heddle.workshop.eval_runner import EvalRunner
 
         # The scoring parameter acceptance is validated at call time,
         # but we can verify the class exists and is importable.
@@ -281,17 +281,17 @@ class TestDeadLetterAuditTrail:
     """Dead-letter consumer supports replay tracking."""
 
     def test_dead_letter_consumer_importable(self):
-        from loom.router.dead_letter import DeadLetterConsumer
+        from heddle.router.dead_letter import DeadLetterConsumer
 
         assert DeadLetterConsumer is not None
 
     def test_replay_record_importable(self):
-        from loom.router.dead_letter import ReplayRecord
+        from heddle.router.dead_letter import ReplayRecord
 
         assert ReplayRecord is not None
 
     def test_dead_letter_has_replay_log(self):
-        from loom.router.dead_letter import DeadLetterConsumer
+        from heddle.router.dead_letter import DeadLetterConsumer
 
         assert hasattr(DeadLetterConsumer, "replay_log")
         assert hasattr(DeadLetterConsumer, "replay_count")
@@ -309,12 +309,12 @@ class TestTUIDashboard:
     """TUI dashboard is importable and ready for use."""
 
     def test_tui_app_importable(self):
-        from loom.tui.app import LoomDashboard
+        from heddle.tui.app import HeddleDashboard
 
-        assert LoomDashboard is not None
+        assert HeddleDashboard is not None
 
     def test_tui_tracked_models_importable(self):
-        from loom.tui.app import TrackedGoal, TrackedStage, TrackedTask
+        from heddle.tui.app import TrackedGoal, TrackedStage, TrackedTask
 
         assert TrackedGoal is not None
         assert TrackedTask is not None
@@ -340,9 +340,9 @@ class TestDependencyDeclarations:
             pyproject = tomllib.load(f)
 
         deps = pyproject["project"]["dependencies"]
-        loom_dep = next(d for d in deps if d.startswith("loom"))
+        loom_dep = next(d for d in deps if d.startswith("heddle-ai"))
         for extra in ("mcp", "duckdb", "rag", "workshop", "tui", "otel"):
-            assert extra in loom_dep, f"loom dependency missing extra: {extra}"
+            assert extra in loom_dep, f"heddle-ai dependency missing extra: {extra}"
 
     def test_manifest_extras_match_pyproject(self):
         import tomllib
@@ -354,10 +354,10 @@ class TestDependencyDeclarations:
         manifest = _load_yaml(MANIFEST)
         manifest_extras = set(manifest["required_extras"])
 
-        # All manifest extras should be in the loom dependency
-        loom_dep = next(d for d in pyproject["project"]["dependencies"] if d.startswith("loom"))
+        # All manifest extras should be in the heddle dependency
+        loom_dep = next(d for d in pyproject["project"]["dependencies"] if d.startswith("heddle-ai"))
         for extra in manifest_extras:
             if extra != "scheduler":  # scheduler is a separate dep (croniter)
                 assert extra in loom_dep, (
-                    f"Manifest extra '{extra}' not in pyproject.toml loom dependency"
+                    f"Manifest extra '{extra}' not in pyproject.toml heddle-ai dependency"
                 )

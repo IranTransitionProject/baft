@@ -1,5 +1,5 @@
 # itp.yaml — ITP Scheduled Actors
-# Managed by: loom scheduler --config configs/schedulers/itp.yaml
+# Managed by: heddle scheduler --config configs/schedulers/itp.yaml
 #
 # Schedule overview (all times UTC):
 #   06:00 — WT daily scan sweep (all watch items)

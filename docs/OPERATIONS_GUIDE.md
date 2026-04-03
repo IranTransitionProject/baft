@@ -18,7 +18,7 @@ Claude Desktop / Claude Code / Workshop UI
        v
 +------------------+
 |  MCP Gateway     |--- DuckDB queries (itp_search, itp_filter, itp_stats, itp_get)
-|  (loom mcp)      |--- Framework YAML as MCP resources
+|  (heddle mcp)      |--- Framework YAML as MCP resources
 |                  |--- Workshop tools (worker CRUD, test bench, eval, impact, dead-letter)
 +--------+---------+
          | NATS (localhost:4222)
@@ -112,7 +112,7 @@ This logs the full payload for every message sent and received by actors. Large 
 ### 3. TUI dashboard (real-time monitoring)
 
 ```bash
-uv run loom ui --nats-url nats://localhost:4222
+uv run heddle ui --nats-url nats://localhost:4222
 ```
 
 **Panels:**
@@ -122,11 +122,11 @@ uv run loom ui --nats-url nats://localhost:4222
 | Goals | Active pipeline goals | status, subtask count, elapsed time |
 | Tasks | Individual worker tasks | worker type, tier, model, elapsed |
 | Pipeline | Stage execution within pipelines | stage name, wall time, status |
-| Events | Scrolling log of all `loom.>` NATS messages | timestamp, subject, summary |
+| Events | Scrolling log of all `heddle.>` NATS messages | timestamp, subject, summary |
 
 **Keyboard shortcuts:** `q` quit, `c` clear log, `r` refresh tables
 
-The TUI subscribes to `loom.>` wildcard and never publishes. It's a pure observer — safe to run alongside production actors at any time.
+The TUI subscribes to `heddle.>` wildcard and never publishes. It's a pure observer — safe to run alongside production actors at any time.
 
 **What to look for:**
 
@@ -235,7 +235,7 @@ workshop.deadletter.list  — returns all dead-letter entries with reason and ti
 **Via CLI:**
 
 ```bash
-uv run loom dead-letter monitor --nats-url nats://localhost:4222
+uv run heddle dead-letter monitor --nats-url nats://localhost:4222
 ```
 
 **Via Workshop UI:**
@@ -372,7 +372,7 @@ Returns:
 | "No LLM backends available" | Check `OLLAMA_URL` and `ANTHROPIC_API_KEY` | Start Ollama: `ollama serve`; verify API key |
 | DuckDB query returns empty | Check `itp-workspace/itp.duckdb` exists | Run import: `uv run python pipeline/scripts/itp_import_to_duckdb.py` |
 | MCP tools not appearing | Check Claude Desktop MCP logs | Verify config JSON syntax; restart Claude Desktop |
-| Workshop won't start | Check port conflicts | Use different port: `loom workshop --port 8081` |
+| Workshop won't start | Check port conflicts | Use different port: `heddle workshop --port 8081` |
 
 ### Tracing issues
 
@@ -391,7 +391,7 @@ Returns:
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `ITP_ROOT` | Yes | — | Parent directory of framework/, loom/, baft/ |
+| `ITP_ROOT` | Yes | — | Parent directory of baseline/, heddle/, baft/ |
 | `ANTHROPIC_API_KEY` | For standard/frontier tier | — | Claude API access |
 | `OLLAMA_URL` | For local tier | `http://localhost:11434` | Ollama endpoint |
 | `OLLAMA_MODEL` | No | `llama3.2:3b` | Default local model |
@@ -417,14 +417,14 @@ Returns:
 
 | Subject | Purpose |
 |---------|---------|
-| `loom.tasks.incoming` | Router picks up new tasks |
-| `loom.tasks.{worker_type}.{tier}` | Routed tasks for specific workers |
-| `loom.tasks.dead_letter` | Failed/unroutable tasks |
-| `loom.results.{goal_id}` | Results back to orchestrators |
-| `loom.results.default` | Results from standalone tasks |
-| `loom.goals.incoming` | Pipeline goals for orchestrators |
-| `loom.control.reload` | Config hot-reload signal |
-| `loom.scheduler.{name}` | Scheduler health-check |
+| `heddle.tasks.incoming` | Router picks up new tasks |
+| `heddle.tasks.{worker_type}.{tier}` | Routed tasks for specific workers |
+| `heddle.tasks.dead_letter` | Failed/unroutable tasks |
+| `heddle.results.{goal_id}` | Results back to orchestrators |
+| `heddle.results.default` | Results from standalone tasks |
+| `heddle.goals.incoming` | Pipeline goals for orchestrators |
+| `heddle.control.reload` | Config hot-reload signal |
+| `heddle.scheduler.{name}` | Scheduler health-check |
 
 ---
 
@@ -456,7 +456,7 @@ If any test fails, the audit independence is compromised. Do not run publication
 
 1. **LLM response time** — the biggest factor. Local models (Ollama) are 3-7s, API calls are 5-30s.
 2. **Pipeline sequential stages** — Tier 2 has 4 sequential stages, each waiting for the previous one.
-3. **DuckDB import** — full import can take 30-60s for large framework datasets.
+3. **DuckDB import** — full import can take 30-60s for large baseline datasets.
 4. **NATS message serialization** — negligible for normal payloads, can matter for very large source bundles.
 
 ### Scaling options
@@ -465,9 +465,9 @@ If any test fails, the audit independence is compromised. Do not run publication
 
 ```bash
 # Run 3 SP workers for parallel source processing
-uv run loom worker --config configs/workers/sp_source_processor.yaml --tier local &
-uv run loom worker --config configs/workers/sp_source_processor.yaml --tier local &
-uv run loom worker --config configs/workers/sp_source_processor.yaml --tier local &
+uv run heddle worker --config configs/workers/sp_source_processor.yaml --tier local &
+uv run heddle worker --config configs/workers/sp_source_processor.yaml --tier local &
+uv run heddle worker --config configs/workers/sp_source_processor.yaml --tier local &
 ```
 
 NATS queue groups ensure each task goes to exactly one worker instance.
@@ -542,4 +542,4 @@ All eval tests use `command-r7b:latest` via Ollama as judge -- no cloud API keys
 *For analyst-facing guidance, see the [Analyst Guide](ANALYST_GUIDE.md).*
 *For initial setup, see the [Setup Guide](SETUP.md).*
 *For Claude Desktop connection, see the [Claude Desktop Guide](CLAUDE_DESKTOP_GUIDE.md).*
-*For Loom framework troubleshooting, see [loom/docs/TROUBLESHOOTING.md](../../loom/docs/TROUBLESHOOTING.md).*
+*For Heddle framework troubleshooting, see [heddle/docs/TROUBLESHOOTING.md](../../heddle/docs/TROUBLESHOOTING.md).*

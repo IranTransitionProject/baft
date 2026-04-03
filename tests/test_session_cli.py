@@ -29,7 +29,7 @@ class TestPreflight:
             patch("baft.cli._check_python_version", return_value=("[OK] Python 3.12.4", True)),
             patch("baft.cli._check_uv", return_value=("[OK] uv 0.6.3", True)),
             patch(
-                "baft.cli._check_repos", return_value=("[OK] Repos: framework, loom, baft", True)
+                "baft.cli._check_repos", return_value=("[OK] Repos: baseline, heddle, baft", True)
             ),
             patch("baft.cli._check_deps", return_value=("[OK] Dependencies installed", True)),
             patch(
@@ -42,9 +42,9 @@ class TestPreflight:
                 "baft.cli._check_ollama", return_value=("[OK] Ollama reachable (llama3.2:3b)", True)
             ),
             patch("baft.cli._check_duckdb", return_value=("[OK] DuckDB exists (14.2 MB)", True)),
-            patch("baft.cli._check_framework_git", return_value=("[OK] Framework git clean", True)),
+            patch("baft.cli._check_baseline_git", return_value=("[OK] Baseline git clean", True)),
             patch(
-                "baft.cli._check_framework_remote", return_value=("[OK] Framework up-to-date", True)
+                "baft.cli._check_baseline_remote", return_value=("[OK] Baseline up-to-date", True)
             ),
         ):
             result = runner.invoke(main, ["preflight"])
@@ -63,8 +63,8 @@ class TestPreflight:
             patch("baft.cli._check_nats", return_value=("[OK] NATS", True)),
             patch("baft.cli._check_ollama", return_value=("[OK] Ollama", True)),
             patch("baft.cli._check_duckdb", return_value=("[OK] DuckDB", True)),
-            patch("baft.cli._check_framework_git", return_value=("[OK] Git", True)),
-            patch("baft.cli._check_framework_remote", return_value=("[OK] Remote", True)),
+            patch("baft.cli._check_baseline_git", return_value=("[OK] Git", True)),
+            patch("baft.cli._check_baseline_remote", return_value=("[OK] Remote", True)),
         ):
             result = runner.invoke(main, ["preflight"])
 
@@ -81,8 +81,8 @@ class TestPreflight:
             patch("baft.cli._check_nats", return_value=("[OK] NATS", True)),
             patch("baft.cli._check_ollama", return_value=("[OK] Ollama", True)),
             patch("baft.cli._check_duckdb", return_value=("[OK] DuckDB", True)),
-            patch("baft.cli._check_framework_git", return_value=("[WARN] Uncommitted", True)),
-            patch("baft.cli._check_framework_remote", return_value=("[OK] Remote", True)),
+            patch("baft.cli._check_baseline_git", return_value=("[WARN] Uncommitted", True)),
+            patch("baft.cli._check_baseline_remote", return_value=("[OK] Remote", True)),
         ):
             result = runner.invoke(main, ["preflight"])
 
@@ -100,12 +100,12 @@ class TestSessionStart:
 
     def test_start_with_auto_id(self, runner, tmp_path):
         """Session start auto-generates an ID when none provided."""
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
         with (
-            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._baseline_dir", return_value=fw),
             patch("baft.cli._baft_dir", return_value=tmp_path),
             patch("baft.cli._git") as mock_git,
             patch("baft.cli._check_nats", return_value=("[OK] NATS", True)),
@@ -121,12 +121,12 @@ class TestSessionStart:
 
     def test_start_with_explicit_id(self, runner, tmp_path):
         """Session start uses the provided session ID."""
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
         with (
-            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._baseline_dir", return_value=fw),
             patch("baft.cli._baft_dir", return_value=tmp_path),
             patch("baft.cli._git") as mock_git,
             patch("baft.cli._check_nats", return_value=("[OK] NATS", True)),
@@ -142,12 +142,12 @@ class TestSessionStart:
 
     def test_start_fails_if_git_pull_fails(self, runner, tmp_path):
         """Session start exits 1 if git pull fails (merge conflict)."""
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
         with (
-            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._baseline_dir", return_value=fw),
             patch("baft.cli._baft_dir", return_value=tmp_path),
             patch("baft.cli._git") as mock_git,
         ):
@@ -159,12 +159,12 @@ class TestSessionStart:
 
     def test_start_fails_if_nats_unreachable(self, runner, tmp_path):
         """Session start exits 1 if NATS is not reachable."""
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
         with (
-            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._baseline_dir", return_value=fw),
             patch("baft.cli._baft_dir", return_value=tmp_path),
             patch("baft.cli._git") as mock_git,
             patch("baft.cli._check_nats", return_value=("[FAIL] NATS unreachable", False)),
@@ -185,8 +185,8 @@ class TestSessionEnd:
     """Tests for `baft session end`."""
 
     def test_end_commits_and_pushes(self, runner, tmp_path):
-        """Session end with --yes commits dirty framework and pushes."""
-        fw = tmp_path / "framework"
+        """Session end with --yes commits dirty baseline and pushes."""
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
@@ -200,7 +200,7 @@ class TestSessionEnd:
             return mock
 
         with (
-            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._baseline_dir", return_value=fw),
             patch("baft.cli._git", side_effect=mock_git_fn),
             patch("baft.sessions.unregister_session") as mock_unreg,
             patch(
@@ -215,8 +215,8 @@ class TestSessionEnd:
         mock_unreg.assert_called_once()
 
     def test_end_no_changes(self, runner, tmp_path):
-        """Session end with clean framework skips commit."""
-        fw = tmp_path / "framework"
+        """Session end with clean baseline skips commit."""
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
@@ -225,7 +225,7 @@ class TestSessionEnd:
             return mock
 
         with (
-            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._baseline_dir", return_value=fw),
             patch("baft.cli._git", side_effect=mock_git_fn),
             patch("baft.sessions.unregister_session"),
             patch(
@@ -236,7 +236,7 @@ class TestSessionEnd:
             result = runner.invoke(main, ["session", "end", "--yes"])
 
         assert result.exit_code == 0
-        assert "No framework changes" in result.output
+        assert "No baseline changes" in result.output
 
     def test_end_no_active_sessions(self, runner):
         """Session end with no active sessions reports and exits cleanly."""
@@ -248,7 +248,7 @@ class TestSessionEnd:
 
     def test_end_prompts_confirmation(self, runner, tmp_path):
         """Session end without --yes shows dirty files and prompts."""
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
@@ -259,7 +259,7 @@ class TestSessionEnd:
             return mock
 
         with (
-            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._baseline_dir", return_value=fw),
             patch("baft.cli._git", side_effect=mock_git_fn),
             patch("baft.sessions.unregister_session"),
             patch(
@@ -275,7 +275,7 @@ class TestSessionEnd:
 
     def test_end_confirmation_yes(self, runner, tmp_path):
         """Session end with interactive confirmation proceeds on yes."""
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
@@ -286,7 +286,7 @@ class TestSessionEnd:
             return mock
 
         with (
-            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._baseline_dir", return_value=fw),
             patch("baft.cli._git", side_effect=mock_git_fn),
             patch("baft.sessions.unregister_session"),
             patch(
@@ -349,7 +349,7 @@ class TestSessionStatus:
 
     def test_status_shows_active_sessions(self, runner, tmp_path):
         """Status lists active sessions."""
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
@@ -366,8 +366,8 @@ class TestSessionStatus:
                     }
                 ],
             ),
-            patch("baft.cli._framework_dir", return_value=fw),
-            patch("baft.cli._check_framework_git", return_value=("[OK] Clean", True)),
+            patch("baft.cli._baseline_dir", return_value=fw),
+            patch("baft.cli._check_baseline_git", return_value=("[OK] Clean", True)),
             patch("baft.cli._check_nats", return_value=("[OK] NATS", True)),
             patch("baft.cli._check_ollama", return_value=("[OK] Ollama", True)),
             patch("baft.cli._check_duckdb", return_value=("[OK] DuckDB", True)),
@@ -379,14 +379,14 @@ class TestSessionStatus:
 
     def test_status_no_sessions(self, runner, tmp_path):
         """Status with no active sessions shows (none)."""
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
         with (
             patch("baft.sessions.get_active_sessions", return_value=[]),
-            patch("baft.cli._framework_dir", return_value=fw),
-            patch("baft.cli._check_framework_git", return_value=("[OK] Clean", True)),
+            patch("baft.cli._baseline_dir", return_value=fw),
+            patch("baft.cli._check_baseline_git", return_value=("[OK] Clean", True)),
             patch("baft.cli._check_nats", return_value=("[OK] NATS", True)),
             patch("baft.cli._check_ollama", return_value=("[OK] Ollama", True)),
             patch("baft.cli._check_duckdb", return_value=("[OK] DuckDB", True)),
@@ -407,7 +407,7 @@ class TestSessionSyncCheck:
 
     def test_sync_check_up_to_date(self, runner, tmp_path):
         """Sync-check reports current when up-to-date."""
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
@@ -420,7 +420,7 @@ class TestSessionSyncCheck:
             return mock
 
         with (
-            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._baseline_dir", return_value=fw),
             patch("baft.cli._git", side_effect=mock_git_fn),
         ):
             result = runner.invoke(main, ["session", "sync-check"])
@@ -430,7 +430,7 @@ class TestSessionSyncCheck:
 
     def test_sync_check_behind(self, runner, tmp_path):
         """Sync-check warns when behind remote."""
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
@@ -445,7 +445,7 @@ class TestSessionSyncCheck:
             return mock
 
         with (
-            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._baseline_dir", return_value=fw),
             patch("baft.cli._git", side_effect=mock_git_fn),
         ):
             result = runner.invoke(main, ["session", "sync-check"])
@@ -463,8 +463,8 @@ class TestSessionSync:
     """Tests for `baft session sync`."""
 
     def test_sync_pulls_and_imports(self, runner, tmp_path):
-        """Sync pulls framework and runs DuckDB import."""
-        fw = tmp_path / "framework"
+        """Sync pulls baseline and runs DuckDB import."""
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
@@ -482,7 +482,7 @@ class TestSessionSync:
             return mock
 
         with (
-            patch("baft.cli._framework_dir", return_value=fw),
+            patch("baft.cli._baseline_dir", return_value=fw),
             patch("baft.cli._baft_dir", return_value=tmp_path),
             patch("baft.cli._git", side_effect=mock_git_fn),
             patch("subprocess.run") as mock_subprocess,
@@ -495,11 +495,11 @@ class TestSessionSync:
 
     def test_sync_fails_on_conflict(self, runner, tmp_path):
         """Sync exits 1 if pull fails."""
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
 
-        with patch("baft.cli._framework_dir", return_value=fw), patch("baft.cli._git") as mock_git:
+        with patch("baft.cli._baseline_dir", return_value=fw), patch("baft.cli._git") as mock_git:
             mock_git.return_value = MagicMock(returncode=1, stdout="", stderr="conflict")
             result = runner.invoke(main, ["session", "sync"])
 
@@ -548,30 +548,30 @@ class TestPreflightChecks:
             msg, ok = _check_duckdb()
         assert ok
 
-    def test_check_framework_git_clean(self, tmp_path):
+    def test_check_baseline_git_clean(self, tmp_path):
         """Framework git check passes on clean repo."""
-        from baft.cli import _check_framework_git
+        from baft.cli import _check_baseline_git
 
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
-        with patch("baft.cli._framework_dir", return_value=fw), patch("baft.cli._git") as mock_git:
+        with patch("baft.cli._baseline_dir", return_value=fw), patch("baft.cli._git") as mock_git:
             mock_git.return_value = MagicMock(returncode=0, stdout="", stderr="")
-            msg, ok = _check_framework_git()
+            msg, ok = _check_baseline_git()
         assert ok
         assert "clean" in msg.lower()
 
-    def test_check_framework_git_dirty(self, tmp_path):
+    def test_check_baseline_git_dirty(self, tmp_path):
         """Framework git check warns on dirty repo."""
-        from baft.cli import _check_framework_git
+        from baft.cli import _check_baseline_git
 
-        fw = tmp_path / "framework"
+        fw = tmp_path / "baseline"
         fw.mkdir()
         (fw / ".git").mkdir()
-        with patch("baft.cli._framework_dir", return_value=fw), patch("baft.cli._git") as mock_git:
+        with patch("baft.cli._baseline_dir", return_value=fw), patch("baft.cli._git") as mock_git:
             mock_git.return_value = MagicMock(
                 returncode=0, stdout="M file1.yaml\nM file2.yaml\n", stderr=""
             )
-            msg, ok = _check_framework_git()
+            msg, ok = _check_baseline_git()
         assert ok  # Warning, not failure
         assert "2 files" in msg

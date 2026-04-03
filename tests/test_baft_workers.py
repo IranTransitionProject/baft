@@ -16,7 +16,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from loom.core.config import load_config
+from heddle.core.config import load_config
 
 BAFT_ROOT = Path(__file__).parent.parent
 WORKERS_DIR = BAFT_ROOT / "configs" / "workers"
@@ -238,14 +238,14 @@ class TestSiloIsolation:
 
     @pytest.mark.parametrize("worker_name", sorted(BLIND_AUDIT_NODES))
     def test_blind_nodes_no_framework_paths(self, worker_name: str):
-        """LA, PA, RT must NOT have file paths pointing to framework/ data."""
+        """LA, PA, RT must NOT have file paths pointing to baseline/ data."""
         worker_path = WORKERS_DIR / f"{worker_name}.yaml"
         if not worker_path.exists():
             pytest.skip(f"{worker_name}.yaml not found")
         config = _load_yaml(worker_path)
         file_refs = self._get_file_refs(config)
-        framework_refs = [p for p in file_refs if "framework" in p.lower() or "FRAMEWORK" in p]
-        assert not framework_refs, f"{worker_name} references framework paths {framework_refs}"
+        framework_refs = [p for p in file_refs if "baseline" in p.lower() or "BASELINE" in p]
+        assert not framework_refs, f"{worker_name} references baseline paths {framework_refs}"
 
     def test_tn_only_terminology_registry(self):
         """TN must ONLY reference the terminology_registry silo."""

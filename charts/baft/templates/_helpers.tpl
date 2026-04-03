@@ -65,9 +65,9 @@ Common environment variables injected into all pods
 {{/*
 Framework volume mounts (read-only for workers)
 */}}
-{{- define "baft.frameworkVolumeMount" -}}
-- name: framework-data
-  mountPath: /data/framework
+{{- define "baft.baselineVolumeMount" -}}
+- name: baseline-data
+  mountPath: /data/baseline
   readOnly: true
 {{- end }}
 

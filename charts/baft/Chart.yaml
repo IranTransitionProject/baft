@@ -1,6 +1,6 @@
 apiVersion: v2
 name: baft
-description: ITP analytical engine — multi-agent intelligence analysis system on Loom
+description: ITP analytical engine — multi-agent intelligence analysis system on Heddle
 type: application
 version: 0.1.0
 appVersion: "0.3.0"
@@ -13,6 +13,6 @@ keywords:
 home: https://github.com/IranTransitionProject/baft
 sources:
   - https://github.com/IranTransitionProject/baft
-  - https://github.com/IranTransitionProject/loom
+  - https://github.com/getheddle/heddle
 maintainers:
   - name: ITP Team
