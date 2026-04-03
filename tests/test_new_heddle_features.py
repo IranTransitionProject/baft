@@ -355,7 +355,8 @@ class TestDependencyDeclarations:
         manifest_extras = set(manifest["required_extras"])
 
         # All manifest extras should be in the heddle dependency
-        loom_dep = next(d for d in pyproject["project"]["dependencies"] if d.startswith("heddle-ai"))
+        deps = pyproject["project"]["dependencies"]
+        loom_dep = next(d for d in deps if d.startswith("heddle-ai"))
         for extra in manifest_extras:
             if extra != "scheduler":  # scheduler is a separate dep (croniter)
                 assert extra in loom_dep, (
