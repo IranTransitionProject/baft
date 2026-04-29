@@ -28,3 +28,4 @@ and concept diagrams. CI auto-exports them to SVG on every change.
 | `silo-isolation.drawio` | Knowledge silo boundaries and data flow |
 | `analyst-workflow.drawio` | End-to-end analyst session via HI-A |
 | `telegram-capture.drawio` | Telegram ingestion pipeline architecture |
+| `pipeline-orchestration-bpmn.drawio` | Pipeline orchestration in BPMN 2.0 notation (foreshadows executable workflows) |

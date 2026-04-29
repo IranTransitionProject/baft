@@ -1,0 +1,268 @@
+<mxfile host="app.diagrams.net" agent="baft-docs" version="22.0.0">
+  <diagram name="pipeline-orchestration-bpmn" id="bpmn-orch">
+    <mxGraphModel dx="1400" dy="860" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="820" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Baft Pipeline Orchestration — BPMN 2.0" style="text;html=1;fontSize=18;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="400" y="10" width="500" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Notation chosen to foreshadow executable workflow definitions" style="text;html=1;fontSize=10;fontStyle=2;align=center;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="400" y="35" width="500" height="18" as="geometry" />
+        </mxCell>
+
+        <!-- ========== POOL FRAME ========== -->
+        <mxCell id="pool" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#333333;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="65" width="1320" height="680" as="geometry" />
+        </mxCell>
+        <mxCell id="pool-label" value="Baft Pipeline Orchestrator" style="text;html=1;fontSize=13;fontStyle=1;align=center;verticalAlign=middle;rotation=-90;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="-30" y="390" width="200" height="25" as="geometry" />
+        </mxCell>
+
+        <!-- Pool-label separator (vertical line) -->
+        <mxCell id="pool-sep" value="" style="endArrow=none;html=1;strokeColor=#333333;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="120" y="65" as="sourcePoint" />
+            <mxPoint x="120" y="745" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ========== LANE 1: Full Context ========== -->
+        <mxCell id="lane1-bg" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EDF2FA;strokeColor=none;opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="120" y="65" width="1240" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="lane1-label" value="Full Context&#xa;(framework_full)" style="text;html=1;fontSize=10;fontStyle=1;align=center;verticalAlign=middle;rotation=-90;fontColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="58" y="150" width="120" height="25" as="geometry" />
+        </mxCell>
+
+        <!-- Lane divider -->
+        <mxCell id="lane-div" value="" style="endArrow=none;html=1;strokeColor=#333333;strokeWidth=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="40" y="365" as="sourcePoint" />
+            <mxPoint x="1360" y="365" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ========== LANE 2: Blind Audit ========== -->
+        <mxCell id="lane2-bg" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EFF8EF;strokeColor=none;opacity=40;" vertex="1" parent="1">
+          <mxGeometry x="120" y="365" width="1240" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="lane2-label" value="Blind Audit&#xa;(blind_audit)" style="text;html=1;fontSize=10;fontStyle=1;align=center;verticalAlign=middle;rotation=-90;fontColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="58" y="495" width="120" height="25" as="geometry" />
+        </mxCell>
+
+        <!-- ========== START EVENT ========== -->
+        <mxCell id="start" value="" style="ellipse;html=1;aspect=fixed;fillColor=#E6FFE6;strokeColor=#36393d;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="170" y="197" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="start-lbl" value="start" style="text;html=1;fontSize=8;fontStyle=2;align=center;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="160" y="234" width="56" height="14" as="geometry" />
+        </mxCell>
+
+        <!-- ========== EXCLUSIVE GATEWAY: MODE ========== -->
+        <mxCell id="gw-mode" value="✕" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;strokeWidth=2;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="265" y="191" width="48" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="gw-mode-lbl" value="mode?" style="text;html=1;fontSize=8;fontStyle=2;align=center;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="258" y="240" width="62" height="14" as="geometry" />
+        </mxCell>
+
+        <!-- ========== STANDARD PATH (y≈130) ========== -->
+        <mxCell id="sp" value="SP&#xa;Source Prep" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="390" y="105" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ia" value="IA&#xa;Initial Analysis" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="540" y="105" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="xv" value="XV&#xa;Cross-Validate" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="690" y="105" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="de" value="DE&#xa;Deep Eval" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="840" y="105" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="end-std" value="" style="ellipse;html=1;aspect=fixed;fillColor=#FFE6E6;strokeColor=#b85450;strokeWidth=4;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="112" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="out-std" value="Session Archive&#xa;+ Baseline Updates" style="text;html=1;fontSize=9;fontStyle=2;align=left;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="107" width="130" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ========== QUICK PATH (y≈295) ========== -->
+        <mxCell id="de-quick" value="DE&#xa;Deep Eval (direct)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="840" y="270" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="end-quick" value="" style="ellipse;html=1;aspect=fixed;fillColor=#FFE6E6;strokeColor=#b85450;strokeWidth=4;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="277" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="out-quick" value="Quick result" style="text;html=1;fontSize=9;fontStyle=2;align=left;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="277" width="100" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ========== STANDARD SEQUENCE FLOWS ========== -->
+        <mxCell id="e-start-gw" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="start" target="gw-mode">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-gw-sp" value="standard" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;fontSize=9;fontStyle=2;fontColor=#6c8ebf;" edge="1" parent="1" source="gw-mode" target="sp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-sp-ia" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="sp" target="ia">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ia-xv" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="ia" target="xv">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-xv-de" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="xv" target="de">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-de-end" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="de" target="end-std">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ========== QUICK SEQUENCE FLOWS ========== -->
+        <mxCell id="e-gw-quick" value="quick" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;fontSize=9;fontStyle=2;fontColor=#d6b656;" edge="1" parent="1" source="gw-mode" target="de-quick">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-quick-end" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="de-quick" target="end-quick">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ========== AUDIT PATH ELEMENTS ========== -->
+        <mxCell id="tn" value="TN&#xa;Triage" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="390" y="530" width="110" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Parallel Fork Gateway -->
+        <mxCell id="gw-fork" value="+" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;strokeWidth=2;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="548" y="533" width="44" height="44" as="geometry" />
+        </mxCell>
+
+        <!-- Three parallel blind audit workers -->
+        <mxCell id="la" value="LA&#xa;Logic Audit" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="415" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="pa" value="PA&#xa;Perspective Audit" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="650" y="530" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rt" value="RT&#xa;Red Team" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="650" width="110" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Parallel Join Gateway -->
+        <mxCell id="gw-join" value="+" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;strokeWidth=2;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="818" y="533" width="44" height="44" as="geometry" />
+        </mxCell>
+
+        <!-- Audit Synthesis -->
+        <mxCell id="as-node" value="AS&#xa;Audit Synth" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="920" y="530" width="110" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- End Event: Audit -->
+        <mxCell id="end-audit" value="" style="ellipse;html=1;aspect=fixed;fillColor=#FFE6E6;strokeColor=#b85450;strokeWidth=4;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="537" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="out-audit" value="Audit Report +&#xa;Confidence Scores" style="text;html=1;fontSize=9;fontStyle=2;align=left;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="532" width="130" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ========== AUDIT SEQUENCE FLOWS ========== -->
+        <!-- Cross-lane: exclusive gateway → TN -->
+        <mxCell id="e-gw-tn" value="audit" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;fontSize=9;fontStyle=2;fontColor=#82b366;" edge="1" parent="1" source="gw-mode" target="tn">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-tn-fork" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="tn" target="gw-fork">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-fork-la" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="gw-fork" target="la">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-fork-pa" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="gw-fork" target="pa">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-fork-rt" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="gw-fork" target="rt">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-la-join" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="la" target="gw-join">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-pa-join" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="pa" target="gw-join">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-rt-join" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="rt" target="gw-join">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-join-as" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="gw-join" target="as-node">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-as-end" style="endArrow=block;endFill=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="as-node" target="end-audit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ========== DATA OBJECTS ========== -->
+        <mxCell id="data-baseline" value="Baseline&#xa;YAML data" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;size=12;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="155" width="80" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="e-data-bl" style="endArrow=open;endSize=10;html=1;dashed=1;strokeColor=#6c8ebf;" edge="1" parent="1" source="data-baseline" target="de">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="data-claim" value="Claim&#xa;under review" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="210" y="530" width="80" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="e-data-cl" style="endArrow=open;endSize=10;html=1;dashed=1;strokeColor=#82b366;" edge="1" parent="1" source="data-claim" target="tn">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ========== LEGEND ========== -->
+        <mxCell id="legend-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#cccccc;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="760" width="700" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" value="BPMN 2.0:" style="text;html=1;fontSize=9;fontStyle=1;align=left;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="150" y="763" width="65" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-s" value="" style="ellipse;html=1;aspect=fixed;fillColor=#E6FFE6;strokeColor=#36393d;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="150" y="781" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-s-l" value="Start" style="text;html=1;fontSize=8;align=left;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="168" y="780" width="32" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-e" value="" style="ellipse;html=1;aspect=fixed;fillColor=#FFE6E6;strokeColor=#b85450;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="210" y="781" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-e-l" value="End" style="text;html=1;fontSize=8;align=left;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="228" y="780" width="28" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-xg" value="✕" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;strokeWidth=1;fontSize=7;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="270" y="780" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-xg-l" value="Exclusive GW" style="text;html=1;fontSize=8;align=left;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="290" y="780" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-pg" value="+" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;strokeWidth=1;fontSize=9;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="780" width="16" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-pg-l" value="Parallel GW" style="text;html=1;fontSize=8;align=left;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="390" y="780" width="65" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-t" value="" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="465" y="783" width="22" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-t-l" value="Service Task" style="text;html=1;fontSize=8;align=left;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="492" y="780" width="62" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-d" value="" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;size=4;fillColor=#f5f5f5;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="565" y="780" width="12" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-d-l" value="Data Object" style="text;html=1;fontSize=8;align=left;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="582" y="780" width="58" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="leg-lane" value="Lanes = Knowledge Silos" style="text;html=1;fontSize=8;fontStyle=2;align=left;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="660" y="780" width="120" height="16" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
