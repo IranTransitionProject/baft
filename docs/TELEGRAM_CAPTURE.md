@@ -150,16 +150,19 @@ baft itp-telegram daemon restart       # launchctl kickstart -k
 baft itp-telegram daemon uninstall
 ```
 
-**Caveat — macOS TCC on external volumes.** If your project lives on
-`/Volumes/...` (external SSD, USB drive), `daemon install` will refuse
-to proceed — launchd-spawned processes can't read external volumes
-without an explicit Full Disk Access grant, and crashing 5 times in a
-launchd retry loop is not a useful debugging experience. The installer
-prints three workarounds:
+**macOS TCC pre-check.** The installer spawns a one-shot launchd probe
+that tries to read `pyvenv.cfg` through the venv's actual python
+interpreter — exactly what the daemon would do at startup. If Full Disk
+Access is already granted, the probe passes and installation proceeds
+even on `/Volumes/`. If the probe fails, the installer refuses with
+three workarounds:
 
 1. **Use `daemon start` instead** (inherits TCC from your terminal — works today, no reboot survival)
-2. **Grant FDA to your venv's actual python interpreter** (System Settings → Privacy & Security → Full Disk Access → Cmd+Shift+G → paste path the installer prints)
+2. **Grant FDA to your venv's python interpreter** (System Settings → Privacy & Security → Full Disk Access → Cmd+Shift+G → paste the path the installer prints, then re-run install)
 3. **Move the project to an internal-disk path** (cleanest long-term)
+
+To skip the probe entirely: `SKIP_TCC_CHECK=1 baft itp-telegram daemon install`
+(use at your own risk).
 
 ## Wiring Claude Desktop / Claude Code
 
@@ -225,7 +228,7 @@ and `baft itp-telegram daemon restart` (or stop + start).
 
 | Symptom | Likely cause + fix |
 |---|---|
-| `daemon install` aborts with "Project lives on an external volume" | Expected on `/Volumes/`. Use `daemon start` instead, or follow the FDA workaround the installer prints. |
+| `daemon install` aborts with "TCC probe failed" | launchd can't read the venv (common on `/Volumes/`). Grant FDA to the python path shown, use `daemon start` instead, or override with `SKIP_TCC_CHECK=1`. |
 | Daemon dies immediately, log shows `PermissionError: ... pyvenv.cfg` | macOS TCC blocked launchd from reading the venv. Same fix as above. |
 | `0 posts captured` over 5+ minutes | Iran clock is ~midnight–05:00 IRST (overnight). Wait for morning. Or run `baft itp-telegram search "ایران"` to sanity-check the store. |
 | `corroboration_check` returns `matches: 0` and log shows `lmstudio.http_error status=400 body={"error":"...n_keep:...n_ctx:..."}` | Analyzer prompt overflowed LM Studio's loaded context. Either reload the model with a larger `n_ctx`, or rely on the built-in 15-post cap. |
@@ -261,6 +264,6 @@ baft/
     pid_manager.py              # PID file + liveness helpers
     cli.py                      # Click subcommand group
   deploy/macos/
-    install.sh                  # launchd plist generator (with TCC pre-check)
+    install.sh                  # launchd plist generator (with launchd TCC probe)
     uninstall.sh
 ```
