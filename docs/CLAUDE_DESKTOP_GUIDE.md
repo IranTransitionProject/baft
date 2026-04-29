@@ -42,6 +42,15 @@ Claude Desktop connects to the Heddle MCP server, which exposes Baft's workers a
 
 - `variables.yaml`, `observations.yaml`, `scenarios.yaml`, `traps.yaml`, `gaps.yaml`, `modules.yaml`, `sessions.yaml` — readable ITP baseline data files
 
+### See also: ITP Telegram MCP gateway
+
+A separate MCP server (`itp-telegram` on `127.0.0.1:8765/mcp/`) exposes
+live Telegram capture from 30+ Persian/Arabic/English channels with
+bias-weighted search and LLM-backed corroboration analysis. It runs
+alongside the main Baft gateway documented here — both can be registered
+in `claude_desktop_config.json` simultaneously. See
+[Telegram Capture + MCP](TELEGRAM_CAPTURE.md) for setup and tool details.
+
 ---
 
 ## Prerequisites

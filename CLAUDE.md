@@ -70,6 +70,23 @@ src/baft/               # Python package (v0.3.0)
     core.py             # SP, IA, DE, XV, IN contracts (Tier 1–2 pipeline)
     audit.py            # TN, LA, PA, RT, AS contracts (Tier 3 audit pipeline)
     monitor.py          # SA, WT, NI contracts (background/scheduled workers)
+  itp_telegram/         # Live Telegram capture + standalone MCP HTTP gateway
+    config.py           # ITPTelegramConfig (paths, model names, intervals)
+    channel_profiles.py # Loads itp_telegram_channels.yaml + faction→bias mapping
+    llm_backend.py      # LMStudioLLMBackend — OpenAI-compat shim for analyzer
+    store.py            # DuckDBVectorStore factory wired to LM Studio embeddings
+    capture.py          # Async capture loop: ingest → chunk → embed → store
+    mcp_server.py       # FastMCP server (search/recent/list/stats/corroboration/status)
+    service.py          # Combined long-lived runner (capture + MCP HTTP)
+    auth_bootstrap.py   # First-time Telethon phone auth (`baft itp-telegram auth`)
+    resolve_ids.py      # Resolve handles → numeric channel IDs JSON
+    pid_manager.py      # PID file lifecycle for the daemon
+    cli.py              # Click subcommand group `baft itp-telegram {...}`
+
+deploy/
+  macos/                # launchd install/uninstall for the Telegram daemon
+    install.sh          # Generates plist; refuses cleanly when project is on /Volumes/
+    uninstall.sh        # Removes plist + cleans stale PID
 
 scripts/                # Development utilities
   resolve_config.py     # Resolve silo references and ${ITP_ROOT} in worker configs
@@ -266,11 +283,51 @@ All configuration and infrastructure is implemented and working:
 - Session MCP tools: `session.*` namespace (5 tools via heddle session bridge)
 - Claude Chat integration: session instructions doc + project setup guide
 
+## ITP Telegram capture + MCP gateway
+
+A separate subsystem from the main Baft pipeline (no shared NATS, no shared
+Workshop, no shared DB). Lives in `src/baft/itp_telegram/` and is driven
+by `baft itp-telegram` CLI. See `docs/TELEGRAM_CAPTURE.md` for full details.
+
+- **Live ingestion** via Telethon (MTProto) of 30+ Persian/Arabic/English channels
+  curated in `pipeline/config/itp_telegram_channels.yaml`. Filter rule:
+  `monitoring_priority in {critical, high}`, skipping `TBD_*`/unverified handles.
+- **DuckDB vector store** at `~/.heddle/itp_rag.duckdb`. Embeddings via LM Studio
+  (`text-embedding-nomic-embed-text-v1.5` by default) using the
+  OpenAI-compatible `/v1/embeddings` endpoint.
+- **Standalone FastMCP HTTP server** on `127.0.0.1:8765/mcp/` (not heddle's
+  gateway YAML — chose direct FastMCP for simplicity). Six tools:
+  `search_posts`, `recent_posts`, `list_channels`, `stats`,
+  `corroboration_check`, `capture_status`.
+- **Bias enrichment** — at startup the service loads `~/.heddle/itp_channel_ids.json`
+  (written by `baft itp-telegram resolve-ids`) and merges resolved
+  numeric channel_ids into the in-memory profiles. It also patches
+  `heddle.contrib.rag.ingestion.telegram_ingestor.DEFAULT_PROFILES` with
+  the same mapping, so the analyzer's `_format_posts` can resolve bias
+  for our channels.
+- **Analyzer LLM** is `google/gemma-4-26b-a4b` by default (non-thinking,
+  good Persian, fits 4K context). Thinking models (qwen3.x, deepseek-r1)
+  also work but burn tokens on `reasoning_content` and need much larger
+  `max_tokens`. The CorroborationFinder analyzer is capped at 15 posts
+  per call to fit LM Studio's typical 4K loaded context.
+- **Daemon flow:** `baft itp-telegram daemon start` (nohup-style detached,
+  inherits TCC from terminal) is the recommended path on this machine
+  because the project lives on `/Volumes/Data/` (external SSD). macOS
+  TCC blocks launchd-spawned processes from reading `/Volumes/*` without
+  a Full Disk Access grant. `daemon install` (launchd) refuses cleanly
+  with a TCC pre-check pointing at the right python interpreter to
+  grant FDA on, if/when the operator wants reboot survival.
+- **CLI commands route through MCP** when the daemon is running, because
+  DuckDB doesn't allow cross-process write+read sharing of one DB file.
+  `baft itp-telegram stats`/`search` detect the live PID and call
+  `fastmcp.Client(URL)` instead of opening DuckDB directly.
+
 ## What to implement next
 
 1. **End-to-end Tier 2 validation** — Run full SP → IA → XV → DE pipeline against a real document with live NATS + workers running
 2. **Test Helm chart deployment** — Deploy on local k8s (minikube / Docker Desktop K8s) and validate service connectivity
 3. **Baseline CLAUDE.md rewrite** — Update baseline repo's CLAUDE.md to reflect current architecture
+4. **Telegram registry verification queue** — resolve TBD handles for HRA, IHR, Hengaw (human rights), Shirazi/Hawza (religious authority), OSINT aggregators; replace drift-broken handles for `iraborsaw`, `masaf_raefipour`, `IranIntl_Fa`, `radiofarda_`, `VOAIran`
 
 ## Worker config format
 

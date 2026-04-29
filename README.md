@@ -75,7 +75,12 @@ scripts/
   run_scheduler.sh                # Start scheduled actors
 
 src/baft/
-  cli.py                          # Click CLI: preflight, session lifecycle
+  cli.py                          # Click CLI: preflight, session lifecycle, itp-telegram
+  itp_telegram/                   # Live Telegram capture + standalone MCP HTTP gateway
+                                  # (daemon, FastMCP server, LM Studio analyzer shim)
+
+deploy/
+  macos/                          # launchd install/uninstall for the Telegram daemon
 
 docs/
   architecture/
@@ -154,6 +159,7 @@ uv run heddle mcp --config configs/mcp/itp.yaml --transport streamable-http --po
 | [Analyst Guide](docs/ANALYST_GUIDE.md) | Analysts | Day-to-day usage, tools, workflows, Workshop, TUI |
 | [Operations Guide](docs/OPERATIONS_GUIDE.md) | Tech support | Tracing, retries, dead-letter, troubleshooting, tuning |
 | [Claude Desktop Guide](docs/CLAUDE_DESKTOP_GUIDE.md) | All users | Connecting Baft to Claude Desktop or Claude Code |
+| [Telegram Capture + MCP](docs/TELEGRAM_CAPTURE.md) | All users | Live Persian/Arabic Telegram ingestion with bias-weighted MCP tools (separate from the main Baft pipeline) |
 | [Setup Guide](docs/SETUP.md) | New users | Full local environment setup |
 | [Architecture v0.5](docs/architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md) | Architects | Pipeline design, gap analysis, implementation roadmap |
 | [Design Invariants](docs/DESIGN_INVARIANTS.md) | All | Silo isolation rules, audit independence constraints |

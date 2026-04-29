@@ -9,7 +9,7 @@ description = "ITP analytical engine — application layer on the Heddle framewo
 requires-python = ">=3.11"
 
 dependencies = [
-    "heddle-ai[mcp,duckdb,rag,workshop,tui,otel]",
+    "heddle-ai[mcp,duckdb,rag,workshop,tui,otel,telegram]",
     "pyyaml>=6.0",
     "pydantic>=2.0",
     "structlog>=24.0",

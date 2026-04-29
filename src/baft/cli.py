@@ -308,6 +308,18 @@ def main() -> None:
     """Baft — ITP analytical engine CLI."""
 
 
+# Mount the ITP Telegram subgroup. Imported at function-call time inside
+# the lazy registration below so the top-level CLI stays fast and stays
+# importable even when telethon / fastmcp aren't installed.
+def _register_itp_telegram() -> None:
+    from baft.itp_telegram.cli import itp_telegram
+
+    main.add_command(itp_telegram)
+
+
+_register_itp_telegram()
+
+
 @main.command()
 def preflight() -> None:
     """Run environment preflight checks."""

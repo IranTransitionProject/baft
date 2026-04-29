@@ -11,6 +11,10 @@ build/
 .env
 .env.*
 
+# Telegram session credentials (Telethon MTProto session — treat like SSH key)
+*.session
+*.session-journal
+
 # Workspace — regenerated from framework YAML + Telegram exports
 itp-workspace/
 *.duckdb
