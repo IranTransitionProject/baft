@@ -1,0 +1,102 @@
+<mxfile host="app.diagrams.net" agent="baft-docs" version="22.0.0">
+  <diagram name="silo-isolation" id="silo-iso">
+    <mxGraphModel dx="1000" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Knowledge Silo Isolation" style="text;html=1;fontSize=18;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="300" y="10" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Blind audit workers are deliberately information-deprived for genuine adversarial review" style="text;html=1;fontSize=11;fontStyle=2;align=center;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="200" y="35" width="500" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Full Context Silo -->
+        <mxCell id="full-silo" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;opacity=30;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="420" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="full-label" value="framework_full silo" style="text;html=1;fontSize=14;fontStyle=1;align=center;fontColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="130" y="85" width="250" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="full-desc" value="Full access to Baseline data, prior analysis,&#xa;session history, and all analytical context" style="text;html=1;fontSize=10;fontStyle=2;align=center;fontColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="80" y="108" width="340" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Workers with full access -->
+        <mxCell id="sp-f" value="SP — Source Prep" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="150" width="140" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="ia-f" value="IA — Initial Analysis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="200" width="140" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="xv-f" value="XV — Cross-Validate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="250" width="140" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="de-f" value="DE — Deep Eval" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="300" width="140" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="hia-f" value="HI-A — Human Interface" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="350" width="140" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- Data they can see -->
+        <mxCell id="data-full" value="Baseline YAML data" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="270" y="150" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="data-sessions" value="Session history" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="270" y="220" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="data-prior" value="Prior analysis" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="270" y="290" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="data-telegram" value="Telegram feeds" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=8;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="270" y="360" width="100" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Blind Silo (restricted) -->
+        <mxCell id="blind-silo" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;opacity=30;" vertex="1" parent="1">
+          <mxGeometry x="540" y="80" width="400" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="blind-label" value="blind_audit silo" style="text;html=1;fontSize=14;fontStyle=1;align=center;fontColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="640" y="85" width="200" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="blind-desc" value="No access to prior analysis, no Baseline data,&#xa;no session history — epistemic quarantine" style="text;html=1;fontSize=10;fontStyle=2;align=center;fontColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="570" y="108" width="340" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Blind workers -->
+        <mxCell id="tn-b" value="TN — Triage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="570" y="160" width="140" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="la-b" value="LA — Logic Audit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="570" y="220" width="140" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="pa-b" value="PA — Perspective Audit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="570" y="280" width="140" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="rt-b" value="RT — Red Team" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="570" y="340" width="140" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="as-b" value="AS — Audit Synth" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="570" y="400" width="140" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- What blind workers CAN see -->
+        <mxCell id="data-claim" value="Only the claim&#xa;under review" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;size=12;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="770" y="200" width="110" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Firewall / barrier -->
+        <mxCell id="firewall" value="" style="shape=mxgraph.basic.patternFillRect;fillStyle=diagDown;step=5;fillStrokeColor=#b85450;strokeColor=#b85450;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="475" y="80" width="50" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="fw-label" value="Silo&#xa;Boundary" style="text;html=1;fontSize=11;fontStyle=1;align=center;fontColor=#b85450;rotation=-90;" vertex="1" parent="1">
+          <mxGeometry x="462" y="260" width="80" height="30" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

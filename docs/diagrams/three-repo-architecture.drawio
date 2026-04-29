@@ -1,0 +1,119 @@
+<mxfile host="app.diagrams.net" agent="baft-docs" version="22.0.0">
+  <diagram name="three-repo-architecture" id="three-repo">
+    <mxGraphModel dx="1100" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="ITP Three-Repo Architecture" style="text;html=1;fontSize=18;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="330" y="10" width="340" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Baseline repo -->
+        <mxCell id="baseline-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="50" y="80" width="280" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="baseline-title" value="Baseline (Data)" style="text;html=1;fontSize=14;fontStyle=1;align=center;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="100" y="85" width="180" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="baseline-desc" value="IranTransitionProject/baseline" style="text;html=1;fontSize=10;fontStyle=2;align=center;fillColor=none;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="80" y="108" width="220" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="b-modules" value="modules.yaml&#xa;22 modules, 8 pillars" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="65" y="135" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="b-variables" value="variables.yaml&#xa;86 tracked variables" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="195" y="135" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="b-scenarios" value="scenarios.yaml&#xa;12 transition scenarios" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="65" y="185" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="b-gaps" value="gaps / traps /&#xa;observations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="195" y="185" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="b-schemas" value="schemas/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="130" y="240" width="120" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Heddle repo -->
+        <mxCell id="heddle-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="400" y="80" width="280" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="heddle-title" value="Heddle (Framework)" style="text;html=1;fontSize=14;fontStyle=1;align=center;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="440" y="85" width="200" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="heddle-desc" value="getheddle/heddle" style="text;html=1;fontSize=10;fontStyle=2;align=center;fillColor=none;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="440" y="108" width="200" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="h-workers" value="Workers&#xa;(actor model)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="415" y="135" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="h-pipeline" value="Pipeline&#xa;(orchestration)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="555" y="135" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="h-nats" value="NATS&#xa;(messaging)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="415" y="185" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="h-mcp" value="MCP Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="555" y="185" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="h-contrib" value="contrib modules" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="415" y="240" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="h-workshop" value="Workshop UI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="555" y="240" width="110" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Baft repo -->
+        <mxCell id="baft-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="750" y="80" width="280" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="baft-title" value="Baft (Application)" style="text;html=1;fontSize=14;fontStyle=1;align=center;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="800" y="85" width="180" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="baft-desc" value="IranTransitionProject/baft" style="text;html=1;fontSize=10;fontStyle=2;align=center;fillColor=none;fontColor=#888888;" vertex="1" parent="1">
+          <mxGeometry x="790" y="108" width="200" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="baft-workers" value="13 ITP Workers&#xa;(SP, IA, TN, ...)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="765" y="135" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="baft-orch" value="3 Orchestrators&#xa;std / audit / quick" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="895" y="135" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="baft-hia" value="HI-A Node&#xa;(Claude ↔ MCP)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="765" y="185" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="baft-telegram" value="Telegram&#xa;Capture" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="895" y="185" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="baft-sessions" value="Session Mgmt" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="830" y="240" width="120" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows -->
+        <mxCell id="e-base-baft" value="reads data" style="endArrow=classic;html=1;rounded=1;fontSize=10;fontStyle=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;curved=1;" edge="1" parent="1" source="baseline-box" target="baft-box">
+          <mxGeometry x="0.5" y="40" relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="540" y="400" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="540" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-heddle-baft" value="built on" style="endArrow=classic;html=1;rounded=0;fontSize=10;fontStyle=2;" edge="1" parent="1" source="heddle-box" target="baft-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- User -->
+        <mxCell id="analyst" value="Analyst&#xa;(via Claude Desktop)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="870" y="380" width="30" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="e-user-baft" style="endArrow=classic;startArrow=classic;html=1;rounded=0;dashed=1;" edge="1" parent="1" source="analyst" target="baft-hia">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

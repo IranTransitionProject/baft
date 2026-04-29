@@ -1,0 +1,105 @@
+<mxfile host="app.diagrams.net" agent="baft-docs" version="22.0.0">
+  <diagram name="worker-map" id="worker-map">
+    <mxGraphModel dx="1100" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Baft Worker Map — 13 Specialized Nodes" style="text;html=1;fontSize=18;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="300" y="10" width="400" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Analysis Workers -->
+        <mxCell id="analysis-group" value="Analysis Workers" style="swimlane;startSize=25;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="480" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="sp-w" value="SP&#xa;Source Prep" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;" vertex="1" parent="analysis-group">
+          <mxGeometry x="10" y="35" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ia-w" value="IA&#xa;Initial Analysis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;" vertex="1" parent="analysis-group">
+          <mxGeometry x="125" y="35" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="xv-w" value="XV&#xa;Cross-Validate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;" vertex="1" parent="analysis-group">
+          <mxGeometry x="240" y="35" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="de-w" value="DE&#xa;Deep Eval" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;" vertex="1" parent="analysis-group">
+          <mxGeometry x="355" y="35" width="100" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Audit Workers -->
+        <mxCell id="audit-group" value="Audit Workers (Blind — Knowledge-Siloed)" style="swimlane;startSize=25;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="220" width="480" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="tn-w" value="TN&#xa;Triage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="audit-group">
+          <mxGeometry x="10" y="35" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="la-w" value="LA&#xa;Logic Audit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="audit-group">
+          <mxGeometry x="125" y="35" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="pa-w" value="PA&#xa;Perspective&#xa;Audit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="audit-group">
+          <mxGeometry x="240" y="35" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rt-w" value="RT&#xa;Red Team" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="audit-group">
+          <mxGeometry x="355" y="35" width="100" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Synthesis -->
+        <mxCell id="synth-group" value="Synthesis" style="swimlane;startSize=25;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="580" y="220" width="140" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="as-w" value="AS&#xa;Audit Synth" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="synth-group">
+          <mxGeometry x="15" y="35" width="100" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Support Workers -->
+        <mxCell id="support-group" value="Support Workers" style="swimlane;startSize=25;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="390" width="480" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="sa-w" value="SA&#xa;Session&#xa;Archivist" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;fontStyle=1;" vertex="1" parent="support-group">
+          <mxGeometry x="10" y="35" width="100" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="wt-w" value="WT&#xa;Watch Tower" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;fontStyle=1;" vertex="1" parent="support-group">
+          <mxGeometry x="125" y="35" width="100" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="in-w" value="IN&#xa;Integrator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;fontStyle=1;" vertex="1" parent="support-group">
+          <mxGeometry x="240" y="35" width="100" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="ni-w" value="NI&#xa;NATS&#xa;Inspector" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;fontStyle=1;" vertex="1" parent="support-group">
+          <mxGeometry x="355" y="35" width="100" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Human Interface -->
+        <mxCell id="hia-group" value="Human Interface" style="swimlane;startSize=25;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="580" y="60" width="250" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="hia-w" value="HI-A&#xa;Human Interface — Analyst&#xa;(Claude ↔ MCP Gateway)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;fontStyle=1;" vertex="1" parent="hia-group">
+          <mxGeometry x="15" y="35" width="220" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- NATS bus at bottom -->
+        <mxCell id="nats-bus" value="NATS Message Bus" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="560" width="790" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Connections to NATS -->
+        <mxCell id="e-an" style="endArrow=classic;startArrow=classic;html=1;rounded=0;strokeColor=#6c8ebf;" edge="1" parent="1" source="analysis-group" target="nats-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-au" style="endArrow=classic;startArrow=classic;html=1;rounded=0;strokeColor=#82b366;" edge="1" parent="1" source="audit-group" target="nats-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-su" style="endArrow=classic;startArrow=classic;html=1;rounded=0;strokeColor=#9673a6;" edge="1" parent="1" source="support-group" target="nats-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-hi" style="endArrow=classic;startArrow=classic;html=1;rounded=0;strokeColor=#b85450;" edge="1" parent="1" source="hia-group" target="nats-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-sy" style="endArrow=classic;startArrow=classic;html=1;rounded=0;strokeColor=#d6b656;" edge="1" parent="1" source="synth-group" target="nats-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

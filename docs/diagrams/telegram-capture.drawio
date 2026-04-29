@@ -1,0 +1,91 @@
+<mxfile host="app.diagrams.net" agent="baft-docs" version="22.0.0">
+  <diagram name="telegram-capture" id="telegram-cap">
+    <mxGraphModel dx="1000" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Telegram Capture Pipeline" style="text;html=1;fontSize=18;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="300" y="10" width="300" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Telegram Channels -->
+        <mxCell id="channels" value="30+ Telegram Channels&#xa;Persian / Arabic / English" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Capture Loop -->
+        <mxCell id="capture" value="Capture Loop&#xa;(Telethon)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="100" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- LLM Processing -->
+        <mxCell id="llm" value="LLM Backend&#xa;(LM Studio / Ollama)&#xa;Summarize + Classify" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="300" y="220" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- DuckDB Store -->
+        <mxCell id="duckdb" value="DuckDB&#xa;Vector Store" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="100" width="120" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- FastMCP Server -->
+        <mxCell id="mcp-server" value="FastMCP HTTP Server&#xa;(SSE transport)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="240" width="170" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- MCP Tools -->
+        <mxCell id="tools" value="MCP Tools" style="swimlane;startSize=20;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="340" width="370" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t-search" value="search_posts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" vertex="1" parent="tools">
+          <mxGeometry x="10" y="30" width="80" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="t-recent" value="recent_posts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" vertex="1" parent="tools">
+          <mxGeometry x="100" y="30" width="80" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="t-corr" value="corroboration_check" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" vertex="1" parent="tools">
+          <mxGeometry x="190" y="30" width="90" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="t-stats" value="channel_stats" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" vertex="1" parent="tools">
+          <mxGeometry x="290" y="30" width="70" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- Claude Desktop -->
+        <mxCell id="claude" value="Claude Desktop&#xa;/ Baft HI-A" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="800" y="240" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows -->
+        <mxCell id="e1" value="poll" style="endArrow=classic;html=1;rounded=0;fontSize=10;fontStyle=2;" edge="1" parent="1" source="channels" target="capture">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="store" style="endArrow=classic;html=1;rounded=0;fontSize=10;fontStyle=2;" edge="1" parent="1" source="capture" target="duckdb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="enrich" style="endArrow=classic;startArrow=classic;html=1;rounded=0;fontSize=10;fontStyle=2;" edge="1" parent="1" source="capture" target="llm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="query" style="endArrow=classic;startArrow=classic;html=1;rounded=0;fontSize=10;fontStyle=2;" edge="1" parent="1" source="mcp-server" target="duckdb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="endArrow=classic;startArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="mcp-server" target="tools">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="MCP" style="endArrow=classic;startArrow=classic;html=1;rounded=0;fontSize=10;fontStyle=2;" edge="1" parent="1" source="claude" target="mcp-server">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Config note -->
+        <mxCell id="config" value="config.yaml&#xa;channel list,&#xa;polling interval,&#xa;LLM settings" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;size=12;fillColor=#f5f5f5;strokeColor=#999999;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="40" y="230" width="110" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e-config" style="endArrow=classic;html=1;rounded=0;dashed=1;strokeColor=#999999;" edge="1" parent="1" source="config" target="capture">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
