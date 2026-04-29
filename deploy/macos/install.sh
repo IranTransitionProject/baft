@@ -66,39 +66,85 @@ echo "  baft binary: $BAFT_BIN"
 # ---------------------------------------------------------------------------
 # TCC pre-check: macOS Sequoia restricts launchd-spawned processes from
 # reading external volumes (anything under /Volumes/) without an explicit
-# user grant. If the binary or its venv is on /Volumes/, the agent will
-# crash on startup with a PermissionError on pyvenv.cfg. Fail loud here
-# rather than letting launchd thrash through 5 retries silently.
+# Full Disk Access grant on the binary that gets exec'd. We probe the real
+# situation by spawning a one-shot launchd job that runs the venv's actual
+# python interpreter and tries to read pyvenv.cfg — exactly what the agent
+# would do at startup. If the probe fails, refuse with actionable workarounds.
+# Skip the probe entirely with --skip-tcc-check (use at your own risk).
 # ---------------------------------------------------------------------------
 
 REAL_BAFT=$(python3 -c "import os; print(os.path.realpath('$BAFT_BIN'))" 2>/dev/null || echo "$BAFT_BIN")
-if echo "$REAL_BAFT" | grep -q "^/Volumes/"; then
-    echo "" >&2
-    echo "ERROR: Project lives on an external volume:" >&2
-    echo "  $REAL_BAFT" >&2
-    echo "" >&2
-    echo "macOS TCC blocks launchd-spawned processes from reading /Volumes/*" >&2
-    echo "without an explicit Full Disk Access grant. The agent would crash" >&2
-    echo "on startup. Three options:" >&2
-    echo "" >&2
-    echo "  (A) Use the nohup-based detached daemon instead:" >&2
-    echo "      baft itp-telegram daemon start" >&2
-    echo "      (works today; needs manual restart after reboot/logout)" >&2
-    echo "" >&2
-    # Resolve the venv's actual python interpreter (the one launchd would
-    # actually exec via the baft script's shebang). This is what FDA must
-    # be granted to, NOT whatever python3 happens to be on $PATH.
-    VENV_PYTHON_LINK=$(dirname "$REAL_BAFT")/python3
-    REAL_VENV_PYTHON=$(python3 -c "import os; print(os.path.realpath('$VENV_PYTHON_LINK'))" 2>/dev/null || echo "$VENV_PYTHON_LINK")
-    echo "  (B) Grant Full Disk Access to the python interpreter:" >&2
-    echo "      $REAL_VENV_PYTHON" >&2
-    echo "      via System Settings > Privacy & Security > Full Disk Access." >&2
-    echo "      (Cmd+Shift+G in the picker, then paste the path.)" >&2
-    echo "" >&2
-    echo "  (C) Move the project to an internal-disk path (e.g. ~/Developer/)" >&2
-    echo "      and re-run install." >&2
-    echo "" >&2
-    exit 1
+VENV_PYTHON_LINK=$(dirname "$REAL_BAFT")/python3
+REAL_VENV_PYTHON=$(python3 -c "import os; print(os.path.realpath('$VENV_PYTHON_LINK'))" 2>/dev/null || echo "$VENV_PYTHON_LINK")
+PYVENV_CFG="$(dirname "$(dirname "$REAL_BAFT")")/pyvenv.cfg"
+
+if [ "${SKIP_TCC_CHECK:-0}" != "1" ]; then
+    PROBE_LABEL="com.itp.tcc-probe.$$"
+    PROBE_PLIST="/tmp/${PROBE_LABEL}.plist"
+    PROBE_LOG="/tmp/${PROBE_LABEL}.log"
+    rm -f "$PROBE_LOG"
+    cat > "$PROBE_PLIST" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>${PROBE_LABEL}</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>${REAL_VENV_PYTHON}</string>
+        <string>-c</string>
+        <string>open('${PYVENV_CFG}').read(); print('TCC_OK')</string>
+    </array>
+    <key>StandardOutPath</key>
+    <string>${PROBE_LOG}</string>
+    <key>StandardErrorPath</key>
+    <string>${PROBE_LOG}</string>
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>
+EOF
+    launchctl load "$PROBE_PLIST" 2>/dev/null
+    # Wait up to 5s for the probe to finish writing
+    for _ in 1 2 3 4 5; do
+        sleep 1
+        grep -q "TCC_OK\|Permission" "$PROBE_LOG" 2>/dev/null && break
+    done
+    launchctl unload "$PROBE_PLIST" 2>/dev/null
+    PROBE_OK=0
+    grep -q "TCC_OK" "$PROBE_LOG" 2>/dev/null && PROBE_OK=1
+    rm -f "$PROBE_PLIST" "$PROBE_LOG"
+
+    if [ "$PROBE_OK" = "1" ]; then
+        echo "  TCC probe:   passed (launchd can read venv via $REAL_VENV_PYTHON)"
+    else
+        echo "" >&2
+        echo "ERROR: TCC probe failed — launchd-spawned python can't read:" >&2
+        echo "  $PYVENV_CFG" >&2
+        echo "" >&2
+        echo "macOS Sequoia restricts launchd-spawned processes from reading" >&2
+        echo "external volumes (anything under /Volumes/) without an explicit" >&2
+        echo "Full Disk Access grant on the exec'd binary. The agent would" >&2
+        echo "crash on startup. Three options:" >&2
+        echo "" >&2
+        echo "  (A) Use the nohup-based detached daemon instead:" >&2
+        echo "      baft itp-telegram daemon start" >&2
+        echo "      (works today; needs manual restart after reboot/logout)" >&2
+        echo "" >&2
+        echo "  (B) Grant Full Disk Access to the venv's python interpreter:" >&2
+        echo "      $REAL_VENV_PYTHON" >&2
+        echo "      via System Settings > Privacy & Security > Full Disk Access" >&2
+        echo "      (Cmd+Shift+G in the picker, then paste the path)." >&2
+        echo "      Then re-run this installer." >&2
+        echo "" >&2
+        echo "  (C) Move the project to an internal-disk path (e.g. ~/Developer/)" >&2
+        echo "      and re-run install." >&2
+        echo "" >&2
+        echo "  Override (advanced): SKIP_TCC_CHECK=1 bash deploy/macos/install.sh" >&2
+        echo "" >&2
+        exit 1
+    fi
 fi
 
 if [ ! -f "$ENV_PATH" ]; then
