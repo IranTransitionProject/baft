@@ -6,7 +6,7 @@ This guide walks through connecting Baft's multi-agent analytical pipeline to Cl
 
 ```text
 ┌─────────────────────┐     MCP (stdio or HTTP)      ┌──────────────────┐
-│   Claude Desktop    │ ◄──────────────────────────► │  Loom MCP Server │
+│   Claude Desktop    │ ◄──────────────────────────► │  Heddle MCP Server │
 │   (HI-A node)       │                              │  (baft gateway)  │
 └─────────────────────┘                              └────────┬─────────┘
                                                               │ NATS bus
@@ -97,7 +97,7 @@ cd /path/to/baft
 uv sync --extra dev
 ```
 
-This creates `.venv/` and installs all dependencies including Loom as an editable path dependency.
+This creates `.venv/` and installs all dependencies including Heddle as an editable path dependency.
 
 ## Step 2: Pull a local model for Ollama
 

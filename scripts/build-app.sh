@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build baft deployment ZIP for Loom Workshop app deployment.
+# Build baft deployment ZIP for Heddle Workshop app deployment.
 #
 # Output: dist/baft-{version}.zip
 # Contents: manifest.yaml, configs/, pipeline/config/, selected scripts

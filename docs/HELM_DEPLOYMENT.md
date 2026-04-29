@@ -4,7 +4,7 @@
 
 The Baft Helm chart deploys the full ITP analytical engine onto Kubernetes. A single `helm install` creates:
 
-- **13 worker pods** (SP, IA, DE, XV, IN, TN, LA, PA, RT, AS, SA, WT, NI) -- each running a Loom worker or processor
+- **13 worker pods** (SP, IA, DE, XV, IN, TN, LA, PA, RT, AS, SA, WT, NI) -- each running a Heddle worker or processor
 - **Router** -- dispatches tasks to workers via NATS subjects
 - **3 pipeline orchestrators** -- Quick (Tier 1), Standard (Tier 2), Audit (Tier 3)
 - **Scheduler** -- cron-driven actors (WT daily, NI daily, SA every 15 min, etc.)
@@ -130,7 +130,7 @@ workers:
   # ... 10 more workers
 ```
 
-**DE must remain at 1 replica.** It is a Loom processor with `max_concurrent=1` to serialize DuckDB writes. Scaling any other worker is safe.
+**DE must remain at 1 replica.** It is a Heddle processor with `max_concurrent=1` to serialize DuckDB writes. Scaling any other worker is safe.
 
 ### Workshop Service
 

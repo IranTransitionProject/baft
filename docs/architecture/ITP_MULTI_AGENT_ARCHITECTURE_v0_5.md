@@ -1,17 +1,17 @@
-# ITP Multi-Agent Architecture v0.5 — Loom Integration and Gap Analysis
+# ITP Multi-Agent Architecture v0.5 — Heddle Integration and Gap Analysis
 
 **Version:** 0.5 DRAFT  
 **Date:** 2026-03-13  
 **Parent document:** ITP_MULTI_AGENT_ARCHITECTURE v0.4 + Addendum A (Source Access Layer)  
-**Purpose:** Map the v0.4 architecture onto Loom's actual implementation state. Identify what is already built, what is missing, and what the MCP-connected conversational UI design requires.
+**Purpose:** Map the v0.4 architecture onto Heddle's actual implementation state. Identify what is already built, what is missing, and what the MCP-connected conversational UI design requires.
 
 ---
 
 ## Executive Summary
 
-Loom is further along than you likely realize. The core infrastructure — actor mesh, MCP server, Telegram ingestion, RAG pipeline, scheduler, DuckDB query backend, knowledge silo injection — is implemented and tested. The gap is not architectural plumbing. The gap is **ITP-specific configuration** (worker YAML files, knowledge silo content, MCP gateway config, terminology registry) and **two code completions** (streamable HTTP MCP transport, NRM normalizer).
+Heddle is further along than you likely realize. The core infrastructure — actor mesh, MCP server, Telegram ingestion, RAG pipeline, scheduler, DuckDB query backend, knowledge silo injection — is implemented and tested. The gap is not architectural plumbing. The gap is **ITP-specific configuration** (worker YAML files, knowledge silo content, MCP gateway config, terminology registry) and **two code completions** (streamable HTTP MCP transport, NRM normalizer).
 
-The conversational UI → MCP → Loom engine design is the right call. Loom's MCP server already exists and exposes workers as tools. A Claude chat session connected to the Heddle MCP gateway gives you the HI-A role with full tool access to the analytical engine. The remaining infrastructure work is small. The configuration work is larger but tractable.
+The conversational UI → MCP → Heddle engine design is the right call. Heddle's MCP server already exists and exposes workers as tools. A Claude chat session connected to the Heddle MCP gateway gives you the HI-A role with full tool access to the analytical engine. The remaining infrastructure work is small. The configuration work is larger but tractable.
 
 **Revised effort estimate:**
 
@@ -22,11 +22,11 @@ The conversational UI → MCP → Loom engine design is the right call. Loom's M
 
 ---
 
-## What Loom Has (Mapped to ITP Architecture)
+## What Heddle Has (Mapped to ITP Architecture)
 
 ### Infrastructure layer (complete)
 
-| Loom Component | ITP Architecture Role | Status |
+| Heddle Component | ITP Architecture Role | Status |
 |---|---|---|
 | `core/actor.py` + NATS | Message bus, actor lifecycle | ✅ Complete, tested |
 | `orchestrator/runner.py` + `decomposer.py` | HI-R orchestration function | ✅ Complete |
@@ -51,7 +51,7 @@ The conversational UI → MCP → Loom engine design is the right call. Loom's M
 
 ### Node mapping (what exists vs. what needs config)
 
-| ITP Node | Loom Mechanism | Code Status | Config Status |
+| ITP Node | Heddle Mechanism | Code Status | Config Status |
 |---|---|---|---|
 | HI-R (Router) | Orchestrator runner + decomposer | ✅ | ❌ No ITP orchestrator config |
 | HI-A (Analyst) | Claude chat + MCP tools | ✅ MCP server | ❌ No ITP MCP gateway config |
@@ -87,7 +87,7 @@ Ordered by blocking priority.
 
 **Current state:** The function exists but is a stub. It creates a Starlette app with only a `/health` route. No MCP protocol messages are handled over HTTP. The stdio transport works correctly.
 
-**Why it blocks Phase 1:** The conversational UI design — a Claude chat session connecting to Loom via MCP — requires HTTP transport. Claude.ai's custom MCP server integration expects a streamable HTTP endpoint. Stdio only works for local Claude Code sessions.
+**Why it blocks Phase 1:** The conversational UI design — a Claude chat session connecting to Heddle via MCP — requires HTTP transport. Claude.ai's custom MCP server integration expects a streamable HTTP endpoint. Stdio only works for local Claude Code sessions.
 
 **Fix required:** Complete the Starlette/FastMCP integration. The comment in the source already identifies the path: `FastMCP streamable_http_app()` helper. The correct implementation wraps the low-level Server in FastMCP's ASGI app, not a bare Starlette route. Estimated: ~50 lines of code change.
 
@@ -111,7 +111,7 @@ Ordered by blocking priority.
 - Queries: ITP database search (variables, observations, gaps, briefs, scenarios)
 - Resources: `data/` directory (YAML files as readable MCP resources)
 
-This is the single config file that turns Loom into "the ITP engine" from the chat UI's perspective.
+This is the single config file that turns Heddle into "the ITP engine" from the chat UI's perspective.
 
 **Template:** Copy `configs/mcp/docman.yaml`, replace workers/pipelines/queries with ITP equivalents.
 
@@ -145,7 +145,7 @@ configs/schedulers/itp.yaml                  # WT daily, AP pre-session, GA week
 
 Each worker config contains: `name`, `description`, `system_prompt`, `input_schema`, `output_schema`, `knowledge_sources`, `default_model_tier`, `reset_after_task`, `timeout_seconds`, `output_constraints`.
 
-The system prompt content already exists — it's in v0.4 under each node's "System prompt core" section. The task is translating those prose definitions into Loom YAML format.
+The system prompt content already exists — it's in v0.4 under each node's "System prompt core" section. The task is translating those prose definitions into Heddle YAML format.
 
 **This is the largest single work item** but is pure configuration (no code). Claude Code can generate all 18 files from the v0.4 document in one session.
 
@@ -155,7 +155,7 @@ The system prompt content already exists — it's in v0.4 under each node's "Sys
 
 **Location:** `configs/workers/*.yaml` → `knowledge_sources` fields, plus a new `configs/knowledge/itp_silos.yaml`
 
-**Current state:** Loom's `worker/knowledge.py` loads knowledge from file paths specified in worker configs. The framework repo contains all the content needed (YAML data files, module markdown, schemas). But no worker config points to these files yet.
+**Current state:** Heddle's `worker/knowledge.py` loads knowledge from file paths specified in worker configs. The baseline repo contains all the content needed (YAML data files, module markdown, schemas). But no worker config points to these files yet.
 
 **What's needed:**
 
@@ -189,7 +189,7 @@ knowledge_sources:
 
 **Location:** New DuckDB file at `itp-workspace/itp.duckdb`
 
-**Current state:** Loom has a fully functional DuckDB query backend (`contrib/duckdb/`). The docman test uses it for document data. The ITP entity data (variables, observations, gaps, briefs, scenarios, modules) lives as YAML in the framework repo.
+**Current state:** Heddle has a fully functional DuckDB query backend (`contrib/duckdb/`). The docman test uses it for document data. The ITP entity data (variables, observations, gaps, briefs, scenarios, modules) lives as YAML in the baseline repo.
 
 **What's needed:** A one-time import script that reads the framework YAML files and populates DuckDB tables that workers can query.
 
@@ -293,7 +293,7 @@ This is the highest-value near-term build item after the blocking gaps — it's 
 
 ### Gap 11 [PHASE 3]: Completed Streamable HTTP for Claude.ai Direct MCP
 
-**Note:** Partially overlaps with Gap 1. Gap 1 is about completing the function. This gap is about the broader deployment consideration — running Loom as a persistent HTTP server accessible to claude.ai's MCP configuration.
+**Note:** Partially overlaps with Gap 1. Gap 1 is about completing the function. This gap is about the broader deployment consideration — running Heddle as a persistent HTTP server accessible to claude.ai's MCP configuration.
 
 **Requirements:**
 
@@ -302,7 +302,7 @@ This is the highest-value near-term build item after the blocking gaps — it's 
 - Authentication header support (claude.ai sends bearer tokens)
 - For local use (Claude Code on same machine), stdio is fine indefinitely
 
-**Recommendation:** For Phase 1–2, run Loom locally, use stdio from Claude Code for DE/executor tasks, and use the HTTP transport for the analytical chat session once Gap 1 is closed. Defer public TLS/auth to Phase 3.
+**Recommendation:** For Phase 1–2, run Heddle locally, use stdio from Claude Code for DE/executor tasks, and use the HTTP transport for the analytical chat session once Gap 1 is closed. Defer public TLS/auth to Phase 3.
 
 ---
 
@@ -310,7 +310,7 @@ This is the highest-value near-term build item after the blocking gaps — it's 
 
 ### OQ #4 (Inter-node schema formalization) — Now has a path
 
-Loom's `core/contracts.py` provides JSON Schema validation for worker I/O. The ITP schemas are defined in the v0.4 node specs (input/output YAML structures for SP, IA, TN, AS, etc.). The action is: transcribe those schemas into Loom's `input_schema`/`output_schema` fields in each worker config. No new code — pure config.
+Heddle's `core/contracts.py` provides JSON Schema validation for worker I/O. The ITP schemas are defined in the v0.4 node specs (input/output YAML structures for SP, IA, TN, AS, etc.). The action is: transcribe those schemas into Heddle's `input_schema`/`output_schema` fields in each worker config. No new code — pure config.
 
 ### OQ #8 (ROBOTIC-LLM integration) — Closed
 
@@ -320,15 +320,15 @@ The ROBOTIC-LLM three-dimension rubric maps directly to the LA and PA nodes:
 - **Causal Logic & Second-Order Effects** → LA (Logic Auditor)  
 - **Perspective Bias** → PA (Perspective Auditor)
 
-Implementation: The ROBOTIC-LLM system prompt (Phase 2 section, Master Geopolitical Prompt) becomes the base for LA and PA system prompts, extended with ITP-specific audit criteria. The "keep the cage small" principle (exact output length constraint: "exactly two sentences") maps to Loom's `output_constraints` field in the worker config. The "zero-shot, fresh session, strip metadata" rules map directly to Loom's stateless worker design — workers reset after every task by design.
+Implementation: The ROBOTIC-LLM system prompt (Phase 2 section, Master Geopolitical Prompt) becomes the base for LA and PA system prompts, extended with ITP-specific audit criteria. The "keep the cage small" principle (exact output length constraint: "exactly two sentences") maps to Heddle's `output_constraints` field in the worker config. The "zero-shot, fresh session, strip metadata" rules map directly to Heddle's stateless worker design — workers reset after every task by design.
 
 ### OQ #9 (Session log integration) — Confirmed and clarified
 
-Architecture: Only the HI-R (Loom orchestrator) writes to `CLAUDE_SESSION_LOG.md`. Individual workers (SP, IA, LA, etc.) are internal pipeline — their outputs go into NATS → DuckDB, not the session log. WT alerts and IN notes have their own YAML queues. The DE node, when handling Tier 1 database operations, may write directly to the session log via the existing Chat→Code protocol.
+Architecture: Only the HI-R (Heddle orchestrator) writes to `CLAUDE_SESSION_LOG.md`. Individual workers (SP, IA, LA, etc.) are internal pipeline — their outputs go into NATS → DuckDB, not the session log. WT alerts and IN notes have their own YAML queues. The DE node, when handling Tier 1 database operations, may write directly to the session log via the existing Chat→Code protocol.
 
 ### OQ #15 (HI-R/HI-A handoff latency) — Resolved by MCP architecture
 
-The MCP design eliminates the handoff friction in Phase 1. The claude.ai chat session IS the HI-A. It has direct tool access to the Heddle engine via MCP — calling SP, IA, DE, XV as tools within the same conversation. The HI-R function (orchestration, tier selection, sequencing) is handled by the orchestrator running in Loom, invoked when the HI-A submits a multi-step goal. Single session, no context switching.
+The MCP design eliminates the handoff friction in Phase 1. The claude.ai chat session IS the HI-A. It has direct tool access to the Heddle engine via MCP — calling SP, IA, DE, XV as tools within the same conversation. The HI-R function (orchestration, tier selection, sequencing) is handled by the orchestrator running in Heddle, invoked when the HI-A submits a multi-step goal. Single session, no context switching.
 
 ---
 
@@ -345,7 +345,7 @@ This is the key design addition in v0.5.
 │  This IS the HI-A node.                                  │
 │  Has full framework knowledge (via project knowledge     │
 │  and conversation context).                              │
-│  Calls Loom tools via MCP for all structured operations. │
+│  Calls Heddle tools via MCP for all structured operations. │
 │                                                           │
 │  MCP Tools available (from configs/mcp/itp.yaml):        │
 │  • process_sources(source_bundle) → extracted_claims     │
@@ -414,7 +414,7 @@ This is the key design addition in v0.5.
 ```text
 Human: "Update SV-03 trend to deteriorating"
 HI-A (Claude): Calls tool update_database({action: update, entity_id: SV-03, fields: {trend: deteriorating}})
-Loom: Routes to DE worker → validates → commits → returns result
+Heddle: Routes to DE worker → validates → commits → returns result
 HI-A: Reports result with validation status
 ```
 
@@ -423,14 +423,14 @@ HI-A: Reports result with validation status
 ```text
 Human: "I have new Khamenei.ir content — [pastes text]"
 HI-A (Claude): Calls tool process_sources({source_bundle: [...]})
-Loom: SP worker extracts claims → returns extracted_claims
+Heddle: SP worker extracts claims → returns extracted_claims
 HI-A: Reviews claims, proposes variable updates
 Human: "Agree, also triggers a new observation"
 HI-A: Calls tool analyze_intelligence({new_claims: [...], session_question: "..."})
-Loom: IA worker produces analytical_output
+Heddle: IA worker produces analytical_output
 HI-A: Reviews, confirms
 HI-A: Calls tool update_database({operations: [...]})
-Loom: DE worker commits
+Heddle: DE worker commits
 ```
 
 **Tier 3 (Publication) — new brief, full audit:**
@@ -438,7 +438,7 @@ Loom: DE worker commits
 ```text
 Human: "Ready to run audit on the Mirbagheri analysis"
 HI-A (Claude): Calls tool run_audit({analytical_input: [IA output]})
-Loom: Orchestrator runs TN → LA + PA + RT (parallel) → AS → returns audit_report
+Heddle: Orchestrator runs TN → LA + PA + RT (parallel) → AS → returns audit_report
 HI-A: Presents structured audit findings
 Human: Reviews, decides on each finding
 HI-A: Logs decisions, calls update_database with any amendments
@@ -484,9 +484,9 @@ HI-A: Logs decisions, calls update_database with any amendments
 
 ### Newly opened
 
-**OQ #17 (Knowledge silo update frequency):** The IA worker loads framework YAML at task time. As the database changes (DE commits), the silo content becomes stale mid-session. Solution options: (a) DuckDB live query instead of file load, (b) worker reads current file at each invocation (default Loom behavior — acceptable for YAML files), (c) Valkey-cached snapshot with TTL. Recommendation: (b) is fine for Phase 1. Evaluate (a) when DuckDB import is operational.
+**OQ #17 (Knowledge silo update frequency):** The IA worker loads framework YAML at task time. As the database changes (DE commits), the silo content becomes stale mid-session. Solution options: (a) DuckDB live query instead of file load, (b) worker reads current file at each invocation (default Heddle behavior — acceptable for YAML files), (c) Valkey-cached snapshot with TTL. Recommendation: (b) is fine for Phase 1. Evaluate (a) when DuckDB import is operational.
 
-**OQ #18 (Streamable HTTP auth for claude.ai MCP):** When claude.ai connects to a custom MCP server, it sends an OAuth bearer token. Loom's HTTP transport (when completed) needs to validate this. The mcp-python library handles token verification in its streamable HTTP transport layer — this is handled by the library, not custom code. But it needs a secret configured. Track when Gap 1 is resolved.
+**OQ #18 (Streamable HTTP auth for claude.ai MCP):** When claude.ai connects to a custom MCP server, it sends an OAuth bearer token. Heddle's HTTP transport (when completed) needs to validate this. The mcp-python library handles token verification in its streamable HTTP transport layer — this is handled by the library, not custom code. But it needs a secret configured. Track when Gap 1 is resolved.
 
 **OQ #19 (DE worker vs. Claude Code for database operations):** Currently Claude Code handles all YAML/git operations via the session log protocol. The DE worker would duplicate some of this. Recommendation: Keep Claude Code for git commits (it has filesystem + git access). Use DE worker for validation-only operations that the HI-A needs real-time feedback on. Two-track: DE worker → validate+return result; Claude Code → commit to repo. The DE worker result triggers the session log integration request.
 
@@ -500,7 +500,7 @@ HI-A: Logs decisions, calls update_database with any amendments
 
 **OQ #6 (Cost/session economics):** Now estimable: Tier 1 = 1 DE call (Haiku). Tier 2 = SP + IA + DE (Haiku + Opus + Haiku). Tier 3 = +TN + LA + PA + RT + AS (Haiku + Sonnet×4 + Sonnet). Full Tier 3 cycle: ~$0.10–0.30 per brief depending on models. Acceptable.
 
-**OQ #7 (Which LLMs for which nodes?):** No change from v0.4. Confirmed by Loom's tier system (local/standard/frontier maps to Haiku/Sonnet/Opus).
+**OQ #7 (Which LLMs for which nodes?):** No change from v0.4. Confirmed by Heddle's tier system (local/standard/frontier maps to Haiku/Sonnet/Opus).
 
 ---
 
@@ -565,9 +565,9 @@ The alternative would be a dedicated web UI or a custom chat application built o
 
 2. **MCP is the right interface contract.** Tool use via MCP gives the HI-A (Claude) structured, validated access to the engine without giving it direct filesystem or database access. The HI-A calls `analyze_intelligence()` and gets structured YAML back — it doesn't load all the YAML files into context and try to do what the IA worker does. Separation is maintained.
 
-3. **Loom's MCP server already works.** The bridge, discovery, and server assembly are complete. The gap (HTTP transport) is small and well-defined.
+3. **Heddle's MCP server already works.** The bridge, discovery, and server assembly are complete. The gap (HTTP transport) is small and well-defined.
 
-4. **No infrastructure fragility.** A custom chat UI would need its own deployment, auth, and maintenance. Claude.ai or Claude Code connected to a local Loom server is a zero-new-infrastructure design for Phases 1–2.
+4. **No infrastructure fragility.** A custom chat UI would need its own deployment, auth, and maintenance. Claude.ai or Claude Code connected to a local Heddle server is a zero-new-infrastructure design for Phases 1–2.
 
 The one caveat: the claude.ai direct MCP connection requires the HTTP transport (Gap 1). Until that's done, the operational pattern is: Claude Code terminal session handles executor tasks (DE, data operations), Claude Chat handles analytical work with manual tool-call results pasted in. This is acceptable for Phase 1 — it's essentially the current workflow with better structure.
 

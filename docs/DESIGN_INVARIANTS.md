@@ -4,7 +4,7 @@ This document describes the ITP-specific design constraints in Baft that
 instantiate the generic patterns defined in the Heddle framework reference.
 
 **Prerequisite reading:** [`heddle/docs/DESIGN_INVARIANTS.md`](../../heddle/docs/DESIGN_INVARIANTS.md)
-— all Loom invariants apply here. This document only covers the Baft-specific
+— all Heddle invariants apply here. This document only covers the Baft-specific
 bindings.
 
 ![Silo Isolation](images/silo-isolation.svg)
@@ -13,7 +13,7 @@ bindings.
 
 ## Silo Isolation Map
 
-Baft implements the epistemic quarantine pattern (Loom invariant #17) with
+Baft implements the epistemic quarantine pattern (Heddle invariant #17) with
 these concrete bindings:
 
 | Silo | Isolated? | Permitted workers | Contains |
@@ -34,7 +34,7 @@ these concrete bindings:
 
 **Hard rule:** `framework_full` and `database_current` must NEVER appear in
 the `knowledge_sources` of LA, PA, RT, AS, or SA. This is the concrete
-enforcement of Loom invariant #17.
+enforcement of Heddle invariant #17.
 
 ### Silo → Worker Access Graph
 
@@ -83,7 +83,7 @@ workers. Blind workers (TN, LA, PA, RT, AS) receive only `constitution` and
 
 ## Blind Audit Tier Table
 
-Baft implements the tiered knowledge deprivation pattern (Loom invariant #19)
+Baft implements the tiered knowledge deprivation pattern (Heddle invariant #19)
 with these specific roles:
 
 | Node | Role | Tier | Sees | Blindness |
@@ -107,20 +107,20 @@ log but NOT the analytical framework.
 
 ## TN Specific Rules
 
-TN implements the neutralization firewall pattern (Loom invariant #18):
+TN implements the neutralization firewall pattern (Heddle invariant #18):
 
 - TN has exactly two knowledge sources: `constitution` and
   `itp_terminology_registry.yaml`. Nothing else, ever.
 - Entity IDs (`V-16`, `Obs-042`, `S-3`) pass through unchanged. They are
   opaque codes, not project terminology.
-- The `reverse_map` TN produces is per-document (Loom invariant #20). AS uses
+- The `reverse_map` TN produces is per-document (Heddle invariant #20). AS uses
   this exact map to de-neutralize audit findings.
 
 ---
 
 ## DE Single-Writer Contract
 
-DE implements the single-writer pattern (Loom invariant #28):
+DE implements the single-writer pattern (Heddle invariant #28):
 
 - DE is the **exclusive** writer to `baseline/data/`. No other worker touches
   these files.
@@ -139,7 +139,7 @@ DE implements the single-writer pattern (Loom invariant #28):
 ### Publication flag (itp_standard pipeline)
 
 IA sets `publication_flag: true` based on content quality assessment, not
-analyst intent (Loom invariant #21). If IA detects publication-grade analytical
+analyst intent (Heddle invariant #21). If IA detects publication-grade analytical
 claims, it flags regardless of whether the analyst said "publish."
 
 The flag triggers escalation from `itp_standard` (Tier 2) to `itp_audit`
@@ -148,7 +148,7 @@ The flag triggers escalation from `itp_standard` (Tier 2) to `itp_audit`
 ### RT escalation threshold (itp_audit pipeline)
 
 RT challenge `strength >= 8` on any core claim sets `escalation_required: true`
-(Loom invariant #22). AS inherits this and routes to `tier_4_manual` — which
+(Heddle invariant #22). AS inherits this and routes to `tier_4_manual` — which
 involves an alternate LLM provider (Gemini/GPT) and human review.
 
 **Calibration matters:** Too low = expensive false-positive escalations that
@@ -157,7 +157,7 @@ erode trust. Too high = genuine analytical failures reach publication.
 ### session_id flow (itp_standard pipeline)
 
 `session_id` originates from the analyst, flows via `input_mapping` through
-SP -> IA -> XV -> DE (Loom invariant #23). SP does not receive it (stateless
+SP -> IA -> XV -> DE (Heddle invariant #23). SP does not receive it (stateless
 extraction). DE uses it for `session_operation_count` tracking.
 
 If IA filters `session_id` from `integration_spec`, governance audits lose
@@ -166,7 +166,7 @@ session granularity.
 ### Audit pipeline parallelism (itp_audit pipeline)
 
 LA, PA, and RT all depend on TN's output and are assigned `parallel_group:
-audit_panel`. Loom's dependency inference (Loom invariant #6) detects they are
+audit_panel`. Heddle's dependency inference (Heddle invariant #6) detects they are
 independent and runs them concurrently. Do not change their `input_mapping` to
 reference each other — this would serialize them and roughly double audit
 latency.
@@ -175,7 +175,7 @@ latency.
 
 ## SA (Session Advisor) Isolation
 
-SA implements the behavioral monitor isolation pattern (Loom invariant #24):
+SA implements the behavioral monitor isolation pattern (Heddle invariant #24):
 
 - SA sees: `cognitive_profile`, `tier_rules`, `constitution`
 - SA does NOT see: `framework_full`, `database_current`
@@ -206,7 +206,7 @@ It must NEVER contain:
 - "Current priorities" or "high-priority findings"
 
 Adding analytical content to the constitution bypasses the entire isolation
-architecture through the one silo that every node trusts (Loom invariant #25).
+architecture through the one silo that every node trusts (Heddle invariant #25).
 
 ---
 

@@ -8,7 +8,7 @@ Run with: pytest tests/test_e2e_smoke.py -v -m e2e
 
 Skip conditions:
   - NATS not reachable at localhost:4222
-  - Loom workers not running
+  - Heddle workers not running
 """
 
 from __future__ import annotations

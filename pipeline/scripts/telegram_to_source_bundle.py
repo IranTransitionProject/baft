@@ -156,7 +156,7 @@ def main() -> None:
             print(f"[WARN] Watch list not found: {args.watch_list} — disabling filter")
             args.no_filter = True
 
-    # Import TelegramIngestor from Loom
+    # Import TelegramIngestor from Heddle
     try:
         from heddle.contrib.rag.ingestion.telegram_ingestor import TelegramIngestor
     except ImportError:

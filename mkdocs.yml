@@ -81,7 +81,7 @@ nav:
     - Claude Chat Sessions: CLAUDE_CHAT_SESSION_INSTRUCTIONS.md
     - Claude Code Build: CLAUDE_CODE_BUILD_INSTRUCTIONS.md
     - Design Invariants: DESIGN_INVARIANTS.md
-    - Loom Builders Guide: LOOM_BUILDERS_GUIDE.md
+    - Heddle Builders Guide: HEDDLE_BUILDERS_GUIDE.md
   - Deployment:
     - Helm Chart: HELM_DEPLOYMENT.md
     - Track B Spec: TRACK_B_HELM_AND_SESSION_AUTOMATION.md

@@ -169,7 +169,7 @@ Session context flows via `session_id` through `input_mapping`.
 Full audit cycle: TN → [LA + PA + RT parallel] → AS
 
 - **TN** neutralizes ITP-specific terminology for blind review
-- **LA**, **PA**, **RT** run in parallel (Loom auto-detects independence from input_mapping)
+- **LA**, **PA**, **RT** run in parallel (Heddle auto-detects independence from input_mapping)
 - **AS** synthesizes all three audit outputs with human decision log
 
 Audit nodes use `audit_id` (not `session_id`) and are blind to analytical framework.
@@ -194,7 +194,7 @@ These are enforced by config — audit independence depends on them:
 
 ```bash
 # Install all dependencies (requires Python 3.11+, uses uv)
-# Loom is resolved from ../heddle via [tool.uv.sources] in pyproject.toml
+# Heddle is resolved from ../heddle via [tool.uv.sources] in pyproject.toml
 uv sync --extra dev
 
 # Optional: install DeepEval for LLM output quality evaluation tests

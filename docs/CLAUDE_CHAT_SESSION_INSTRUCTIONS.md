@@ -1,6 +1,6 @@
 # ITP Session Management — Instructions for Claude
 
-You are assisting an ITP analyst. The analytical system runs on the Loom
+You are assisting an ITP analyst. The analytical system runs on the Heddle
 framework with 13 specialized workers connected via NATS.
 
 ## At session start

@@ -7,16 +7,16 @@
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 <!-- Keep in sync with heddle pyproject.toml version -->
-[![Built on Heddle](https://img.shields.io/badge/built_on-Loom_v0.9.0-blueviolet.svg)](https://github.com/getheddle/heddle)
+[![Built on Heddle](https://img.shields.io/badge/built_on-Heddle_v0.9.2-blueviolet.svg)](https://github.com/getheddle/heddle)
 [![Status: Active Development](https://img.shields.io/badge/status-active_development-brightgreen.svg)]()
 
 **Persian:** بافت — *woven fabric, texture, tissue*
 
-Baft is the Iran Transition Project's analytical engine. It is an application built on the [Loom](https://github.com/getheddle/heddle) actor mesh framework and the [framework](https://github.com/IranTransitionProject/baseline) YAML database.
+Baft is the Iran Transition Project's analytical engine. It is an application built on the [Heddle](https://github.com/getheddle/heddle) actor mesh framework and the [baseline](https://github.com/IranTransitionProject/baseline) YAML database.
 
 ![Three-Repo Architecture](docs/images/three-repo-architecture.svg)
 
-Loom provides the infrastructure: worker actors, NATS message bus, MCP gateway, RAG pipeline, scheduler, DuckDB query backend, Workshop web UI, TUI dashboard, distributed tracing.
+Heddle provides the infrastructure: worker actors, NATS message bus, MCP gateway, RAG pipeline, scheduler, DuckDB query backend, Workshop web UI, TUI dashboard, distributed tracing.
 
 Baft provides the ITP-specific configuration: node system prompts, knowledge silos, inter-node schemas, terminology registry, tier rules, watch list, source channel registry, and pipeline orchestration configs.
 
@@ -64,7 +64,7 @@ pipeline/
   scripts/
     telegram_to_source_bundle.py    # Telegram JSON → SP source_bundle
     telegram_corpus_interleave.py   # Multi-channel timeline merge
-    itp_import_to_duckdb.py         # framework YAML → DuckDB
+    itp_import_to_duckdb.py         # baseline YAML → DuckDB
   ni_findings/
     ni_findings_log.yaml            # Running narrative intelligence log
 
@@ -94,10 +94,10 @@ docs/
 uv run baft preflight
 
 # Session lifecycle
-uv run baft session start                      # Pull framework, import DuckDB, check services
+uv run baft session start                      # Pull baseline, import DuckDB, check services
 uv run baft session status                     # Active sessions + service health
-uv run baft session sync-check                 # Check for remote framework updates
-uv run baft session end -m "description"       # Commit framework changes, push
+uv run baft session sync-check                 # Check for remote baseline updates
+uv run baft session end -m "description"       # Commit baseline changes, push
 ```
 
 ## Deployment
@@ -114,7 +114,7 @@ See [Helm Deployment Guide](docs/HELM_DEPLOYMENT.md) for full Kubernetes setup.
 
 - Python 3.11+
 - [uv](https://docs.astral.sh/uv/) package manager
-- [Loom](https://github.com/getheddle/heddle) cloned as sibling directory (`../heddle`)
+- [Heddle](https://github.com/getheddle/heddle) cloned as sibling directory (`../heddle`)
 - [Ollama](https://ollama.com/) for local-tier workers
 - NATS server (`brew install nats-server` or Docker)
 - Valkey (`brew install valkey` or Docker) — optional, for checkpoints
@@ -148,8 +148,8 @@ uv run heddle mcp --config configs/mcp/itp.yaml --transport streamable-http --po
 
 | Repo | Role |
 |------|------|
-| [framework](https://github.com/IranTransitionProject/baseline) | Analytical database (YAML source of truth) |
-| [heddle](https://github.com/getheddle/heddle) | Actor mesh framework (infrastructure) |
+| [baseline](https://github.com/IranTransitionProject/baseline) | Analytical database (YAML source of truth) |
+| [Heddle](https://github.com/getheddle/heddle) | Actor mesh framework (infrastructure) |
 | **baft** (this repo) | ITP application layer (config + scripts) |
 
 ## Documentation
@@ -163,4 +163,4 @@ uv run heddle mcp --config configs/mcp/itp.yaml --transport streamable-http --po
 | [Setup Guide](docs/SETUP.md) | New users | Full local environment setup |
 | [Architecture v0.5](docs/architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md) | Architects | Pipeline design, gap analysis, implementation roadmap |
 | [Design Invariants](docs/DESIGN_INVARIANTS.md) | All | Silo isolation rules, audit independence constraints |
-| [Loom Builders Guide](docs/LOOM_BUILDERS_GUIDE.md) | Engineers | Design philosophy, lessons learned, extending Loom |
+| [Heddle Builders Guide](docs/HEDDLE_BUILDERS_GUIDE.md) | Engineers | Design philosophy, lessons learned, extending Heddle |

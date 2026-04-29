@@ -152,7 +152,7 @@ def three_repo_architecture():
         "No code — data only",
     ], size=11, fill="#92400e", lh=1.5)
 
-    # Loom
+    # Heddle
     s.rect(430, 100, 320, 300, fill="#dbeafe", rx=12, stroke="#3b82f6", sw=2)
     s.text(590, 125, "heddle/", size=18, weight=700, fill="#1e40af")
     s.text(590, 148, "Orchestration Framework", size=11, weight=400, fill="#2563eb")

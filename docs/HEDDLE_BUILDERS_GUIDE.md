@@ -1,15 +1,15 @@
-# Loom Builder's Guide
+# Heddle Builder's Guide
 
 **Version:** 0.1 DRAFT
 **Date:** 2026-03-15
-**Audience:** Anyone extending Loom for a new analytical project, or building a similar multi-agent pipeline from scratch.
+**Audience:** Anyone extending Heddle for a new analytical project, or building a similar multi-agent pipeline from scratch.
 **Source project:** ITP (Iran Transition Project) / Baft repository
 
 ---
 
-## 1. What Loom Is
+## 1. What Heddle Is
 
-Loom is a multi-agent orchestration framework for structured analytical work. It connects specialized LLM workers via a message bus (NATS), routes tasks by complexity tier, enforces knowledge silos for audit independence, and exposes the entire pipeline as MCP tools so a human analyst can interact through a conversational interface (Claude Chat, Claude Code, or any MCP client).
+Heddle is a multi-agent orchestration framework for structured analytical work. It connects specialized LLM workers via a message bus (NATS), routes tasks by complexity tier, enforces knowledge silos for audit independence, and exposes the entire pipeline as MCP tools so a human analyst can interact through a conversational interface (Claude Chat, Claude Code, or any MCP client).
 
 The metaphor: a weaving loom where each thread (worker) has a specific function, isolation boundaries prevent cross-contamination, and the fabric (analytical output) is traceable from raw source to published conclusion.
 
@@ -96,13 +96,13 @@ In practice, this means your backend config needs at least two provider slots: o
 
 ---
 
-## 3. Comparison: Loom vs. Pathmode
+## 3. Comparison: Heddle vs. Pathmode
 
-Pathmode (pathmode.io) is a Finnish SaaS product building an "Intent Layer" for product teams. It's the closest publicly visible system to what Loom does, despite targeting a completely different domain (product development vs. intelligence analysis). The comparison is instructive.
+Pathmode (pathmode.io) is a Finnish SaaS product building an "Intent Layer" for product teams. It's the closest publicly visible system to what Heddle does, despite targeting a completely different domain (product development vs. intelligence analysis). The comparison is instructive.
 
 ### What they share
 
-| Concept | Pathmode term | Loom term |
+| Concept | Pathmode term | Heddle term |
 |---------|--------------|-----------|
 | Structured specs as core artifact | IntentSpec (Markdown + YAML frontmatter) | Worker configs (YAML + JSON schemas) |
 | Evidence → structured output pipeline | Collect → Cluster → Synthesize → Ship | SP → IA → TN → LA/PA/RT → AS → DE |
@@ -113,7 +113,7 @@ Pathmode (pathmode.io) is a Finnish SaaS product building an "Intent Layer" for 
 
 ### Where they diverge
 
-| Dimension | Pathmode | Loom |
+| Dimension | Pathmode | Heddle |
 |-----------|----------|------|
 | **Domain** | Product discovery / software development | Geopolitical intelligence analysis |
 | **Input sources** | Support tickets, Intercom, Dovetail, analytics | Telegram channels, regime media, OSINT, multilingual primary sources |
@@ -124,19 +124,19 @@ Pathmode (pathmode.io) is a Finnish SaaS product building an "Intent Layer" for 
 | **Epistemic discipline** | Confidence score (single number) | Four-level epistemic tags ([Fact]/[Inference]/[Uncertain]/[Speculation]) with source-tier grounding |
 | **MCP integration** | MCP server for agent tool use | MCP server for human-analyst tool access to entire pipeline |
 
-### What Loom can learn from Pathmode
+### What Heddle can learn from Pathmode
 
-**"Constitution Rules" pattern.** Pathmode injects a set of non-negotiable constraints into every agent prompt automatically. Loom does this ad hoc — IA has standing rules, but they're manually maintained in the system_prompt. A dedicated `constitution.yaml` file that auto-injects into every worker prompt would be cleaner and ensure consistency. ITP's version would include: sophisticated actor default, factional neutrality, epistemic discipline, Wikipedia exclusion, anti-Islamophobic framing discipline.
+**"Constitution Rules" pattern.** Pathmode injects a set of non-negotiable constraints into every agent prompt automatically. Heddle does this ad hoc — IA has standing rules, but they're manually maintained in the system_prompt. A dedicated `constitution.yaml` file that auto-injects into every worker prompt would be cleaner and ensure consistency. ITP's version would include: sophisticated actor default, factional neutrality, epistemic discipline, Wikipedia exclusion, anti-Islamophobic framing discipline.
 
-**Vision-first filtering.** Pathmode aligns every evidence signal against a product vision before it enters the pipeline. This filters noise early. Loom's equivalent would be a "project thesis anchors" filter in SP or a pre-IA gate that checks whether new claims are relevant to the project's core analytical questions. Currently this happens implicitly in IA's system_prompt. Making it an explicit pipeline stage would improve signal-to-noise for high-volume ingestion.
+**Vision-first filtering.** Pathmode aligns every evidence signal against a product vision before it enters the pipeline. This filters noise early. Heddle's equivalent would be a "project thesis anchors" filter in SP or a pre-IA gate that checks whether new claims are relevant to the project's core analytical questions. Currently this happens implicitly in IA's system_prompt. Making it an explicit pipeline stage would improve signal-to-noise for high-volume ingestion.
 
-**Evidence typing.** Pathmode categorizes evidence into five types: friction, quotes, observations, metrics, requests. Loom's SP extracts claims but doesn't sub-type them. Adding a `claim_type` field (factual assertion, stated position, quantitative metric, event report, attributed quote) would improve downstream routing and IA triage.
+**Evidence typing.** Pathmode categorizes evidence into five types: friction, quotes, observations, metrics, requests. Heddle's SP extracts claims but doesn't sub-type them. Adding a `claim_type` field (factual assertion, stated position, quantitative metric, event report, attributed quote) would improve downstream routing and IA triage.
 
-### What Pathmode could learn from Loom
+### What Pathmode could learn from Heddle
 
-**Audit independence is not optional.** Pathmode's synthesis is single-model: the same AI that ingests evidence also produces the spec. There's no independent review. Loom's blind audit pipeline (TN → LA/PA/RT → AS) is architecturally expensive but catches systematic biases that single-model pipelines cannot detect.
+**Audit independence is not optional.** Pathmode's synthesis is single-model: the same AI that ingests evidence also produces the spec. There's no independent review. Heddle's blind audit pipeline (TN → LA/PA/RT → AS) is architecturally expensive but catches systematic biases that single-model pipelines cannot detect.
 
-**Epistemic discipline beyond confidence scores.** A single confidence number (Pathmode's "92% confidence") collapses too many dimensions. Loom's four-level epistemic tags + source tier grounding + explicit reasoning chains provide much more actionable quality metadata.
+**Epistemic discipline beyond confidence scores.** A single confidence number (Pathmode's "92% confidence") collapses too many dimensions. Heddle's four-level epistemic tags + source tier grounding + explicit reasoning chains provide much more actionable quality metadata.
 
 **Terminology neutralization for honest review.** Without stripping project-specific vocabulary, an LLM reviewer will pattern-match to the project's framing and produce a favorable review that looks independent but isn't. This is a subtle and important insight that applies to any multi-agent system where one agent reviews another's work.
 
@@ -164,7 +164,7 @@ In YAML, bare `yes`, `no`, `true`, `false`, `on`, `off` are all booleans. If a w
 
 LLM workers are stateless. Each invocation gets the system_prompt + knowledge silo content + user message. If the knowledge silo content is stale (e.g., the entity registry was updated but the silo file wasn't rebuilt), the worker operates on outdated information.
 
-**Mitigation:** Knowledge silo rebuild should be a mandatory pre-step before any pipeline run. The Loom runner should refuse to start if silos are older than the database modification timestamp.
+**Mitigation:** Knowledge silo rebuild should be a mandatory pre-step before any pipeline run. The Heddle runner should refuse to start if silos are older than the database modification timestamp.
 
 ### 4.5 Silo leakage through examples
 
@@ -172,11 +172,11 @@ If your system_prompt example contains real project data (real entity names, rea
 
 ---
 
-## 5. Extending Loom for a New Project
+## 5. Extending Heddle for a New Project
 
 ### 5.1 Minimum viable configuration
 
-To adapt Loom for a different analytical domain, you need:
+To adapt Heddle for a different analytical domain, you need:
 
 1. **Worker configs** (`configs/workers/*.yaml`): One per analytical role. Start with the five mechanical workers (SP, DE, XV, TN, IN) — these are domain-generic and mostly need prompt customization.
 
@@ -232,7 +232,7 @@ To adapt Loom for a different analytical domain, you need:
 
 3. **Silo freshness enforcement:** Should the Heddle runner refuse to start if knowledge silos are older than the source database?
 
-4. **IntentSpec-like artifact standard:** Should Loom adopt a standardized output artifact format (like Pathmode's IntentSpec) that is readable by external tools? The current output is JSON blobs — a defined schema with a `.intent.json` extension and standard fields would improve interoperability.
+4. **IntentSpec-like artifact standard:** Should Heddle adopt a standardized output artifact format (like Pathmode's IntentSpec) that is readable by external tools? The current output is JSON blobs — a defined schema with a `.intent.json` extension and standard fields would improve interoperability.
 
 5. **Multi-run convergence:** For high-stakes analytical tasks, should IA run multiple times with different temperatures and the results be aggregated? This is expensive but could improve confidence assessment.
 

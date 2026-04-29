@@ -109,7 +109,7 @@ start_worker() {
 rm -f "$PID_FILE"
 
 # --- Start router ---
-info "Starting Loom router..."
+info "Starting Heddle router..."
 nohup uv run --project "$BAFT_DIR" heddle router --config "$HEDDLE_DIR/configs/router_rules.yaml" --nats-url nats://localhost:4222 \
     > "$LOG_DIR/router.log" 2>&1 &
 ROUTER_PID=$!

@@ -8,13 +8,13 @@
 
 ## Your mission
 
-Build the Baft repository from the skeleton provided. Baft is the ITP-specific configuration layer on top of Loom. All architectural decisions are already made — this is implementation work.
+Build the Baft repository from the skeleton provided. Baft is the ITP-specific configuration layer on top of Heddle. All architectural decisions are already made — this is implementation work.
 
 **Read before starting:**
 
 1. `CLAUDE.md` — operating rules for this repo
 2. `docs/architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md` — the canonical node spec
-3. `$ITP_ROOT/heddle/configs/workers/_template.yaml` — Loom worker config format
+3. `$ITP_ROOT/heddle/configs/workers/_template.yaml` — Heddle worker config format
 4. `$ITP_ROOT/heddle/configs/workers/summarizer.yaml` — real example worker config
 
 ---
@@ -53,7 +53,7 @@ Write in this order:
 
 - Node: DE (Database Engineer), architecture doc Node 2
 - Tier: local
-- This is a `processor` (non-LLM) type if Loom supports it, otherwise LLM with strict output format
+- This is a `processor` (non-LLM) type if Heddle supports it, otherwise LLM with strict output format
 - Knowledge: all JSON schemas from framework repo, current data files for ID lookup
 - Input schema: `integration_request` (operations list)
 - Output schema: `integration_result` with `operations_attempted`, `operations_succeeded`, `validation_result`, `ga_notification`
@@ -172,7 +172,7 @@ These nodes are blind. They receive only the neutralized analytical text and the
 - Node: WT (Watch Tower)
 - Tier: standard (Sonnet)
 - Knowledge: `pipeline/config/itp_watch_list.yaml`, channel registry
-- Tool access: web_search enabled in Loom backend config
+- Tool access: web_search enabled in Heddle backend config
 - Input: `watch_list_path` + optional `mode` (scan | agenda_assembly)
 - Output: `watch_results` with per-item findings + agenda_items for AP
 
@@ -193,7 +193,7 @@ Read `$ITP_ROOT/heddle/configs/orchestrators/rag_pipeline.yaml` for format.
 **File: `configs/orchestrators/itp_standard.yaml`** — SP → IA → DE (sequential, pass output forward)
 **File: `configs/orchestrators/itp_audit.yaml`** — TN → [LA, PA, RT] (parallel) → AS
 
-For the audit pipeline, LA/PA/RT must run in parallel (Loom orchestrator supports parallel decomposition).
+For the audit pipeline, LA/PA/RT must run in parallel (Heddle orchestrator supports parallel decomposition).
 
 ### Step 1.6 — Update `configs/mcp/itp.yaml`
 
@@ -298,9 +298,9 @@ Note: ROBOTIC-LLM.md path is wherever Hooman has it. Ask if unclear.
 
 ---
 
-## Session 3: Loom gap fix + end-to-end validation (Sprint 1, Batch C)
+## Session 3: Heddle gap fix + end-to-end validation (Sprint 1, Batch C)
 
-### Step 3.1 — Fix Loom streamable HTTP transport (Gap 1)
+### Step 3.1 — Fix Heddle streamable HTTP transport (Gap 1)
 
 **File:** `$ITP_ROOT/heddle/src/heddle/mcp/server.py`
 **Function:** `run_streamable_http()`
@@ -409,7 +409,7 @@ git commit -m "Session 1: Initial Baft repository — worker configs, MCP gatewa
 
 ## When to stop and ask
 
-- If a Loom API or schema has changed since the architecture was written → check Loom CLAUDE.md
-- If a worker config field is undocumented → read `_template.yaml` and `building-workflows.md` in Loom docs
+- If a Heddle API or schema has changed since the architecture was written → check Heddle CLAUDE.md
+- If a worker config field is undocumented → read `_template.yaml` and `building-workflows.md` in Heddle docs
 - If an import or dependency conflicts → ask before trying to fix the dependency
 - If the streamable HTTP fix requires more than ~100 lines → something is wrong; ask before continuing

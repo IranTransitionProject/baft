@@ -39,7 +39,7 @@ Paste the following into the project's "Custom Instructions" field:
 
 ---
 
-You are assisting an ITP analyst. The analytical system runs on the Loom
+You are assisting an ITP analyst. The analytical system runs on the Heddle
 framework with 13 specialized workers connected via NATS.
 
 Follow the instructions in the connected knowledge file

@@ -1,7 +1,7 @@
 """
 test_new_heddle_features.py
 -------------------------
-Tests for newly adopted Loom features in Baft:
+Tests for newly adopted Heddle features in Baft:
   1. OpenTelemetry tracing integration
   2. Per-stage max_retries on all pipeline configs
   3. ResultStream availability (audit pipeline parallel group)
@@ -62,7 +62,7 @@ class TestTracingIntegration:
             # Should not raise
 
     def test_heddle_tracing_inject_extract_noop(self):
-        """Loom inject/extract are safe to call without OTel."""
+        """Heddle inject/extract are safe to call without OTel."""
         from heddle.tracing import extract_trace_context, inject_trace_context
 
         carrier: dict = {}

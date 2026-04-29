@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Resolve silo references in baft worker configs to concrete file paths.
 
-Baft worker configs use ``silo: <name>`` in knowledge_sources.  Loom's runtime
+Baft worker configs use ``silo: <name>`` in knowledge_sources.  Heddle's runtime
 expects ``path:`` + ``inject_as:`` entries.  This script bridges the two.
 """
 
