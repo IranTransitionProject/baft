@@ -1,421 +1,88 @@
-# CLAUDE.md — Baft project context
+# CLAUDE.md — Baft
 
-## What this project is
+## What this is
 
-Baft is the ITP (Iran Transition Project) analytical engine — the application layer built on the Heddle framework. It provides ITP-specific worker configurations, pipeline definitions, knowledge silo mappings, and utility scripts for the multi-agent intelligence analysis system.
+Baft is the ITP (Iran Transition Project) analytical application layer built on the Heddle framework. It provides worker configs, pipeline definitions, knowledge silo mappings, and session tooling for the multi-agent intelligence analysis system.
 
-This repo does NOT contain analytical work or the Heddle framework itself. It translates the ITP pipeline architecture (defined in `docs/architecture/`) into working Heddle YAML configurations.
+This repo does NOT contain analytical data. It translates the ITP pipeline architecture into Heddle YAML configs. Data lives in `baseline/`. The Heddle framework lives in `../heddle`.
 
-## Three-repo architecture
+## Three-repo layout
 
 - **baseline/** — ITP analytical database (YAML source of truth, schemas, briefs)
 - **heddle/** — Heddle framework (worker runtime, MCP server, NATS bus, scheduler)
-- **baft/** (this repo) — ITP application layer (all ITP-specific config)
+- **baft/** (this repo) — ITP application layer (worker/pipeline/silo/session configs)
 
-Source of truth for node definitions: `docs/architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md`
-
-## Project structure
-
-```text
-configs/
-  workers/              # 13 worker YAML configs (system prompts, I/O schemas, tiers)
-    sp_source_processor.yaml      # SP — source processing (local tier)
-    ia_intelligence_analyst.yaml  # IA — analytical decisions (frontier tier)
-    de_database_engineer.yaml     # DE — database integration (local tier, processor)
-    xv_cross_validator.yaml       # XV — cross-reference validation (local tier)
-    in_input_node.yaml            # IN — low-friction note capture (local tier)
-    tn_terminology_neutralizer.yaml  # TN — audit neutralizer (local tier)
-    la_logic_auditor.yaml         # LA — logic audit (standard tier, blind)
-    pa_perspective_auditor.yaml   # PA — perspective audit (standard tier, blind)
-    rt_red_teamer.yaml            # RT — red team challenge (frontier tier, blind)
-    as_audit_synthesizer.yaml     # AS — audit synthesis (standard tier)
-    sa_session_advisor.yaml       # SA — session quality monitor (local tier)
-    wt_watch_tower.yaml           # WT — watch list scanning (standard tier)
-    ni_narrative_intelligence.yaml # NI — narrative corpus analysis (standard tier)
-  orchestrators/        # Pipeline configs
-    itp_quick.yaml      # Tier 1: direct single-worker dispatch
-    itp_standard.yaml   # Tier 2: SP → IA → XV → DE sequential pipeline
-    itp_audit.yaml      # Tier 3: TN → [LA + PA + RT parallel] → AS
-  schedulers/
-    itp.yaml            # Scheduled actors (WT daily, NI daily, AP pre-session, SA every 15min, GA weekly)
-  mcp/
-    itp.yaml            # MCP gateway exposing workers + DuckDB queries as tools
-  knowledge/
-    itp_silos.yaml      # Knowledge silo index (silo name → file paths)
-
-pipeline/
-  config/               # Pipeline configuration data files
-    itp_source_hierarchy.yaml       # 5-tier source taxonomy
-    itp_epistemic_rules.yaml        # Fact/Inference/Uncertain/Speculation rules
-    itp_tier_rules.yaml             # Task complexity → tier mapping
-    itp_watch_list.yaml             # Priority watch items with channel routing
-    itp_cognitive_profile.yaml      # Analyst profile for SA monitoring
-    itp_entity_name_registry.yaml   # Entity transliteration standards
-    itp_terminology_registry.yaml   # ITP-specific terminology for audit neutralization
-    itp_telegram_channels.yaml      # Telegram channel registry
-    human_decision_log_template.yaml
-  scripts/              # Data pipeline utilities
-    itp_import_to_duckdb.py         # YAML → DuckDB import (full + incremental)
-    telegram_to_source_bundle.py    # Telegram JSON → SP source_bundle format
-    telegram_corpus_interleave.py   # Multi-channel corpus interleaving
-    generate_entity_registry.py     # Extract entity names from baseline data
-
-src/baft/               # Python package (v0.3.0)
-  __init__.py           # Package marker
-  cli.py                # Click CLI: preflight, session start/end/status/sync-check/sync
-  sessions.py           # Session tracking for scheduler expansion (get_active_sessions)
-  tracing.py            # OTel tracing integration (wraps heddle.tracing with ITP defaults)
-  contracts/            # Pydantic I/O models — source of truth for worker schemas
-    __init__.py         # Re-exports all contract models
-    core.py             # SP, IA, DE, XV, IN contracts (Tier 1–2 pipeline)
-    audit.py            # TN, LA, PA, RT, AS contracts (Tier 3 audit pipeline)
-    monitor.py          # SA, WT, NI contracts (background/scheduled workers)
-  itp_telegram/         # Live Telegram capture + standalone MCP HTTP gateway
-    config.py           # ITPTelegramConfig (paths, model names, intervals)
-    channel_profiles.py # Loads itp_telegram_channels.yaml + faction→bias mapping
-    llm_backend.py      # LMStudioLLMBackend — OpenAI-compat shim for analyzer
-    store.py            # DuckDBVectorStore factory wired to LM Studio embeddings
-    capture.py          # Async capture loop: ingest → chunk → embed → store
-    mcp_server.py       # FastMCP server (search/recent/list/stats/corroboration/status)
-    service.py          # Combined long-lived runner (capture + MCP HTTP)
-    auth_bootstrap.py   # First-time Telethon phone auth (`baft itp-telegram auth`)
-    resolve_ids.py      # Resolve handles → numeric channel IDs JSON
-    pid_manager.py      # PID file lifecycle for the daemon
-    cli.py              # Click subcommand group `baft itp-telegram {...}`
-
-deploy/
-  macos/                # launchd install/uninstall for the Telegram daemon
-    install.sh          # Generates plist; refuses cleanly when project is on /Volumes/
-    uninstall.sh        # Removes plist + cleans stale PID
-
-scripts/                # Development utilities
-  resolve_config.py     # Resolve silo references and ${ITP_ROOT} in worker configs
-  build-app.sh          # Build deployment ZIP for Heddle Workshop
-  audition_models.py    # Test different LLM models against worker prompts
-  test_e2e_quick.py     # Quick end-to-end smoke test
-
-manifest.yaml           # App manifest for Heddle Workshop deployment
-
-tests/                  # 378 unit tests (8 test files)
-  test_baft_workers.py      # Worker config validation (schema, silo resolution)
-  test_contracts.py         # Pydantic contract models (validation, schema generation)
-  test_baft_pipelines.py    # Pipeline orchestration (InMemoryBus, mock backends)
-  test_session_cli.py       # Session CLI commands and preflight checks (22 tests)
-  test_duckdb_import.py     # DuckDB import script validation
-  test_e2e_smoke.py         # End-to-end smoke tests (@pytest.mark.e2e)
-  test_resolve_config.py    # Config resolution and silo expansion
-  test_new_loom_features.py # OTel tracing, retries, Workshop MCP, eval baselines, TUI, dead-letter
-
-docs/
-  ANALYST_GUIDE.md      # Non-technical analyst guide (tools, workflows, Workshop, TUI)
-  OPERATIONS_GUIDE.md   # Technical ops guide (tracing, retries, dead-letter, troubleshooting)
-  SETUP.md              # Local environment setup (step-by-step)
-  CLAUDE_DESKTOP_GUIDE.md  # Claude Desktop/Code connection guide
-  LOOM_BUILDERS_GUIDE.md   # Design philosophy and lessons learned
-  DESIGN_INVARIANTS.md  # Baft-specific design constraints (silo isolation, audit independence)
-  architecture/         # ITP multi-agent architecture specification
-
-charts/baft/            # Helm chart for K8s deployment (Chart.yaml, values.yaml, 17 templates)
-
-docker/                 # 7 Dockerfiles (worker, router, pipeline, workshop, mcp, import, commit-agent)
-
-.github/workflows/      # CI: ci.yml, docs.yml, helm.yml, docker.yml
-```
-
-## Relationship to Heddle
-
-Baft depends on `heddle-ai[mcp,duckdb,rag,workshop,tui,otel]` as a package (v0.9.0+). It uses:
-
-- Worker YAML configs loaded by `heddle worker` and `heddle processor` CLI commands
-- `PipelineOrchestrator` via `heddle pipeline` CLI for Tier 2 and Tier 3 pipelines
-- `SchedulerActor` via `heddle scheduler` CLI for automated tasks
-- MCP gateway via `heddle mcp` CLI to expose workers as MCP tools
-- `heddle.contrib.duckdb.DuckDBQueryBackend` for structured queries against ITP data
-- `heddle.core.config.resolve_schema_refs()` to resolve `input_schema_ref`/`output_schema_ref` in worker configs to JSON Schema from Pydantic models in `baft.contracts`
-- **OpenTelemetry tracing** — `baft.tracing` wraps `heddle.tracing` for end-to-end pipeline visibility; W3C traceparent propagation through NATS messages
-- **Per-stage retry** — all pipeline stages have `max_retries` configured (2 for local tier, 1 for standard/frontier)
-- **ResultStream** — `heddle.orchestrator.stream.ResultStream` for incremental result collection during audit pipeline parallel groups
-- **Workshop MCP tools** — `workshop.*` namespace tools for worker CRUD, test bench, eval, impact analysis, dead-letter inspection
-- **Config impact analysis** — `heddle.workshop.config_impact.get_impact()` maps worker changes to affected pipelines/downstream stages
-- **Eval baselines** — `WorkshopDB.promote_baseline()` / `compare_against_baseline()` for golden dataset regression detection
-- **Dead-letter audit trail** — `ReplayRecord` on `DeadLetterConsumer` tracks replay history for governance
-- **TUI dashboard** — `heddle ui` for real-time NATS observation of goals, tasks, pipeline stages
-
-The CLI loads backends by fully qualified class path from worker configs.
+Node definitions source of truth: `docs/architecture/ITP_MULTI_AGENT_ARCHITECTURE_v0_5.md`
 
 ## Pipeline tiers
 
-### Tier 1 — Quick (itp_quick.yaml)
+| Tier | Config | Flow |
+| ------ | -------- | ------ |
+| 1 — Quick | `itp_quick.yaml` | Direct single-worker dispatch (DE, XV, IN) |
+| 2 — Standard | `itp_standard.yaml` | SP → IA → XV → DE |
+| 3 — Audit | `itp_audit.yaml` | TN → [LA + PA + RT in parallel] → AS |
 
-Direct single-worker dispatch, no orchestration. Used for:
-
-- DE database updates (validate_only, add observations)
-- XV cross-reference checks
-- IN inbox note capture
-
-### Tier 2 — Standard (itp_standard.yaml)
-
-Sequential pipeline: SP → IA → XV → DE
-
-- **SP** extracts claims from source material
-- **IA** analyzes claims against analytical framework, produces integration spec
-- **XV** validates cross-references and epistemic tags
-- **DE** persists validated results to database
-
-Session context flows via `session_id` through `input_mapping`.
-
-### Tier 3 — Audit (itp_audit.yaml)
-
-Full audit cycle: TN → [LA + PA + RT parallel] → AS
-
-- **TN** neutralizes ITP-specific terminology for blind review
-- **LA**, **PA**, **RT** run in parallel (Heddle auto-detects independence from input_mapping)
-- **AS** synthesizes all three audit outputs with human decision log
-
-Audit nodes use `audit_id` (not `session_id`) and are blind to analytical framework.
+`session_id` flows through Tier 2: SP (no session) → IA → XV → DE. DE tracks `session_operation_count` for governance audit triggers.
 
 ## Critical silo isolation rules
 
-These are enforced by config — audit independence depends on them:
+**Audit independence breaks if these are violated. Enforced by config, not code.**
 
-- **LA, PA, RT**: MUST NOT have any framework data in `knowledge_sources`
-- **AS**: MUST NOT have ITP framework — only audit node outputs + human_decision_log
-- **TN**: MUST ONLY have terminology_registry — nothing else
-- **SA**: MUST NOT have analytical framework — only cognitive_profile, tier_rules, constitution
+- `LA`, `PA`, `RT` — MUST NOT have any ITP framework data in `knowledge_sources`
+- `AS` — MUST NOT have ITP framework; only audit node outputs + `human_decision_log`
+- `TN` — MUST have ONLY `terminology_registry`; nothing else
+- `SA` — MUST NOT have analytical framework; only `cognitive_profile`, `tier_rules`, `constitution`
 
-## Session management
+Silo names resolve via `configs/knowledge/itp_silos.yaml`.
 
-- `session_id` is externally provided (by analyst via MCP tool calls)
-- Flows through Tier 2 pipeline: SP (no session) → IA (receives session_id) → XV → DE (tracks session_id)
-- SA monitors session quality with `session_id` in its input schema
-- DE tracks `session_operation_count` per session for governance audit triggers
+## Concurrent multi-analyst sessions
 
-## Build and test commands
+Pipelines set `max_concurrent_goals: 4`. SA scheduler uses `expand_from: baft.sessions.get_active_sessions` to dispatch one SA task per active session. Session markers: `~/.heddle/sessions/`. DuckDB writes are serialized via a single DE processor instance.
+
+## Build and test
 
 ```bash
-# Install all dependencies (requires Python 3.11+, uses uv)
-# Heddle is resolved from ../heddle via [tool.uv.sources] in pyproject.toml
-uv sync --extra dev
-
-# Optional: install DeepEval for LLM output quality evaluation tests
-# Uses Ollama as judge model (no cloud API needed)
-uv sync --extra eval
-
-# Run unit tests (no infrastructure needed)
-uv run pytest tests/ -v -m "not e2e and not deepeval"
-
-# Run DeepEval quality evaluation tests (needs Ollama with command-r7b)
-uv run pytest tests/ -m deepeval -v
-
-# Skip DeepEval tests explicitly
-uv run pytest tests/ -m "not deepeval"
-
-# Run with infrastructure (needs NATS + Heddle installed)
-# Terminal 1: docker run -p 4222:4222 nats:latest
-# Terminal 2: uv run heddle router --nats-url nats://localhost:4222
-# Terminal 3: uv run heddle processor --config configs/workers/de_database_engineer.yaml --nats-url nats://localhost:4222
-# Terminal 4: OLLAMA_URL=http://localhost:11434 uv run heddle worker --config configs/workers/sp_source_processor.yaml --tier local --nats-url nats://localhost:4222
-# Terminal 5: ANTHROPIC_API_KEY=sk-... uv run heddle worker --config configs/workers/ia_intelligence_analyst.yaml --tier frontier --nats-url nats://localhost:4222
-# Terminal 6: uv run heddle pipeline --config configs/orchestrators/itp_standard.yaml --nats-url nats://localhost:4222
-
-# MCP server (includes Workshop tools: worker CRUD, test bench, eval, impact, dead-letter)
-uv run heddle mcp --config configs/mcp/itp.yaml
-uv run heddle mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765
-
-# Workshop web UI (worker testing, eval baselines, config impact analysis)
-uv run heddle workshop --port 8080
-uv run heddle workshop --port 8080 --nats-url nats://localhost:4222  # with live metrics
-
-# TUI dashboard (real-time NATS observation — goals, tasks, pipeline stages)
-uv run heddle ui --nats-url nats://localhost:4222
-
-# Import baseline data to DuckDB
-python pipeline/scripts/itp_import_to_duckdb.py
-python pipeline/scripts/itp_import_to_duckdb.py --incremental
-
-# Lint
-uv run ruff check scripts/ pipeline/scripts/
-
-# Session management CLI
-uv run baft preflight                          # Run environment checks
-uv run baft session start                      # Start session (auto-generated ID)
-uv run baft session start --session-id my-run  # Start with explicit ID
-uv run baft session status                     # Show active sessions + service health
-uv run baft session sync-check                 # Check if baseline remote has new commits
-uv run baft session sync                       # Pull baseline + incremental DuckDB import
-uv run baft session end                        # End session (shows changes, confirms, commits + pushes)
-uv run baft session end -m "added new entity"  # End with commit message
-uv run baft session end --yes                  # Skip confirmation prompt
+uv sync --extra dev              # Python 3.11+; Heddle resolved from ../heddle
+uv run pytest tests/ -v -m "not e2e and not deepeval"   # unit tests, no infra
+uv run pytest tests/ -m deepeval -v                     # needs Ollama + command-r7b
+uv run ruff check scripts/ pipeline/scripts/            # lint
+uv run heddle validate configs/workers/*.yaml           # validate all worker configs
+uv run baft preflight                                   # environment check (10 validations)
 ```
 
-## Session CLI details
+## Session CLI
 
-The `baft` CLI provides session lifecycle automation:
+```bash
+uv run baft session start                      # pull baseline, start session
+uv run baft session status                     # active sessions + service health
+uv run baft session sync                       # pull + incremental DuckDB import
+uv run baft session end -m "message"           # commit + push baseline changes
+```
 
-- **`baft preflight`** — Validates the entire environment: Python, uv, repos, deps, env vars, NATS, Ollama, DuckDB, baseline git status (10 checks)
-- **`baft session start`** — Pulls baseline, runs incremental DuckDB import, checks services, registers session marker
-- **`baft session end`** — Shows changed files, asks for confirmation, commits only `data/` directory + tracked changes, pushes to remote. Use `--yes/-y` to skip confirmation
-- **`baft session status`** — Shows active sessions, baseline git state, service health
-- **`baft session sync-check`** — Fetches remote, reports ahead/behind/diverged status
-- **`baft session sync`** — Fast-forward pulls baseline and runs incremental DuckDB import
+Session `end` commits only the `data/` directory — never infrastructure files. See `docs/ANALYST_GUIDE.md` for the full analyst workflow.
 
-Session markers are stored in `~/.heddle/sessions/` as JSON files (reuses `baft.sessions` module). Git operations use `subprocess.run(["git", ...])` — no gitpython dependency.
+## MCP and Workshop
 
-## Current state
+```bash
+uv run heddle mcp --config configs/mcp/itp.yaml                           # stdio
+uv run heddle mcp --config configs/mcp/itp.yaml --transport streamable-http --port 8765
+uv run heddle workshop --port 8080 --nats-url nats://localhost:4222
+uv run heddle ui --nats-url nats://localhost:4222                          # TUI dashboard
+```
 
-All configuration and infrastructure is implemented and working:
+## ITP Telegram subsystem
 
-- 13 worker configs (Batch A core + Batch B audit + Batch C background/scheduled)
-- 3 orchestrator pipeline configs (quick, standard, audit) — all with per-stage `max_retries`
-- Scheduler config with 5 scheduled actors
-- MCP gateway config exposing workers + DuckDB queries + Workshop tools (worker/test/eval/impact/deadletter)
-- Knowledge silo index mapping silo names to file paths
-- 9 pipeline config data files (source hierarchy, epistemic rules, watch list, etc.)
-- DuckDB import script with full and incremental modes
-- Telegram-to-source-bundle converter
-- Config resolution script (silo expansion, ${ITP_ROOT} substitution)
-- OpenTelemetry tracing integration (`baft.tracing` module)
-- Unit tests: 381 tests pass (workers, contracts, pipelines, DuckDB import, config resolution, sessions, new heddle features)
-- Helm chart with 24 deployments (13 workers + infra + services), helm lint clean
-- 7 Dockerfiles for container images (worker, router, pipeline, workshop, mcp, import, commit-agent)
-- CI: docs deploy, helm lint, container image build on tag push
-- Session CLI: `baft preflight` + `baft session start/end/status/sync-check/sync`
-- Session MCP tools: `session.*` namespace (5 tools via heddle session bridge)
-- Claude Chat integration: session instructions doc + project setup guide
-
-## ITP Telegram capture + MCP gateway
-
-A separate subsystem from the main Baft pipeline (no shared NATS, no shared
-Workshop, no shared DB). Lives in `src/baft/itp_telegram/` and is driven
-by `baft itp-telegram` CLI. See `docs/TELEGRAM_CAPTURE.md` for full details.
-
-- **Live ingestion** via Telethon (MTProto) of 30+ Persian/Arabic/English channels
-  curated in `pipeline/config/itp_telegram_channels.yaml`. Filter rule:
-  `monitoring_priority in {critical, high}`, skipping `TBD_*`/unverified handles.
-- **DuckDB vector store** at `~/.heddle/itp_rag.duckdb`. Embeddings via LM Studio
-  (`text-embedding-nomic-embed-text-v1.5` by default) using the
-  OpenAI-compatible `/v1/embeddings` endpoint.
-- **Standalone FastMCP HTTP server** on `127.0.0.1:8765/mcp/` (not heddle's
-  gateway YAML — chose direct FastMCP for simplicity). Six tools:
-  `search_posts`, `recent_posts`, `list_channels`, `stats`,
-  `corroboration_check`, `capture_status`.
-- **Bias enrichment** — at startup the service loads `~/.heddle/itp_channel_ids.json`
-  (written by `baft itp-telegram resolve-ids`) and merges resolved
-  numeric channel_ids into the in-memory profiles. It also patches
-  `heddle.contrib.rag.ingestion.telegram_ingestor.DEFAULT_PROFILES` with
-  the same mapping, so the analyzer's `_format_posts` can resolve bias
-  for our channels.
-- **Analyzer LLM** is `google/gemma-4-26b-a4b` by default (non-thinking,
-  good Persian, fits 4K context). Thinking models (qwen3.x, deepseek-r1)
-  also work but burn tokens on `reasoning_content` and need much larger
-  `max_tokens`. The CorroborationFinder analyzer is capped at 15 posts
-  per call to fit LM Studio's typical 4K loaded context.
-- **Daemon flow:** `baft itp-telegram daemon start` (nohup-style detached,
-  inherits TCC from terminal) is the recommended path on this machine
-  because the project lives on `/Volumes/Data/` (external SSD). macOS
-  TCC blocks launchd-spawned processes from reading `/Volumes/*` without
-  a Full Disk Access grant. `daemon install` (launchd) refuses cleanly
-  with a TCC pre-check pointing at the right python interpreter to
-  grant FDA on, if/when the operator wants reboot survival.
-- **CLI commands route through MCP** when the daemon is running, because
-  DuckDB doesn't allow cross-process write+read sharing of one DB file.
-  `baft itp-telegram stats`/`search` detect the live PID and call
-  `fastmcp.Client(URL)` instead of opening DuckDB directly.
-
-## What to implement next
-
-1. **End-to-end Tier 2 validation** — Run full SP → IA → XV → DE pipeline against a real document with live NATS + workers running
-2. **Test Helm chart deployment** — Deploy on local k8s (minikube / Docker Desktop K8s) and validate service connectivity
-3. **Baseline CLAUDE.md rewrite** — Update baseline repo's CLAUDE.md to reflect current architecture
-4. **Telegram registry verification queue** — resolve TBD handles for HRA, IHR, Hengaw (human rights), Shirazi/Hawza (religious authority), OSINT aggregators; replace drift-broken handles for `iraborsaw`, `masaf_raefipour`, `IranIntl_Fa`, `radiofarda_`, `VOAIran`
-
-## Worker config format
-
-All 13 worker configs follow the Heddle v0.8.0 worker config schema:
-
-- **`name`** (str, required) — unique worker identifier, matches filename
-- **`description`** (str, required) — one-sentence purpose, shown in Workshop/MCP
-- **`system_prompt`** (str, required) — complete LLM instructions
-- **`default_model_tier`** (str, required) — `local` | `standard` | `frontier`
-- **`reset_after_task`** (bool, required) — must be `true` (workers are stateless)
-- **`timeout_seconds`** (int, required) — per-task timeout
-- **`input_schema_ref`** / **`output_schema_ref`** (str) — Pydantic model dotted path in `baft.contracts`, resolved to JSON Schema at load time by `heddle.core.config.resolve_schema_refs()`
-- **`knowledge_sources`** (list) — silo references (`silo: <name>`) resolved via `itp_silos.yaml`
-- **`output_constraints`** (dict) — `{format: json_only, max_tokens: N}` for output enforcement
-
-## Concurrent multi-analyst sessions (v0.3.0)
-
-Baft supports multiple analysts working simultaneously:
-
-- **Pipelines** set `max_concurrent_goals: 4` (itp_standard, itp_audit) for parallel goal processing
-- **SA scheduler** uses `expand_from: baft.sessions.get_active_sessions` to dispatch one SA task per active session
-- **Session tracking** via `baft.sessions.register_session()` / `unregister_session()` — file-based markers in `~/.heddle/sessions/`
-- **DuckDB writes** serialized via single DE processor instance (default `max_concurrent=1`)
-- **App bundle** built via `scripts/build-app.sh` → deploy via Heddle Workshop
+Separate from the main pipeline (no shared NATS, Workshop, or DB). See `docs/TELEGRAM_CAPTURE.md`. Lives in `src/baft/itp_telegram/`; driven by `baft itp-telegram` CLI. Daemon must be started via `baft itp-telegram daemon start` (not launchd) on this machine — the project is on `/Volumes/Data/` and launchd-spawned processes lack TCC access to external volumes.
 
 ## Environment variables
 
 ```bash
 export ANTHROPIC_API_KEY="sk-ant-..."
-export ITP_ROOT="/path/to/IranTransitionProject"  # parent of baseline/, heddle/, baft/
+export ITP_ROOT="/path/to/IranTransitionProject"   # parent of baseline/, heddle/, baft/
 export BAFT_WORKSPACE="$ITP_ROOT/baft/itp-workspace"
 export NATS_URL="nats://localhost:4222"
-export REDIS_URL="redis://localhost:6379"
-export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"  # Optional: OTel collector for tracing
-export LOOM_TRACE=1  # Optional: full I/O debug logging for pipeline stages
 ```
 
-## Observability and resilience
+Optional: `REDIS_URL`, `OTEL_EXPORTER_OTLP_ENDPOINT`, `LOOM_TRACE=1`.
 
-### OpenTelemetry tracing
-
-- `baft.tracing.init_baft_tracing()` initializes OTel with service name `baft-itp`
-- `baft.tracing.get_baft_tracer(scope)` returns a scoped tracer (real or no-op)
-- W3C traceparent propagates through NATS messages via `_trace_context` key
-- Spans on: actor message processing, router dispatch, pipeline stages, LLM calls
-- LLM call spans include `gen_ai.*` attributes per OTel GenAI semantic conventions (`gen_ai.system`, `gen_ai.request.model`, `gen_ai.response.model`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens`)
-- `LOOM_TRACE_CONTENT=1` records prompt/completion text as OTel span events
-- Requires `OTEL_EXPORTER_OTLP_ENDPOINT` env var (e.g. Jaeger at `http://localhost:4317`)
-- Safe to call without OTel installed — degrades to no-ops
-
-### Code coverage
-
-- CI uploads coverage to Codecov; badge displayed on README
-- Run locally: `uv run pytest --cov=baft --cov-report=term-missing`
-
-### Per-stage retry
-
-All pipeline stages have `max_retries` configured:
-
-- **Local tier** workers (SP, XV, TN, DE): `max_retries: 2` (cheap to retry)
-- **Standard tier** workers (LA, PA, AS): `max_retries: 1`
-- **Frontier tier** workers (IA, RT): `max_retries: 1` (expensive — conservative)
-- Retries only on transient errors (timeouts, worker failures), not validation errors
-
-### Workshop MCP tools
-
-The MCP gateway exposes Workshop tools under `workshop.*` namespace:
-
-- `workshop.worker.{list,get,update}` — worker config CRUD
-- `workshop.worker.test` — run worker against test payload
-- `workshop.eval.{run,compare}` — eval suite execution + baseline comparison
-- `workshop.impact.analyze` — config change impact analysis
-- `workshop.deadletter.{list,replay}` — dead-letter inspection + replay (audit trail)
-
-### TUI dashboard
-
-`heddle ui --nats-url nats://localhost:4222` shows live pipeline state:
-
-- Goals panel (status, subtask count, elapsed)
-- Tasks panel (worker type, tier, model, elapsed)
-- Pipeline panel (stage execution with wall time)
-- Events panel (scrolling log of all `heddle.>` messages)
-
-## Environment
-
-- Apple Silicon Mac
-- Python >=3.11 (pyproject.toml)
-- Heddle framework (resolved from ../heddle)
-- NATS for message bus
-- DuckDB for embedded analytics database
-- Ollama for local LLM tier
+See `docs/OPERATIONS_GUIDE.md` for tracing, retries, dead-letter queue, and troubleshooting.
