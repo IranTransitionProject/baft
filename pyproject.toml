@@ -90,6 +90,35 @@ quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
 
+[tool.pyright]
+# Mirrors heddle's gated-strict shape (heddle v0.9.2 §"Type safety").
+# Strict typecheck on baft's first-party Python, with the four Unknown-type
+# rules and missing-type-stubs deferred to ``warning`` so YAML / JSON / HTTP
+# / heddle-import boundaries don't trip CI.  Promote rules back to ``error``
+# once each boundary has a typed wrapper.
+include = [
+    "src/baft/contracts",
+    "src/baft/sessions.py",
+    "src/baft/tracing.py",
+    "src/baft/cli.py",
+]
+exclude = ["**/__pycache__", "**/node_modules", ".venv"]
+pythonVersion = "3.11"
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
+# Heddle ships untyped; downgrade until it publishes py.typed marker.
+reportMissingTypeStubs = "warning"
+# Optional/contrib imports — keep noise out of CI.
+reportMissingImports = "warning"
+# Unknown-type rules: deferred per heddle's pattern.  Each fires on
+# yaml.safe_load / response.json() / Pydantic-dump result that flows
+# untyped through the codebase.
+reportUnknownVariableType = "warning"
+reportUnknownMemberType = "warning"
+reportUnknownArgumentType = "warning"
+reportUnknownParameterType = "warning"
+
 [tool.rumdl]
 exclude = [".venv", "node_modules", "_build"]
 disable = [

@@ -1,0 +1,47 @@
+{
+  "$defs": {
+    "WatchMode": {
+      "description": "Operating mode for WT watch request.",
+      "enum": [
+        "scan",
+        "agenda_assembly"
+      ],
+      "title": "WatchMode",
+      "type": "string"
+    },
+    "WatchRequestInner": {
+      "description": "Inner payload of WT watch request.",
+      "properties": {
+        "hours_lookback": {
+          "default": 24,
+          "title": "Hours Lookback",
+          "type": "integer"
+        },
+        "mode": {
+          "$ref": "#/$defs/WatchMode",
+          "default": "scan"
+        },
+        "watch_list_path": {
+          "title": "Watch List Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "watch_list_path"
+      ],
+      "title": "WatchRequestInner",
+      "type": "object"
+    }
+  },
+  "description": "WT input: ``watch_request`` wrapper.",
+  "properties": {
+    "watch_request": {
+      "$ref": "#/$defs/WatchRequestInner"
+    }
+  },
+  "required": [
+    "watch_request"
+  ],
+  "title": "WatchRequest",
+  "type": "object"
+}

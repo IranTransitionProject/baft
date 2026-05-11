@@ -1,0 +1,62 @@
+{
+  "$defs": {
+    "AnalysisMode": {
+      "description": "Narrative analysis mode variants for NI.",
+      "enum": [
+        "coordination",
+        "silence",
+        "divergence",
+        "velocity",
+        "tone",
+        "amplification"
+      ],
+      "title": "AnalysisMode",
+      "type": "string"
+    },
+    "NIrequestInner": {
+      "description": "Inner payload of NI narrative intelligence request.",
+      "properties": {
+        "analysis_modes": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/AnalysisMode"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Analysis Modes"
+        },
+        "corpus_path": {
+          "title": "Corpus Path",
+          "type": "string"
+        },
+        "time_range": {
+          "title": "Time Range",
+          "type": "string"
+        }
+      },
+      "required": [
+        "corpus_path",
+        "time_range"
+      ],
+      "title": "NIrequestInner",
+      "type": "object"
+    }
+  },
+  "description": "NI input: ``ni_request`` wrapper.",
+  "properties": {
+    "ni_request": {
+      "$ref": "#/$defs/NIrequestInner"
+    }
+  },
+  "required": [
+    "ni_request"
+  ],
+  "title": "NIrequest",
+  "type": "object"
+}

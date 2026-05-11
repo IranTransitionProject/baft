@@ -1,0 +1,41 @@
+{
+  "$defs": {
+    "NeutralizationRequestInner": {
+      "description": "Inner payload for TN neutralization request.",
+      "properties": {
+        "analytical_text": {
+          "title": "Analytical Text",
+          "type": "string"
+        },
+        "content_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Type"
+        }
+      },
+      "required": [
+        "analytical_text"
+      ],
+      "title": "NeutralizationRequestInner",
+      "type": "object"
+    }
+  },
+  "description": "TN input: ``neutralization_request`` wrapper.",
+  "properties": {
+    "neutralization_request": {
+      "$ref": "#/$defs/NeutralizationRequestInner"
+    }
+  },
+  "required": [
+    "neutralization_request"
+  ],
+  "title": "NeutralizationRequest",
+  "type": "object"
+}

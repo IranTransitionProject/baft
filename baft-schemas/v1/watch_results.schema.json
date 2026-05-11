@@ -1,0 +1,172 @@
+{
+  "$defs": {
+    "AgendaItem": {
+      "description": "A single prioritized agenda item for session preparation.",
+      "properties": {
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "priority": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Priority"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        }
+      },
+      "title": "AgendaItem",
+      "type": "object"
+    },
+    "WatchFinding": {
+      "description": "A single watch list item finding from WT scan.",
+      "properties": {
+        "channels_checked": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Channels Checked"
+        },
+        "item_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Item Id"
+        },
+        "status": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Status"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Summary"
+        }
+      },
+      "title": "WatchFinding",
+      "type": "object"
+    },
+    "WatchResultsInner": {
+      "description": "Inner payload of WT scan mode watch results.",
+      "properties": {
+        "agenda_items": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/AgendaItem"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Agenda Items"
+        },
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/WatchFinding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "items_checked": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Items Checked"
+        },
+        "scan_completed_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scan Completed At"
+        }
+      },
+      "required": [
+        "findings"
+      ],
+      "title": "WatchResultsInner",
+      "type": "object"
+    }
+  },
+  "description": "WT output: scan mode ``watch_results`` wrapper.",
+  "properties": {
+    "watch_results": {
+      "$ref": "#/$defs/WatchResultsInner"
+    }
+  },
+  "required": [
+    "watch_results"
+  ],
+  "title": "WatchResults",
+  "type": "object"
+}

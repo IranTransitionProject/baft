@@ -1,0 +1,46 @@
+{
+  "$defs": {
+    "AuditRequestInner": {
+      "description": "Inner payload for shared LA/PA/RT audit request.",
+      "properties": {
+        "audit_id": {
+          "title": "Audit Id",
+          "type": "string"
+        },
+        "content_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Type"
+        },
+        "neutralized_text": {
+          "title": "Neutralized Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "neutralized_text",
+        "audit_id"
+      ],
+      "title": "AuditRequestInner",
+      "type": "object"
+    }
+  },
+  "description": "Shared input for LA, PA, RT: ``audit_request`` wrapper.",
+  "properties": {
+    "audit_request": {
+      "$ref": "#/$defs/AuditRequestInner"
+    }
+  },
+  "required": [
+    "audit_request"
+  ],
+  "title": "AuditRequest",
+  "type": "object"
+}

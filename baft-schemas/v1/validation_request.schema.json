@@ -1,0 +1,38 @@
+{
+  "$defs": {
+    "ValidationRequestInner": {
+      "description": "Inner payload of XV validation request.",
+      "properties": {
+        "entity_refs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Entity Refs",
+          "type": "array"
+        },
+        "integration_spec": {
+          "additionalProperties": true,
+          "title": "Integration Spec",
+          "type": "object"
+        }
+      },
+      "required": [
+        "integration_spec",
+        "entity_refs"
+      ],
+      "title": "ValidationRequestInner",
+      "type": "object"
+    }
+  },
+  "description": "XV input: ``validation_request`` wrapper.",
+  "properties": {
+    "validation_request": {
+      "$ref": "#/$defs/ValidationRequestInner"
+    }
+  },
+  "required": [
+    "validation_request"
+  ],
+  "title": "ValidationRequest",
+  "type": "object"
+}

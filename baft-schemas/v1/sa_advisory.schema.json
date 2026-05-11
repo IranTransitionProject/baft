@@ -1,0 +1,83 @@
+{
+  "$defs": {
+    "FlagSeverity": {
+      "description": "Severity levels for SA cognitive flags.",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "title": "FlagSeverity",
+      "type": "string"
+    },
+    "SAadvisoryInner": {
+      "description": "Inner payload of SA advisory output.",
+      "properties": {
+        "flags": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/SAflag"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Flags"
+        },
+        "no_flags": {
+          "title": "No Flags",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "no_flags"
+      ],
+      "title": "SAadvisoryInner",
+      "type": "object"
+    },
+    "SAflag": {
+      "description": "A single SA advisory flag with severity and recommended action.",
+      "properties": {
+        "evidence": {
+          "title": "Evidence",
+          "type": "string"
+        },
+        "flag_type": {
+          "title": "Flag Type",
+          "type": "string"
+        },
+        "recommended_action": {
+          "title": "Recommended Action",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/FlagSeverity"
+        }
+      },
+      "required": [
+        "flag_type",
+        "severity",
+        "evidence",
+        "recommended_action"
+      ],
+      "title": "SAflag",
+      "type": "object"
+    }
+  },
+  "description": "SA output: ``sa_advisory`` wrapper.",
+  "properties": {
+    "sa_advisory": {
+      "$ref": "#/$defs/SAadvisoryInner"
+    }
+  },
+  "required": [
+    "sa_advisory"
+  ],
+  "title": "SAadvisory",
+  "type": "object"
+}

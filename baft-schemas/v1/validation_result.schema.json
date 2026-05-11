@@ -1,0 +1,96 @@
+{
+  "$defs": {
+    "EntityCheckDetail": {
+      "description": "Detail of a single entity check by XV.",
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "status": {
+          "$ref": "#/$defs/EntityCheckStatus"
+        }
+      },
+      "required": [
+        "entity_id",
+        "status"
+      ],
+      "title": "EntityCheckDetail",
+      "type": "object"
+    },
+    "EntityCheckStatus": {
+      "description": "Per-entity lookup status from XV.",
+      "enum": [
+        "FOUND",
+        "NOT_FOUND",
+        "WARNING"
+      ],
+      "title": "EntityCheckStatus",
+      "type": "string"
+    },
+    "ValidationResultInner": {
+      "description": "Inner payload of XV validation result.",
+      "properties": {
+        "checked_count": {
+          "title": "Checked Count",
+          "type": "integer"
+        },
+        "details": {
+          "items": {
+            "$ref": "#/$defs/EntityCheckDetail"
+          },
+          "title": "Details",
+          "type": "array"
+        },
+        "failed_count": {
+          "title": "Failed Count",
+          "type": "integer"
+        },
+        "overall_status": {
+          "$ref": "#/$defs/XVstatus"
+        }
+      },
+      "required": [
+        "overall_status",
+        "checked_count",
+        "failed_count",
+        "details"
+      ],
+      "title": "ValidationResultInner",
+      "type": "object"
+    },
+    "XVstatus": {
+      "description": "Overall validation status from XV cross-validator.",
+      "enum": [
+        "PASS",
+        "PASS_WITH_WARNINGS",
+        "FAIL"
+      ],
+      "title": "XVstatus",
+      "type": "string"
+    }
+  },
+  "description": "XV output: ``validation_result`` wrapper.",
+  "properties": {
+    "validation_result": {
+      "$ref": "#/$defs/ValidationResultInner"
+    }
+  },
+  "required": [
+    "validation_result"
+  ],
+  "title": "ValidationResult",
+  "type": "object"
+}

@@ -1,0 +1,198 @@
+{
+  "$defs": {
+    "AnalyticalOutputInner": {
+      "description": "Inner payload of IA analytical output.",
+      "properties": {
+        "claims_assessed": {
+          "items": {
+            "$ref": "#/$defs/ClaimAssessment"
+          },
+          "title": "Claims Assessed",
+          "type": "array"
+        },
+        "gap_fills": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gap Fills"
+        },
+        "integration_spec": {
+          "$ref": "#/$defs/IntegrationSpec"
+        },
+        "new_observations": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "New Observations"
+        },
+        "publication_flag": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Publication Flag"
+        },
+        "scenario_updates": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scenario Updates"
+        },
+        "variable_updates": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Variable Updates"
+        }
+      },
+      "required": [
+        "claims_assessed",
+        "integration_spec"
+      ],
+      "title": "AnalyticalOutputInner",
+      "type": "object"
+    },
+    "AssessmentVerdict": {
+      "description": "Verdict categories for IA claim assessment.",
+      "enum": [
+        "corroborates",
+        "contradicts",
+        "updates_variable",
+        "fills_gap",
+        "triggers_trap",
+        "new_intelligence",
+        "noise"
+      ],
+      "title": "AssessmentVerdict",
+      "type": "string"
+    },
+    "ClaimAssessment": {
+      "description": "Assessment verdict for a single claim.",
+      "properties": {
+        "analytical_note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Analytical Note"
+        },
+        "assessment": {
+          "$ref": "#/$defs/AssessmentVerdict"
+        },
+        "claim_id": {
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "entity_ids": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Ids"
+        }
+      },
+      "required": [
+        "claim_id",
+        "assessment"
+      ],
+      "title": "ClaimAssessment",
+      "type": "object"
+    },
+    "IntegrationSpec": {
+      "description": "Database integration specification produced by IA.",
+      "properties": {
+        "operations": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Operations",
+          "type": "array"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "title": "IntegrationSpec",
+      "type": "object"
+    }
+  },
+  "description": "IA output: ``analytical_output`` wrapper.",
+  "properties": {
+    "analytical_output": {
+      "$ref": "#/$defs/AnalyticalOutputInner"
+    }
+  },
+  "required": [
+    "analytical_output"
+  ],
+  "title": "AnalyticalOutput",
+  "type": "object"
+}

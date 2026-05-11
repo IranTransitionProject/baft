@@ -1,0 +1,145 @@
+{
+  "$defs": {
+    "NIFinding": {
+      "description": "A single narrative intelligence finding from NI.",
+      "properties": {
+        "channels_involved": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Channels Involved",
+          "type": "array"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "finding_id": {
+          "title": "Finding Id",
+          "type": "string"
+        },
+        "finding_type": {
+          "title": "Finding Type",
+          "type": "string"
+        },
+        "recommended_routing": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recommended Routing"
+        },
+        "significance": {
+          "$ref": "#/$defs/Significance"
+        },
+        "time_range": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Range"
+        }
+      },
+      "required": [
+        "finding_id",
+        "finding_type",
+        "channels_involved",
+        "description",
+        "significance"
+      ],
+      "title": "NIFinding",
+      "type": "object"
+    },
+    "NIoutputInner": {
+      "description": "Inner payload of NI narrative intelligence output.",
+      "properties": {
+        "analyzed_at": {
+          "title": "Analyzed At",
+          "type": "string"
+        },
+        "channels_covered": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Channels Covered"
+        },
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/NIFinding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "messages_analyzed": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Messages Analyzed"
+        },
+        "no_significant_findings": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "No Significant Findings"
+        }
+      },
+      "required": [
+        "analyzed_at",
+        "findings"
+      ],
+      "title": "NIoutputInner",
+      "type": "object"
+    },
+    "Significance": {
+      "description": "Significance level for NI findings.",
+      "enum": [
+        "low",
+        "medium-low",
+        "medium",
+        "medium-high",
+        "high"
+      ],
+      "title": "Significance",
+      "type": "string"
+    }
+  },
+  "description": "NI output: ``ni_output`` wrapper.",
+  "properties": {
+    "ni_output": {
+      "$ref": "#/$defs/NIoutputInner"
+    }
+  },
+  "required": [
+    "ni_output"
+  ],
+  "title": "NIoutput",
+  "type": "object"
+}

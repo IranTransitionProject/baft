@@ -1,0 +1,82 @@
+{
+  "$defs": {
+    "SessionMonitorRequestInner": {
+      "description": "Inner payload of SA session monitor request.",
+      "properties": {
+        "current_tier": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Current Tier"
+        },
+        "operation_count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operation Count"
+        },
+        "session_id": {
+          "title": "Session Id",
+          "type": "string"
+        },
+        "session_objective": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Objective"
+        },
+        "session_start": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Start"
+        },
+        "transcript": {
+          "title": "Transcript",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id",
+        "transcript"
+      ],
+      "title": "SessionMonitorRequestInner",
+      "type": "object"
+    }
+  },
+  "description": "SA input: ``session_monitor_request`` wrapper.",
+  "properties": {
+    "session_monitor_request": {
+      "$ref": "#/$defs/SessionMonitorRequestInner"
+    }
+  },
+  "required": [
+    "session_monitor_request"
+  ],
+  "title": "SessionMonitorRequest",
+  "type": "object"
+}

@@ -1,0 +1,226 @@
+{
+  "$defs": {
+    "Claim": {
+      "description": "A single extracted claim with epistemic classification.",
+      "properties": {
+        "claim_id": {
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "claim_text": {
+          "title": "Claim Text",
+          "type": "string"
+        },
+        "entity_candidates": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Candidates"
+        },
+        "entity_ids": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Ids"
+        },
+        "epistemic_tag": {
+          "$ref": "#/$defs/EpistemicTag"
+        },
+        "faction_tag": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Faction Tag"
+        },
+        "forwarded_from": {
+          "default": null,
+          "title": "Forwarded From"
+        },
+        "is_forward": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Is Forward"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
+        },
+        "provenance_flag": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provenance Flag"
+        },
+        "raw_excerpt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Excerpt"
+        },
+        "source_global_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Global Id"
+        },
+        "source_tier": {
+          "title": "Source Tier",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "claim_id",
+        "source_tier",
+        "claim_text",
+        "epistemic_tag"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "EpistemicTag": {
+      "description": "Epistemic classification tags for claims.",
+      "enum": [
+        "[Fact]",
+        "[Inference]",
+        "[Uncertain]",
+        "[Speculation]"
+      ],
+      "title": "EpistemicTag",
+      "type": "string"
+    },
+    "ExtractedClaimsInner": {
+      "description": "Inner payload of SP extracted claims output.",
+      "properties": {
+        "claim_count": {
+          "title": "Claim Count",
+          "type": "integer"
+        },
+        "claims": {
+          "items": {
+            "$ref": "#/$defs/Claim"
+          },
+          "title": "Claims",
+          "type": "array"
+        },
+        "languages_detected": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Languages Detected"
+        },
+        "low_confidence_count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Low Confidence Count"
+        },
+        "processed_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Processed At"
+        },
+        "source_count": {
+          "title": "Source Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "source_count",
+        "claim_count",
+        "claims"
+      ],
+      "title": "ExtractedClaimsInner",
+      "type": "object"
+    }
+  },
+  "description": "SP output: ``extracted_claims`` wrapper.",
+  "properties": {
+    "extracted_claims": {
+      "$ref": "#/$defs/ExtractedClaimsInner"
+    }
+  },
+  "required": [
+    "extracted_claims"
+  ],
+  "title": "ExtractedClaims",
+  "type": "object"
+}

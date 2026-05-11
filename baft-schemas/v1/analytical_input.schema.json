@@ -1,0 +1,67 @@
+{
+  "$defs": {
+    "AnalyticalInputInner": {
+      "description": "Inner payload of IA analytical input.",
+      "properties": {
+        "analyst_note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Analyst Note"
+        },
+        "extracted_claims": {
+          "title": "Extracted Claims"
+        },
+        "priority_gaps": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Priority Gaps"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        }
+      },
+      "required": [
+        "extracted_claims"
+      ],
+      "title": "AnalyticalInputInner",
+      "type": "object"
+    }
+  },
+  "description": "IA input: ``analytical_input`` wrapper.",
+  "properties": {
+    "analytical_input": {
+      "$ref": "#/$defs/AnalyticalInputInner"
+    }
+  },
+  "required": [
+    "analytical_input"
+  ],
+  "title": "AnalyticalInput",
+  "type": "object"
+}

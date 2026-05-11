@@ -1,0 +1,74 @@
+{
+  "$defs": {
+    "SynthesisRequestInner": {
+      "description": "Inner payload for AS synthesis request.",
+      "properties": {
+        "audit_id": {
+          "title": "Audit Id",
+          "type": "string"
+        },
+        "la_audit": {
+          "additionalProperties": true,
+          "title": "La Audit",
+          "type": "object"
+        },
+        "original_ia_output_summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Original Ia Output Summary"
+        },
+        "pa_audit": {
+          "additionalProperties": true,
+          "title": "Pa Audit",
+          "type": "object"
+        },
+        "reverse_map": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reverse Map"
+        },
+        "rt_audit": {
+          "additionalProperties": true,
+          "title": "Rt Audit",
+          "type": "object"
+        }
+      },
+      "required": [
+        "audit_id",
+        "la_audit",
+        "pa_audit",
+        "rt_audit"
+      ],
+      "title": "SynthesisRequestInner",
+      "type": "object"
+    }
+  },
+  "description": "AS input: ``synthesis_request`` wrapper.",
+  "properties": {
+    "synthesis_request": {
+      "$ref": "#/$defs/SynthesisRequestInner"
+    }
+  },
+  "required": [
+    "synthesis_request"
+  ],
+  "title": "SynthesisRequest",
+  "type": "object"
+}

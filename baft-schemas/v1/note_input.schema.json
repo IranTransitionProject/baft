@@ -1,0 +1,38 @@
+{
+  "$defs": {
+    "PriorityLevel": {
+      "description": "Priority tiers for inbox items captured by IN.",
+      "enum": [
+        "urgent",
+        "high",
+        "normal",
+        "low"
+      ],
+      "title": "PriorityLevel",
+      "type": "string"
+    }
+  },
+  "description": "IN input: raw analyst note.",
+  "properties": {
+    "note": {
+      "title": "Note",
+      "type": "string"
+    },
+    "priority_override": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PriorityLevel"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "note"
+  ],
+  "title": "NoteInput",
+  "type": "object"
+}

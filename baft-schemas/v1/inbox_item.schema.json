@@ -1,0 +1,106 @@
+{
+  "$defs": {
+    "InboxItemInner": {
+      "description": "Inner payload of IN inbox item output.",
+      "properties": {
+        "captured_at": {
+          "title": "Captured At",
+          "type": "string"
+        },
+        "entity_ids": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Ids"
+        },
+        "epistemic_hint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Epistemic Hint"
+        },
+        "item_id": {
+          "title": "Item Id",
+          "type": "string"
+        },
+        "priority": {
+          "$ref": "#/$defs/PriorityLevel"
+        },
+        "processed": {
+          "title": "Processed",
+          "type": "boolean"
+        },
+        "raw_note": {
+          "title": "Raw Note",
+          "type": "string"
+        },
+        "route_to": {
+          "title": "Route To",
+          "type": "string"
+        },
+        "source_refs": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Refs"
+        }
+      },
+      "required": [
+        "item_id",
+        "captured_at",
+        "raw_note",
+        "priority",
+        "route_to",
+        "processed"
+      ],
+      "title": "InboxItemInner",
+      "type": "object"
+    },
+    "PriorityLevel": {
+      "description": "Priority tiers for inbox items captured by IN.",
+      "enum": [
+        "urgent",
+        "high",
+        "normal",
+        "low"
+      ],
+      "title": "PriorityLevel",
+      "type": "string"
+    }
+  },
+  "description": "IN output: ``inbox_item`` wrapper.",
+  "properties": {
+    "inbox_item": {
+      "$ref": "#/$defs/InboxItemInner"
+    }
+  },
+  "required": [
+    "inbox_item"
+  ],
+  "title": "InboxItem",
+  "type": "object"
+}

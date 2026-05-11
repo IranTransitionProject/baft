@@ -1,0 +1,98 @@
+{
+  "$defs": {
+    "DBAction": {
+      "description": "Supported database operation action types.",
+      "enum": [
+        "create",
+        "update",
+        "append",
+        "validate_only"
+      ],
+      "title": "DBAction",
+      "type": "string"
+    },
+    "DBOperation": {
+      "description": "A single database operation in an integration request.",
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/DBAction"
+        },
+        "entity_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Id"
+        },
+        "fields": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fields"
+        },
+        "target_file": {
+          "title": "Target File",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "target_file"
+      ],
+      "title": "DBOperation",
+      "type": "object"
+    },
+    "IntegrationRequestInner": {
+      "description": "Inner payload of DE integration request.",
+      "properties": {
+        "operation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operation Id"
+        },
+        "operations": {
+          "items": {
+            "$ref": "#/$defs/DBOperation"
+          },
+          "title": "Operations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "operations"
+      ],
+      "title": "IntegrationRequestInner",
+      "type": "object"
+    }
+  },
+  "description": "DE input: ``integration_request`` wrapper.",
+  "properties": {
+    "integration_request": {
+      "$ref": "#/$defs/IntegrationRequestInner"
+    }
+  },
+  "required": [
+    "integration_request"
+  ],
+  "title": "IntegrationRequest",
+  "type": "object"
+}

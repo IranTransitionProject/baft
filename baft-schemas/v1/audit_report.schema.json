@@ -1,0 +1,164 @@
+{
+  "$defs": {
+    "AuditReportInner": {
+      "description": "Inner payload of AS audit synthesis report.",
+      "properties": {
+        "audit_id": {
+          "title": "Audit Id",
+          "type": "string"
+        },
+        "blind_spot_alerts": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Blind Spot Alerts"
+        },
+        "conflicts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Conflicts",
+          "type": "array"
+        },
+        "consensus_findings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Consensus Findings",
+          "type": "array"
+        },
+        "escalation_required": {
+          "title": "Escalation Required",
+          "type": "boolean"
+        },
+        "escalation_trigger": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Escalation Trigger"
+        },
+        "integration_patch": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Integration Patch"
+        },
+        "overall_quality": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OverallQuality"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "recommended_decisions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Recommended Decisions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "audit_id",
+        "escalation_required",
+        "consensus_findings",
+        "conflicts",
+        "recommended_decisions"
+      ],
+      "title": "AuditReportInner",
+      "type": "object"
+    },
+    "OverallQuality": {
+      "description": "Composite quality scores from LA, PA, and RT auditors.",
+      "properties": {
+        "composite": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Composite"
+        },
+        "la_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "La Score"
+        },
+        "pa_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pa Score"
+        },
+        "rt_max_challenge": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rt Max Challenge"
+        }
+      },
+      "title": "OverallQuality",
+      "type": "object"
+    }
+  },
+  "description": "AS output: ``audit_report`` wrapper.",
+  "properties": {
+    "audit_report": {
+      "$ref": "#/$defs/AuditReportInner"
+    }
+  },
+  "required": [
+    "audit_report"
+  ],
+  "title": "AuditReport",
+  "type": "object"
+}

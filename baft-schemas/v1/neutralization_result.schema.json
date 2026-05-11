@@ -1,0 +1,74 @@
+{
+  "$defs": {
+    "NeutralizationResultInner": {
+      "description": "Inner payload of TN neutralization result.",
+      "properties": {
+        "neutralized_text": {
+          "title": "Neutralized Text",
+          "type": "string"
+        },
+        "replacement_count": {
+          "title": "Replacement Count",
+          "type": "integer"
+        },
+        "replacements_applied": {
+          "items": {
+            "$ref": "#/$defs/Replacement"
+          },
+          "title": "Replacements Applied",
+          "type": "array"
+        },
+        "reverse_map": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Reverse Map",
+          "type": "object"
+        }
+      },
+      "required": [
+        "neutralized_text",
+        "replacements_applied",
+        "reverse_map",
+        "replacement_count"
+      ],
+      "title": "NeutralizationResultInner",
+      "type": "object"
+    },
+    "Replacement": {
+      "description": "A single term replacement applied during neutralization.",
+      "properties": {
+        "count": {
+          "title": "Count",
+          "type": "integer"
+        },
+        "original": {
+          "title": "Original",
+          "type": "string"
+        },
+        "replacement": {
+          "title": "Replacement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "original",
+        "replacement",
+        "count"
+      ],
+      "title": "Replacement",
+      "type": "object"
+    }
+  },
+  "description": "TN output: ``neutralization_result`` wrapper.",
+  "properties": {
+    "neutralization_result": {
+      "$ref": "#/$defs/NeutralizationResultInner"
+    }
+  },
+  "required": [
+    "neutralization_result"
+  ],
+  "title": "NeutralizationResult",
+  "type": "object"
+}

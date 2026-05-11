@@ -1,0 +1,115 @@
+{
+  "$defs": {
+    "AuditDimension": {
+      "description": "Scored audit dimension with justification.",
+      "properties": {
+        "dimension": {
+          "title": "Dimension",
+          "type": "string"
+        },
+        "issues": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Issues"
+        },
+        "justification": {
+          "title": "Justification",
+          "type": "string"
+        },
+        "score": {
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Score",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "dimension",
+        "score",
+        "justification"
+      ],
+      "title": "AuditDimension",
+      "type": "object"
+    },
+    "LAauditInner": {
+      "description": "Inner payload of LA logic audit result.",
+      "properties": {
+        "audit_id": {
+          "title": "Audit Id",
+          "type": "string"
+        },
+        "auditor": {
+          "default": "la_logic_auditor",
+          "title": "Auditor",
+          "type": "string"
+        },
+        "dimensions": {
+          "items": {
+            "$ref": "#/$defs/AuditDimension"
+          },
+          "title": "Dimensions",
+          "type": "array"
+        },
+        "overall_score": {
+          "title": "Overall Score",
+          "type": "number"
+        },
+        "recommended_revision": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recommended Revision"
+        },
+        "top_issues": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top Issues"
+        }
+      },
+      "required": [
+        "audit_id",
+        "dimensions",
+        "overall_score"
+      ],
+      "title": "LAauditInner",
+      "type": "object"
+    }
+  },
+  "description": "LA output: ``la_audit`` wrapper.",
+  "properties": {
+    "la_audit": {
+      "$ref": "#/$defs/LAauditInner"
+    }
+  },
+  "required": [
+    "la_audit"
+  ],
+  "title": "LAaudit",
+  "type": "object"
+}

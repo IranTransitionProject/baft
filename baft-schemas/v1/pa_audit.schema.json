@@ -1,0 +1,115 @@
+{
+  "$defs": {
+    "AuditDimension": {
+      "description": "Scored audit dimension with justification.",
+      "properties": {
+        "dimension": {
+          "title": "Dimension",
+          "type": "string"
+        },
+        "issues": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Issues"
+        },
+        "justification": {
+          "title": "Justification",
+          "type": "string"
+        },
+        "score": {
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Score",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "dimension",
+        "score",
+        "justification"
+      ],
+      "title": "AuditDimension",
+      "type": "object"
+    },
+    "PAauditInner": {
+      "description": "Inner payload of PA perspective audit result.",
+      "properties": {
+        "audit_id": {
+          "title": "Audit Id",
+          "type": "string"
+        },
+        "auditor": {
+          "default": "pa_perspective_auditor",
+          "title": "Auditor",
+          "type": "string"
+        },
+        "dimensions": {
+          "items": {
+            "$ref": "#/$defs/AuditDimension"
+          },
+          "title": "Dimensions",
+          "type": "array"
+        },
+        "overall_score": {
+          "title": "Overall Score",
+          "type": "number"
+        },
+        "recommended_revision": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recommended Revision"
+        },
+        "top_issues": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top Issues"
+        }
+      },
+      "required": [
+        "audit_id",
+        "dimensions",
+        "overall_score"
+      ],
+      "title": "PAauditInner",
+      "type": "object"
+    }
+  },
+  "description": "PA output: ``pa_audit`` wrapper.",
+  "properties": {
+    "pa_audit": {
+      "$ref": "#/$defs/PAauditInner"
+    }
+  },
+  "required": [
+    "pa_audit"
+  ],
+  "title": "PAaudit",
+  "type": "object"
+}

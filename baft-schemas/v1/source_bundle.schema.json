@@ -1,0 +1,137 @@
+{
+  "$defs": {
+    "SourceBundleInner": {
+      "description": "Inner payload of SP source bundle input.",
+      "properties": {
+        "generated_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Generated At"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/SourceItem"
+          },
+          "title": "Items",
+          "type": "array"
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "title": "SourceBundleInner",
+      "type": "object"
+    },
+    "SourceItem": {
+      "description": "A single raw source item in the source bundle.",
+      "properties": {
+        "faction_tag": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Faction Tag"
+        },
+        "forwarded_from": {
+          "default": null,
+          "title": "Forwarded From"
+        },
+        "global_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Global Id"
+        },
+        "is_forward": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Is Forward"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
+        },
+        "normalized_text": {
+          "default": null,
+          "title": "Normalized Text"
+        },
+        "raw_text": {
+          "title": "Raw Text",
+          "type": "string"
+        },
+        "retrieval_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrieval Date"
+        },
+        "source_tier": {
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Source Tier",
+          "type": "integer"
+        },
+        "url": {
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "source_tier",
+        "raw_text"
+      ],
+      "title": "SourceItem",
+      "type": "object"
+    }
+  },
+  "description": "SP input: ``source_bundle`` wrapper.",
+  "properties": {
+    "source_bundle": {
+      "$ref": "#/$defs/SourceBundleInner"
+    }
+  },
+  "required": [
+    "source_bundle"
+  ],
+  "title": "SourceBundle",
+  "type": "object"
+}

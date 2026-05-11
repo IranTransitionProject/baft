@@ -35,6 +35,16 @@ theme:
   icon:
     repo: fontawesome/brands/github
 
+# Theme-aware diagram switching.  Pages that ship both ``foo.svg`` and
+# ``foo-dark.svg`` can embed both with ``#only-light`` / ``#only-dark``
+# URL fragments and the CSS rules pick the right one per Material palette.
+# See heddle's adoption (heddle v0.9.2 §"Dark-mode diagrams") for the
+# pattern; baft's existing diagrams ship only ``-light`` variants today,
+# so this file is wired up for the next dark-mode SVG to land without
+# requiring further config changes.
+extra_css:
+  - stylesheets/theme-aware-images.css
+
 plugins:
   - search
   - mkdocstrings:

@@ -1,0 +1,152 @@
+{
+  "$defs": {
+    "BuildStatus": {
+      "description": "Overall build status after DE operations.",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "SKIPPED"
+      ],
+      "title": "BuildStatus",
+      "type": "string"
+    },
+    "IntegrationResultInner": {
+      "description": "Inner payload of DE integration result.",
+      "properties": {
+        "build_status": {
+          "$ref": "#/$defs/BuildStatus"
+        },
+        "ga_notification": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ga Notification"
+        },
+        "operations_attempted": {
+          "title": "Operations Attempted",
+          "type": "integer"
+        },
+        "operations_failed": {
+          "title": "Operations Failed",
+          "type": "integer"
+        },
+        "operations_succeeded": {
+          "title": "Operations Succeeded",
+          "type": "integer"
+        },
+        "results": {
+          "items": {
+            "$ref": "#/$defs/OperationResultItem"
+          },
+          "title": "Results",
+          "type": "array"
+        },
+        "session_operation_count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Operation Count"
+        }
+      },
+      "required": [
+        "operations_attempted",
+        "operations_succeeded",
+        "operations_failed",
+        "results",
+        "build_status"
+      ],
+      "title": "IntegrationResultInner",
+      "type": "object"
+    },
+    "OperationResultItem": {
+      "description": "Result detail for a single DE database operation.",
+      "properties": {
+        "action": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Action"
+        },
+        "message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message"
+        },
+        "operation_index": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operation Index"
+        },
+        "status": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Status"
+        },
+        "target_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target File"
+        }
+      },
+      "title": "OperationResultItem",
+      "type": "object"
+    }
+  },
+  "description": "DE output: ``integration_result`` wrapper.",
+  "properties": {
+    "integration_result": {
+      "$ref": "#/$defs/IntegrationResultInner"
+    }
+  },
+  "required": [
+    "integration_result"
+  ],
+  "title": "IntegrationResult",
+  "type": "object"
+}

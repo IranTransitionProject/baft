@@ -1,0 +1,119 @@
+{
+  "$defs": {
+    "Challenge": {
+      "description": "A single red-team challenge against a claim.",
+      "properties": {
+        "challenge_id": {
+          "title": "Challenge Id",
+          "type": "string"
+        },
+        "claim_challenged": {
+          "title": "Claim Challenged",
+          "type": "string"
+        },
+        "counter_argument": {
+          "title": "Counter Argument",
+          "type": "string"
+        },
+        "evidence_basis": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence Basis"
+        },
+        "requires_revision": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Requires Revision"
+        },
+        "strength": {
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Strength",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "challenge_id",
+        "claim_challenged",
+        "counter_argument",
+        "strength"
+      ],
+      "title": "Challenge",
+      "type": "object"
+    },
+    "RTauditInner": {
+      "description": "Inner payload of RT red-team audit result.",
+      "properties": {
+        "audit_id": {
+          "title": "Audit Id",
+          "type": "string"
+        },
+        "auditor": {
+          "default": "rt_red_teamer",
+          "title": "Auditor",
+          "type": "string"
+        },
+        "challenges": {
+          "items": {
+            "$ref": "#/$defs/Challenge"
+          },
+          "title": "Challenges",
+          "type": "array"
+        },
+        "escalation_required": {
+          "title": "Escalation Required",
+          "type": "boolean"
+        },
+        "max_challenge_strength": {
+          "title": "Max Challenge Strength",
+          "type": "integer"
+        },
+        "summary_assessment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Summary Assessment"
+        }
+      },
+      "required": [
+        "audit_id",
+        "escalation_required",
+        "challenges",
+        "max_challenge_strength"
+      ],
+      "title": "RTauditInner",
+      "type": "object"
+    }
+  },
+  "description": "RT output: ``rt_audit`` wrapper.",
+  "properties": {
+    "rt_audit": {
+      "$ref": "#/$defs/RTauditInner"
+    }
+  },
+  "required": [
+    "rt_audit"
+  ],
+  "title": "RTaudit",
+  "type": "object"
+}
