@@ -6,3 +6,8 @@
 # MD042: Empty link — used for status badges with no target URL
 # MD057: Cross-repo relative links unresolvable in CI (repos checked out in isolation)
 disable = ["MD013", "MD036", "MD042", "MD057"]
+
+# .claude/ holds Claude Code skill / subagent definitions that begin with
+# YAML frontmatter (---), not a markdown H1, and use a structured format
+# rumdl can't sensibly lint.  They're configuration, not user-facing docs.
+exclude = [".claude/**"]
