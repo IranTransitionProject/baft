@@ -129,6 +129,7 @@ baft itp-telegram stop                 # graceful SIGTERM (drains buffer)
 ```
 
 The daemon process is reparented to PID 1 (init), so it survives:
+
 - This shell exiting
 - Claude Desktop / Claude Code restarts
 - Any descendant terminal closing
