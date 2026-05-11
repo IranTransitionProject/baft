@@ -327,8 +327,7 @@ class TestPipelineConditionEvaluation:
         assert not offenders, (
             "Heddle's evaluator does not strip surrounding quotes, so quoted "
             "literals never match the unquoted worker output. Use bare tokens "
-            "(e.g. `... != FAIL`, not `... != 'FAIL'`). Offenders:\n  "
-            + "\n  ".join(offenders)
+            "(e.g. `... != FAIL`, not `... != 'FAIL'`). Offenders:\n  " + "\n  ".join(offenders)
         )
 
     # ── Per-pipeline semantic truth tables ────────────────────────────
@@ -339,9 +338,7 @@ class TestPipelineConditionEvaluation:
         stage = next(s for s in config["stages"] if s["id"] == "db_write")
         context = {
             "stages": {
-                "cross_validate": {
-                    "output": {"validation_result": {"overall_status": "PASS"}}
-                }
+                "cross_validate": {"output": {"validation_result": {"overall_status": "PASS"}}}
             }
         }
         assert evaluator(stage["condition"], context) is True
@@ -352,9 +349,7 @@ class TestPipelineConditionEvaluation:
         stage = next(s for s in config["stages"] if s["id"] == "db_write")
         context = {
             "stages": {
-                "cross_validate": {
-                    "output": {"validation_result": {"overall_status": "FAIL"}}
-                }
+                "cross_validate": {"output": {"validation_result": {"overall_status": "FAIL"}}}
             }
         }
         assert evaluator(stage["condition"], context) is False
@@ -382,11 +377,7 @@ class TestPipelineConditionEvaluation:
         config = _load_yaml(ORCHESTRATORS_DIR / "itp_quick.yaml")
         stage = next(s for s in config["stages"] if s["id"] == "de_write")
         context = {
-            "stages": {
-                "xv_validate": {
-                    "output": {"validation_result": {"overall_status": "PASS"}}
-                }
-            }
+            "stages": {"xv_validate": {"output": {"validation_result": {"overall_status": "PASS"}}}}
         }
         assert evaluator(stage["condition"], context) is True
 
@@ -395,11 +386,7 @@ class TestPipelineConditionEvaluation:
         config = _load_yaml(ORCHESTRATORS_DIR / "itp_quick.yaml")
         stage = next(s for s in config["stages"] if s["id"] == "de_write")
         context = {
-            "stages": {
-                "xv_validate": {
-                    "output": {"validation_result": {"overall_status": "FAIL"}}
-                }
-            }
+            "stages": {"xv_validate": {"output": {"validation_result": {"overall_status": "FAIL"}}}}
         }
         assert evaluator(stage["condition"], context) is False
 
@@ -408,9 +395,7 @@ class TestPipelineConditionEvaluation:
         config = _load_yaml(ORCHESTRATORS_DIR / "itp_audit.yaml")
         esc = config["escalation"][0]
         context = {
-            "stages": {
-                "synthesize": {"output": {"audit_report": {"escalation_required": True}}}
-            }
+            "stages": {"synthesize": {"output": {"audit_report": {"escalation_required": True}}}}
         }
         assert evaluator(esc["condition"], context) is True
 
@@ -419,8 +404,6 @@ class TestPipelineConditionEvaluation:
         config = _load_yaml(ORCHESTRATORS_DIR / "itp_audit.yaml")
         esc = config["escalation"][0]
         context = {
-            "stages": {
-                "synthesize": {"output": {"audit_report": {"escalation_required": False}}}
-            }
+            "stages": {"synthesize": {"output": {"audit_report": {"escalation_required": False}}}}
         }
         assert evaluator(esc["condition"], context) is False

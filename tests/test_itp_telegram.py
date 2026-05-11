@@ -313,13 +313,17 @@ class TestChannelProfiles:
 
         profiles = load_itp_profiles(_registry_yaml(tmp_path))
         resolved = tmp_path / "resolved.json"
-        resolved.write_text(json.dumps({
-            "channels": {
-                "StateOne": {"channel_id": 999_001, "title": "State One"},
-                "OppositionFa": {"channel_id": 999_002, "title": "Opp"},
-                "unknown_handle": {"channel_id": 1, "title": "?"},  # ignored
-            }
-        }))
+        resolved.write_text(
+            json.dumps(
+                {
+                    "channels": {
+                        "StateOne": {"channel_id": 999_001, "title": "State One"},
+                        "OppositionFa": {"channel_id": 999_002, "title": "Opp"},
+                        "unknown_handle": {"channel_id": 1, "title": "?"},  # ignored
+                    }
+                }
+            )
+        )
         merge_resolved_ids(profiles, resolved)
         assert profiles["stateone"].channel_id == 999_001
         assert profiles["oppositionfa"].channel_id == 999_002
@@ -384,10 +388,12 @@ class TestLMStudioLLMBackend:
         fake_resp = MagicMock()
         fake_resp.ok = True
         fake_resp.json.return_value = {
-            "choices": [{
-                "message": {"content": "", "reasoning_content": "rescued"},
-                "finish_reason": "stop",
-            }]
+            "choices": [
+                {
+                    "message": {"content": "", "reasoning_content": "rescued"},
+                    "finish_reason": "stop",
+                }
+            ]
         }
         with patch.object(mod.requests, "post", return_value=fake_resp):
             assert backend.complete("sys", "usr") == "rescued"
