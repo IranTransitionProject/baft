@@ -6,10 +6,14 @@ Used by ``baft itp-telegram serve`` (writes), ``status`` (reads), and
 
 from __future__ import annotations
 
+import contextlib
 import errno
 import os
 from dataclasses import dataclass
-from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @dataclass
@@ -39,10 +43,8 @@ def read_pid(path: Path) -> int | None:
 
 def remove_pid(path: Path) -> None:
     """Remove the PID file if it exists."""
-    try:
+    with contextlib.suppress(FileNotFoundError):
         path.unlink()
-    except FileNotFoundError:
-        pass
 
 
 def is_running(pid: int) -> bool:

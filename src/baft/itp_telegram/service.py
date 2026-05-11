@@ -16,15 +16,18 @@ disabled with ``--no-capture`` or ``--no-mcp``:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import signal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .capture import CaptureLoop, CaptureStatus
 from .channel_profiles import load_itp_profiles, merge_resolved_ids
-from .config import ITPTelegramConfig
 from .mcp_server import build_mcp
 from .pid_manager import remove_pid, write_pid
+
+if TYPE_CHECKING:
+    from .config import ITPTelegramConfig
 
 logger = logging.getLogger(__name__)
 
@@ -114,15 +117,11 @@ async def serve(
             await capture_loop.stop()
         if mcp_task and not mcp_task.done():
             mcp_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError, Exception):
                 await mcp_task
-            except (asyncio.CancelledError, Exception):  # noqa: BLE001
-                pass
         if capture_task and not capture_task.done():
             capture_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError, Exception):
                 await capture_task
-            except (asyncio.CancelledError, Exception):  # noqa: BLE001
-                pass
         remove_pid(cfg.pid_path)
         logger.info("Service stopped.")

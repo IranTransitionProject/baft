@@ -220,6 +220,53 @@ stages:
 
 ---
 
+## Pipeline conditions
+
+Pipeline stages can be gated by a `condition:` string. **Since Heddle v0.9.2 this
+field has a strict, narrow grammar** — getting it wrong silently disables the
+stage instead of running it.
+
+### Supported grammar
+
+Exactly three whitespace-separated tokens: `<dot.path> <op> <value>`.
+
+- **Operator** — `==` or `!=` only. No `and`/`or`/`not`, no arithmetic, no
+  function calls, no `in`/`is`, no negation.
+- **LHS** — a dot-separated path that resolves against the pipeline context
+  (`input.*`, `stages.<id>.output.*`, `stages.<id>.skipped`, etc.).
+- **RHS** — a bare token, NOT a quoted string. The token is interpreted as:
+  - `true` / `false` → Python `True` / `False`
+  - `null` / `none` → Python `None`
+  - anything else → the literal string of the token itself
+
+### Common foot-guns
+
+| Symptom | Cause |
+|---|---|
+| Stage runs even when its guard returns `FAIL` | Wrote `!= 'FAIL'` (quoted). Heddle compares against the string `"'FAIL'"` (quotes included), which never matches the unquoted worker output. Drop the quotes: `!= FAIL`. |
+| Stage never runs | Used a multi-token expression (`A or B`, `len(...) > 0`, `not skipped`). Fails the 3-token check, evaluates to `False` under the v0.9.2 fail-closed default. Logged as `pipeline.invalid_condition`. |
+| Stage never runs only when upstream was skipped | Upstream `_skipped` stages are NOT added to `context`, so paths like `stages.upstream.output.status` raise `KeyError` and return `False`. Logged as `pipeline.condition_missing_path`. Restructure so the guard runs unconditionally and returns a benign default. |
+
+### Migration knob
+
+To restore pre-v0.9.2 fail-open behaviour during a transition window:
+
+```bash
+HEDDLE_STRICT_CONDITIONS=0 uv run heddle pipeline ...
+```
+
+A malformed condition then evaluates to `True` (run the stage) instead of
+`False`. **Use only as a stop-gap** — the legacy default will be removed in a
+future Heddle release. Prefer fixing the conditions.
+
+### Regression guard
+
+`tests/test_baft_pipelines.py::TestPipelineConditionEvaluation` exercises every
+`condition:` in baft's pipeline configs against the real Heddle evaluator
+with synthetic contexts. Add an entry there when you introduce a new condition.
+
+---
+
 ## Dead-letter queue
 
 Tasks that can't be routed (wrong worker_type, tier not available) or that fail all retries land in the dead-letter queue.

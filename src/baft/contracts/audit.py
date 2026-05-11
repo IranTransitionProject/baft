@@ -20,12 +20,6 @@ class ContentType(StrEnum):
     BRIEF_SECTION = "brief_section"
 
 
-class NeutralizationRequest(BaseModel):
-    """TN input: ``neutralization_request`` wrapper."""
-
-    neutralization_request: NeutralizationRequestInner
-
-
 class NeutralizationRequestInner(BaseModel):
     """Inner payload for TN neutralization request."""
 
@@ -33,7 +27,10 @@ class NeutralizationRequestInner(BaseModel):
     content_type: str | None = None
 
 
-NeutralizationRequest.model_rebuild()
+class NeutralizationRequest(BaseModel):
+    """TN input: ``neutralization_request`` wrapper."""
+
+    neutralization_request: NeutralizationRequestInner
 
 
 class Replacement(BaseModel):
@@ -64,12 +61,6 @@ class NeutralizationResult(BaseModel):
 # ---------------------------------------------------------------------------
 
 
-class AuditRequest(BaseModel):
-    """Shared input for LA, PA, RT: ``audit_request`` wrapper."""
-
-    audit_request: AuditRequestInner
-
-
 class AuditRequestInner(BaseModel):
     """Inner payload for shared LA/PA/RT audit request."""
 
@@ -78,7 +69,10 @@ class AuditRequestInner(BaseModel):
     content_type: str | None = None
 
 
-AuditRequest.model_rebuild()
+class AuditRequest(BaseModel):
+    """Shared input for LA, PA, RT: ``audit_request`` wrapper."""
+
+    audit_request: AuditRequestInner
 
 
 # ---------------------------------------------------------------------------
@@ -172,12 +166,6 @@ class RTaudit(BaseModel):
 # ---------------------------------------------------------------------------
 
 
-class SynthesisRequest(BaseModel):
-    """AS input: ``synthesis_request`` wrapper."""
-
-    synthesis_request: SynthesisRequestInner
-
-
 class SynthesisRequestInner(BaseModel):
     """Inner payload for AS synthesis request."""
 
@@ -189,7 +177,10 @@ class SynthesisRequestInner(BaseModel):
     original_ia_output_summary: str | None = None
 
 
-SynthesisRequest.model_rebuild()
+class SynthesisRequest(BaseModel):
+    """AS input: ``synthesis_request`` wrapper."""
+
+    synthesis_request: SynthesisRequestInner
 
 
 class OverallQuality(BaseModel):

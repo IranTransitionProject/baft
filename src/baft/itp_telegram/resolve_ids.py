@@ -32,11 +32,14 @@ import asyncio
 import json
 import logging
 from datetime import UTC, datetime
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .channel_profiles import load_itp_profiles
-from .config import ITPTelegramConfig
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from .config import ITPTelegramConfig
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +73,7 @@ async def _resolve(cfg: ITPTelegramConfig, output_path: Path) -> dict[str, Any]:
         for handle in handles:
             try:
                 entity = await client.get_entity(handle)
-            except Exception as exc:  # noqa: BLE001 — telethon raises many specific types
+            except Exception as exc:
                 logger.warning("Could not resolve @%s: %s", handle, exc)
                 failed.append(handle)
                 continue
@@ -84,7 +87,7 @@ async def _resolve(cfg: ITPTelegramConfig, output_path: Path) -> dict[str, Any]:
                 participants = getattr(full, "participants_count", None)
                 if participants is not None:
                     entry["subscribers"] = int(participants)
-            except Exception:  # noqa: BLE001
+            except Exception:
                 pass
 
             resolved[handle.lower()] = entry

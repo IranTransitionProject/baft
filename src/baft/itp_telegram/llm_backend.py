@@ -17,7 +17,6 @@ import logging
 import time
 
 import requests
-
 from heddle.contrib.rag.analysis.llm_analyzers import (
     _MAX_RETRIES,
     _RETRY_DELAY_S,

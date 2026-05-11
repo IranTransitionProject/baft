@@ -21,7 +21,6 @@ from __future__ import annotations
 import os
 
 import structlog
-
 from heddle.tracing import get_tracer, init_tracing
 
 logger = structlog.get_logger()

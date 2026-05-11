@@ -25,6 +25,15 @@ system_prompt: |
 
   ## Validation checks
 
+  0. EMPTY-INPUT FAST PATH. If entity_refs is empty AND the
+     integration_spec contains no operations that reference entity IDs
+     (i.e. there is nothing to check), return:
+       overall_status: PASS, checked_count: 0, failed_count: 0,
+       warning_count: 0, details: [].
+     This is a deliberate no-op pass — the Tier 1 (itp_quick) pipeline
+     always runs XV as a safety guard and depends on this behaviour
+     when the caller has nothing to cross-reference.
+
   1. ENTITY ID EXISTS. Every entity_id referenced anywhere in the spec
      must exist in the entity registry. Format must match:
      V-XX, Obs NNN, S-N, W-N, Trap N, G-NN, B-NN, ITB-AX, ISA-SX.

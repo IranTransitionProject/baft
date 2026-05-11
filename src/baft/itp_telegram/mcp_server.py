@@ -19,15 +19,17 @@ from __future__ import annotations
 
 import logging
 from datetime import UTC, datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from fastmcp import FastMCP
 
-from .capture import CaptureStatus
 from .channel_profiles import by_channel_id
-from .config import ITPTelegramConfig
 from .llm_backend import LMStudioLLMBackend
 from .store import open_store
+
+if TYPE_CHECKING:
+    from .capture import CaptureStatus
+    from .config import ITPTelegramConfig
 
 logger = logging.getLogger(__name__)
 
@@ -192,7 +194,7 @@ def build_mcp(
         cutoff = int(datetime.now(tz=UTC).timestamp()) - (hours_back * 3600)
         store = open_store(cfg)
         try:
-            conn = store._conn  # noqa: SLF001 — direct query, no public method yet
+            conn = store._conn
             where = ["timestamp_unix >= ?"]
             params: list[Any] = [cutoff]
             if channel_handle:

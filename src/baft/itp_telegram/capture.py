@@ -15,14 +15,16 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from heddle.contrib.rag.chunker.sentence_chunker import ChunkConfig, chunk_post
 from heddle.contrib.rag.ingestion.telegram_live import TelegramLiveIngestor
 
 from .channel_profiles import channel_handles
-from .config import ITPTelegramConfig
 from .store import open_store
+
+if TYPE_CHECKING:
+    from .config import ITPTelegramConfig
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +113,7 @@ class CaptureLoop:
                     self._stop_event.wait(),
                     timeout=self.cfg.flush_interval_sec,
                 )
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass  # normal interval tick
 
             await self._flush(chunk_cfg)

@@ -38,7 +38,10 @@ stages:
     worker: de_database_engineer
     depends_on: [cross_validate]
     max_retries: 1          # Retry once on transient DE failures
-    condition: "stages.cross_validate.output.validation_result.overall_status != 'FAIL'"
+    # Heddle's 3-token condition grammar requires bare enum literals;
+    # `'FAIL'` (quoted) would compare against the literal string "'FAIL'"
+    # and always evaluate True.  See docs/OPERATIONS_GUIDE.md.
+    condition: "stages.cross_validate.output.validation_result.overall_status != FAIL"
     input_mapping:
       integration_request: "{{stages.analyze.output.analytical_output.integration_spec}}"
     on_failure:

@@ -20,14 +20,14 @@ Submodules:
 from __future__ import annotations
 
 __all__ = [
-    "config",
-    "channel_profiles",
-    "llm_backend",
-    "store",
-    "capture",
-    "mcp_server",
-    "service",
     "auth_bootstrap",
-    "pid_manager",
+    "capture",
+    "channel_profiles",
     "cli",
+    "config",
+    "llm_backend",
+    "mcp_server",
+    "pid_manager",
+    "service",
+    "store",
 ]

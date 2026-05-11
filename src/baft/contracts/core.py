@@ -36,12 +36,6 @@ class SourceItem(BaseModel):
     forwarded_from: Any = None
 
 
-class SourceBundle(BaseModel):
-    """SP input: ``source_bundle`` wrapper."""
-
-    source_bundle: SourceBundleInner
-
-
 class SourceBundleInner(BaseModel):
     """Inner payload of SP source bundle input."""
 
@@ -49,8 +43,10 @@ class SourceBundleInner(BaseModel):
     items: list[SourceItem]
 
 
-# Pydantic needs forward-ref update for SourceBundle → SourceBundleInner.
-SourceBundle.model_rebuild()
+class SourceBundle(BaseModel):
+    """SP input: ``source_bundle`` wrapper."""
+
+    source_bundle: SourceBundleInner
 
 
 class Claim(BaseModel):
@@ -105,12 +101,6 @@ class AssessmentVerdict(StrEnum):
     NOISE = "noise"
 
 
-class AnalyticalInput(BaseModel):
-    """IA input: ``analytical_input`` wrapper."""
-
-    analytical_input: AnalyticalInputInner
-
-
 class AnalyticalInputInner(BaseModel):
     """Inner payload of IA analytical input."""
 
@@ -120,7 +110,10 @@ class AnalyticalInputInner(BaseModel):
     priority_gaps: list[str] | None = None
 
 
-AnalyticalInput.model_rebuild()
+class AnalyticalInput(BaseModel):
+    """IA input: ``analytical_input`` wrapper."""
+
+    analytical_input: AnalyticalInputInner
 
 
 class ClaimAssessment(BaseModel):
@@ -180,12 +173,6 @@ class DBOperation(BaseModel):
     fields: dict[str, Any] | None = None
 
 
-class IntegrationRequest(BaseModel):
-    """DE input: ``integration_request`` wrapper."""
-
-    integration_request: IntegrationRequestInner
-
-
 class IntegrationRequestInner(BaseModel):
     """Inner payload of DE integration request."""
 
@@ -193,7 +180,10 @@ class IntegrationRequestInner(BaseModel):
     operations: list[DBOperation]
 
 
-IntegrationRequest.model_rebuild()
+class IntegrationRequest(BaseModel):
+    """DE input: ``integration_request`` wrapper."""
+
+    integration_request: IntegrationRequestInner
 
 
 class BuildStatus(StrEnum):
@@ -310,12 +300,6 @@ class NoteInput(BaseModel):
     priority_override: PriorityLevel | None = None
 
 
-class InboxItem(BaseModel):
-    """IN output: ``inbox_item`` wrapper."""
-
-    inbox_item: InboxItemInner
-
-
 class InboxItemInner(BaseModel):
     """Inner payload of IN inbox item output."""
 
@@ -330,4 +314,7 @@ class InboxItemInner(BaseModel):
     processed: bool
 
 
-InboxItem.model_rebuild()
+class InboxItem(BaseModel):
+    """IN output: ``inbox_item`` wrapper."""
+
+    inbox_item: InboxItemInner

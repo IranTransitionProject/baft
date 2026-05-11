@@ -38,28 +38,27 @@ _WARN = click.style("[WARN]", fg="yellow")
 _FAIL = click.style("[FAIL]", fg="red")
 
 
+def _baft_dir() -> Path:
+    """Resolve baft repo root.
+
+    Derived from this module's path: ``baft/src/baft/cli.py`` → ``baft/``.
+    The ``__file__``-relative derivation is more reliable than relying on
+    ``ITP_ROOT/baft`` because it tolerates non-standard directory names
+    (e.g. ``baft-dev`` for a working copy).
+    """
+    return Path(__file__).resolve().parents[2]
+
+
 def _itp_root() -> Path:
-    """Resolve ITP_ROOT from env or auto-detect from parent of baft repo."""
+    """Resolve ITP_ROOT from env, or auto-detect as parent of baft repo."""
     env = os.getenv("ITP_ROOT")
     if env:
         return Path(env)
-    # Auto-detect: baft/src/baft/cli.py → baft/ → ITP root
-    baft_dir = Path(__file__).resolve().parents[2]
-    candidate = baft_dir.parent
-    if (candidate / "baseline" / "data").is_dir():
-        return candidate
-    return candidate
+    return _baft_dir().parent
 
 
 def _baseline_dir() -> Path:
     return _itp_root() / "baseline"
-
-
-def _baft_dir() -> Path:
-    env = os.getenv("ITP_ROOT")
-    if env:
-        return Path(env) / "baft"
-    return Path(__file__).resolve().parents[2]
 
 
 def _workspace_dir() -> Path:
@@ -399,78 +398,99 @@ def start(session_id: str | None) -> None:
     )
 
 
+# ---------------------------------------------------------------------------
+# session end — helpers
+# ---------------------------------------------------------------------------
+
+
+def _resolve_session_to_end(session_id: str | None, yes: bool) -> str | None:
+    """Pick a session id to end, or return None if no active sessions exist."""
+    from baft.sessions import get_active_sessions
+
+    if session_id is not None:
+        return session_id
+    active = get_active_sessions()
+    if not active:
+        click.echo("No active sessions found.")
+        return None
+    sid = active[0]["session_monitor_request"]["session_id"]
+    if len(active) > 1 and not yes:
+        click.echo(f"  Multiple active sessions ({len(active)}). Ending most recent: {sid}")
+    return sid
+
+
+def _baseline_dirty_files(baseline: Path) -> list[str]:
+    """Return porcelain status lines, or [] if not a git repo or clean."""
+    if not (baseline / ".git").is_dir():
+        return []
+    status = _git(["status", "--porcelain"], cwd=baseline)
+    if not status.stdout.strip():
+        return []
+    return [line.strip() for line in status.stdout.strip().split("\n") if line.strip()]
+
+
+def _confirm_commit(sid: str, dirty_files: list[str]) -> bool:
+    """Show pending changes and prompt for confirmation; True iff approved."""
+    styled_sid = click.style(sid, bold=True)
+    click.echo(f"\n  Session {styled_sid} — {len(dirty_files)} changed file(s):")
+    for f in dirty_files[:20]:
+        click.echo(f"    {f}")
+    if len(dirty_files) > 20:
+        click.echo(f"    ... and {len(dirty_files) - 20} more")
+    click.echo()
+    return click.confirm("  Commit and push these changes?", default=True)
+
+
+def _commit_and_push_baseline(baseline: Path, sid: str, message: str) -> None:
+    """Stage data/, commit, push. Exits non-zero on commit failure."""
+    date_str = dt.datetime.now(tz=dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+    desc = message or "analytical session updates"
+    commit_msg = f"Session {sid}: {desc} — {date_str}"
+
+    # Stage only data/ (analytical content), not repo config.
+    _git(["add", "data/"], cwd=baseline)
+    # Also stage any other tracked-file changes (but not untracked junk).
+    _git(["add", "-u"], cwd=baseline)
+    commit = _git(["commit", "-m", commit_msg], cwd=baseline)
+    if commit.returncode != 0:
+        click.echo(f"  {_FAIL} Commit failed: {commit.stderr.strip()}")
+        raise SystemExit(1)
+
+    push = _git(["push"], cwd=baseline)
+    if push.returncode == 0:
+        click.echo(f"  {_OK} Baseline changes committed and pushed.")
+    else:
+        click.echo(f"  {_WARN} Committed locally but push failed: {push.stderr.strip()}")
+        click.echo("  Run `baft session sync-check` then push manually.")
+
+
 @session.command()
 @click.option("--session-id", default=None, help="Session to end (uses most recent if omitted)")
 @click.option("--message", "-m", default="", help="Commit message describing session work")
 @click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt")
 def end(session_id: str | None, message: str, yes: bool) -> None:
     """End an analytical session (commit baseline, push, unregister)."""
-    from baft.sessions import get_active_sessions, unregister_session
+    from baft.sessions import unregister_session
 
-    # Resolve session id
-    if session_id is None:
-        active = get_active_sessions()
-        if not active:
-            click.echo("No active sessions found.")
-            return
-        # Pick the most recent (list is sorted by last_active descending)
-        sid = active[0]["session_monitor_request"]["session_id"]
-        if len(active) > 1 and not yes:
-            click.echo(f"  Multiple active sessions ({len(active)}). Ending most recent: {sid}")
-    else:
-        sid = session_id
+    sid = _resolve_session_to_end(session_id, yes)
+    if sid is None:
+        return
 
-    # 1. Check baseline state before unregistering
-    fw = _baseline_dir()
-    dirty_files: list[str] = []
-    if (fw / ".git").is_dir():
-        status = _git(["status", "--porcelain"], cwd=fw)
-        if status.stdout.strip():
-            dirty_files = [
-                line.strip() for line in status.stdout.strip().split("\n") if line.strip()
-            ]
+    baseline = _baseline_dir()
+    dirty_files = _baseline_dirty_files(baseline)
 
-    # 2. Show what will happen and confirm
-    if dirty_files and not yes:
-        click.echo(f"\n  Session {click.style(sid, bold=True)} — {len(dirty_files)} changed file(s):")
-        for f in dirty_files[:20]:
-            click.echo(f"    {f}")
-        if len(dirty_files) > 20:
-            click.echo(f"    ... and {len(dirty_files) - 20} more")
-        click.echo()
-        if not click.confirm("  Commit and push these changes?", default=True):
-            click.echo("  Aborted. Session still active.")
-            return
+    if dirty_files and not yes and not _confirm_commit(sid, dirty_files):
+        click.echo("  Aborted. Session still active.")
+        return
 
-    # 3. Unregister
     unregister_session(sid)
 
-    # 4. Commit baseline changes (only data/ directory, not everything)
-    if (fw / ".git").is_dir():
-        if dirty_files:
-            date_str = dt.datetime.now(tz=dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
-            desc = message or "analytical session updates"
-            commit_msg = f"Session {sid}: {desc} — {date_str}"
-
-            # Stage only the data/ directory (analytical content), not repo config
-            _git(["add", "data/"], cwd=fw)
-            # Also stage any other tracked-file changes (but not untracked junk)
-            _git(["add", "-u"], cwd=fw)
-            commit = _git(["commit", "-m", commit_msg], cwd=fw)
-            if commit.returncode != 0:
-                click.echo(f"  {_FAIL} Commit failed: {commit.stderr.strip()}")
-                raise SystemExit(1)
-
-            push = _git(["push"], cwd=fw)
-            if push.returncode == 0:
-                click.echo(f"  {_OK} Baseline changes committed and pushed.")
-            else:
-                click.echo(f"  {_WARN} Committed locally but push failed: {push.stderr.strip()}")
-                click.echo("  Run `baft session sync-check` then push manually.")
-        else:
-            click.echo("  No baseline changes to commit.")
-    else:
+    if not (baseline / ".git").is_dir():
         click.echo(f"  {_WARN} Baseline not a git repo — skipping commit")
+    elif dirty_files:
+        _commit_and_push_baseline(baseline, sid, message)
+    else:
+        click.echo("  No baseline changes to commit.")
 
     click.echo(f"\n  Session {click.style(sid, bold=True)} ended.")
 

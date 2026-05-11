@@ -259,3 +259,168 @@ class TestMCPGateway:
     def test_has_query_backend(self, config):
         queries = config.get("tools", {}).get("queries", [])
         assert len(queries) > 0, "MCP config should have at least one query backend"
+
+
+# ── Test: stage and escalation conditions evaluate correctly ───────────
+#
+# Heddle's PipelineOrchestrator._evaluate_condition accepts only
+# 3-token `path op value` expressions with == / !=.  Anything else
+# returns False under HEDDLE_STRICT_CONDITIONS=1 (the v0.9.2 default),
+# silently disabling whatever stage owns the condition.  String literals
+# must be UNQUOTED — `... != 'FAIL'` compares against the literal string
+# "'FAIL'" and is always True, defeating the guard.
+#
+# These tests exercise every condition string in baft's pipeline configs
+# against the real heddle evaluator with synthetic contexts that mirror
+# the worker output shapes.  They would have caught both bugs fixed in
+# the v0.3.1 patch.
+
+
+class TestPipelineConditionEvaluation:
+    """Every `condition:` in baft's pipelines parses under heddle's grammar."""
+
+    @pytest.fixture(scope="class")
+    def evaluator(self):
+        from heddle.orchestrator.pipeline import PipelineOrchestrator
+
+        return PipelineOrchestrator._evaluate_condition
+
+    def _collect_conditions(self) -> list[tuple[str, str, str]]:
+        """Return (pipeline_name, location, condition_string) for every condition."""
+        rows: list[tuple[str, str, str]] = []
+        for path in ALL_ORCHESTRATOR_FILES:
+            config = _load_yaml(path)
+            for stage in config.get("stages", []):
+                cond = stage.get("condition")
+                if cond:
+                    rows.append((path.stem, f"stage:{stage['id']}", cond))
+            for esc in config.get("escalation", []) or []:
+                cond = esc.get("condition")
+                if cond:
+                    rows.append((path.stem, "escalation", cond))
+        return rows
+
+    def test_every_condition_is_three_tokens(self, evaluator):
+        """All conditions must satisfy heddle's 3-token grammar."""
+        offenders = []
+        for pipeline, location, cond in self._collect_conditions():
+            if len(cond.split()) != 3:
+                offenders.append(f"{pipeline}/{location}: {cond!r}")
+        assert not offenders, (
+            "Heddle v0.9.2 evaluates non-3-token conditions as False by default "
+            "(HEDDLE_STRICT_CONDITIONS=1), silently disabling the owning stage. "
+            "Offenders:\n  " + "\n  ".join(offenders)
+        )
+
+    def test_no_quoted_enum_literals(self, evaluator):
+        """String literals on the RHS must be unquoted bare tokens."""
+        offenders = []
+        for pipeline, location, cond in self._collect_conditions():
+            parts = cond.split()
+            if len(parts) != 3:
+                continue  # already covered above
+            rhs = parts[2]
+            if (rhs.startswith("'") and rhs.endswith("'")) or (
+                rhs.startswith('"') and rhs.endswith('"')
+            ):
+                offenders.append(f"{pipeline}/{location}: {cond!r}")
+        assert not offenders, (
+            "Heddle's evaluator does not strip surrounding quotes, so quoted "
+            "literals never match the unquoted worker output. Use bare tokens "
+            "(e.g. `... != FAIL`, not `... != 'FAIL'`). Offenders:\n  "
+            + "\n  ".join(offenders)
+        )
+
+    # ── Per-pipeline semantic truth tables ────────────────────────────
+
+    def test_itp_standard_db_write_runs_on_pass(self, evaluator):
+        """itp_standard: db_write runs when XV returns PASS."""
+        config = _load_yaml(ORCHESTRATORS_DIR / "itp_standard.yaml")
+        stage = next(s for s in config["stages"] if s["id"] == "db_write")
+        context = {
+            "stages": {
+                "cross_validate": {
+                    "output": {"validation_result": {"overall_status": "PASS"}}
+                }
+            }
+        }
+        assert evaluator(stage["condition"], context) is True
+
+    def test_itp_standard_db_write_skips_on_fail(self, evaluator):
+        """itp_standard: db_write is skipped when XV returns FAIL."""
+        config = _load_yaml(ORCHESTRATORS_DIR / "itp_standard.yaml")
+        stage = next(s for s in config["stages"] if s["id"] == "db_write")
+        context = {
+            "stages": {
+                "cross_validate": {
+                    "output": {"validation_result": {"overall_status": "FAIL"}}
+                }
+            }
+        }
+        assert evaluator(stage["condition"], context) is False
+
+    def test_itp_standard_escalation_on_publication_flag(self, evaluator):
+        """itp_standard: escalation fires when IA sets publication_flag=true."""
+        config = _load_yaml(ORCHESTRATORS_DIR / "itp_standard.yaml")
+        esc = config["escalation"][0]
+        context = {
+            "stages": {"analyze": {"output": {"analytical_output": {"publication_flag": True}}}}
+        }
+        assert evaluator(esc["condition"], context) is True
+
+    def test_itp_standard_escalation_skips_when_publication_flag_false(self, evaluator):
+        """itp_standard: escalation does not fire when publication_flag=false."""
+        config = _load_yaml(ORCHESTRATORS_DIR / "itp_standard.yaml")
+        esc = config["escalation"][0]
+        context = {
+            "stages": {"analyze": {"output": {"analytical_output": {"publication_flag": False}}}}
+        }
+        assert evaluator(esc["condition"], context) is False
+
+    def test_itp_quick_de_write_runs_on_pass(self, evaluator):
+        """itp_quick: de_write runs when XV returns PASS (including empty-input no-op)."""
+        config = _load_yaml(ORCHESTRATORS_DIR / "itp_quick.yaml")
+        stage = next(s for s in config["stages"] if s["id"] == "de_write")
+        context = {
+            "stages": {
+                "xv_validate": {
+                    "output": {"validation_result": {"overall_status": "PASS"}}
+                }
+            }
+        }
+        assert evaluator(stage["condition"], context) is True
+
+    def test_itp_quick_de_write_skips_on_fail(self, evaluator):
+        """itp_quick: de_write is skipped when XV returns FAIL."""
+        config = _load_yaml(ORCHESTRATORS_DIR / "itp_quick.yaml")
+        stage = next(s for s in config["stages"] if s["id"] == "de_write")
+        context = {
+            "stages": {
+                "xv_validate": {
+                    "output": {"validation_result": {"overall_status": "FAIL"}}
+                }
+            }
+        }
+        assert evaluator(stage["condition"], context) is False
+
+    def test_itp_audit_escalation_on_required(self, evaluator):
+        """itp_audit: escalation fires when AS sets escalation_required=true."""
+        config = _load_yaml(ORCHESTRATORS_DIR / "itp_audit.yaml")
+        esc = config["escalation"][0]
+        context = {
+            "stages": {
+                "synthesize": {"output": {"audit_report": {"escalation_required": True}}}
+            }
+        }
+        assert evaluator(esc["condition"], context) is True
+
+    def test_itp_audit_escalation_skips_when_not_required(self, evaluator):
+        """itp_audit: escalation is skipped when AS sets escalation_required=false."""
+        config = _load_yaml(ORCHESTRATORS_DIR / "itp_audit.yaml")
+        esc = config["escalation"][0]
+        context = {
+            "stages": {
+                "synthesize": {"output": {"audit_report": {"escalation_required": False}}}
+            }
+        }
+        assert evaluator(esc["condition"], context) is False

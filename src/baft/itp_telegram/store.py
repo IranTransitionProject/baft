@@ -7,9 +7,12 @@ the magic ``embedding_backend="openai-compatible"`` flag.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from heddle.contrib.rag.vectorstore.duckdb_store import DuckDBVectorStore
 
-from .config import ITPTelegramConfig
+if TYPE_CHECKING:
+    from .config import ITPTelegramConfig
 
 
 def open_store(cfg: ITPTelegramConfig) -> DuckDBVectorStore:

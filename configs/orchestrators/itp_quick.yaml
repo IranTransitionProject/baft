@@ -1,7 +1,14 @@
 # itp_quick.yaml — Tier 1 direct dispatch
 # Use: database updates, formatting, validation-only operations
-# Nodes: HI-R → DE (optionally XV first for cross-ref check)
+# Nodes: HI-R → XV → DE (XV always runs as a safety guard)
 # Cost: ~2–3 API calls
+#
+# Heddle condition grammar note (v0.9.2+):
+#   Only 3-token `path op value` expressions with == / != are supported.
+#   String literals must be unquoted; comparisons against enum values use
+#   the bare enum name (e.g. `... != FAIL`, not `... != 'FAIL'`).
+#   Malformed conditions default to fail-closed (stage skipped).
+#   See docs/OPERATIONS_GUIDE.md "Pipeline conditions" for details.
 
 name: itp_quick
 description: "Tier 1: Direct database operation. XV validate → DE write."
@@ -9,9 +16,12 @@ description: "Tier 1: Direct database operation. XV validate → DE write."
 stages:
   - id: xv_validate
     worker: xv_cross_validator
-    optional: true   # skip if no entity refs in request
     max_retries: 2   # Local tier — cheap to retry
-    condition: "len(input.integration_request.get('entity_refs', [])) > 0"
+    # XV always runs as a safety guard.  When the integration_request has
+    # no entity_refs, XV returns overall_status: PASS with checked_count: 0
+    # (see configs/workers/xv_cross_validator.yaml).  Heddle's condition
+    # grammar can't express `len(list) > 0`, so we let XV handle the empty
+    # case rather than gating the stage.
     input_mapping:
       validation_request:
         integration_spec: "{{input.integration_request}}"
@@ -21,13 +31,14 @@ stages:
     worker: de_database_engineer
     depends_on: [xv_validate]
     max_retries: 1   # Retry once on transient DE failures
-    condition: "stages.xv_validate.skipped or stages.xv_validate.output.validation_result.overall_status != 'FAIL'"
+    # Skip DE write if XV reports overall failure.  3-token form is the
+    # only grammar Heddle's evaluator accepts; FAIL is unquoted because
+    # XV emits the literal string "FAIL" (XVstatus enum).
+    condition: "stages.xv_validate.output.validation_result.overall_status != FAIL"
     input_mapping:
       integration_request: "{{input.integration_request}}"
-    on_failure:
-      action: halt
-      message: "DE validation failed — no write performed"
 
-error_handling:
-  xv_fail: halt     # Do not write if XV finds broken refs
-  de_fail: report   # Report failure, do not retry automatically
+# NOTE: `error_handling` and stage `on_failure` blocks are advisory —
+# heddle v0.9.2 does not yet act on them.  Stage failures propagate as
+# PipelineStageError by default, halting the pipeline.  See the Heddle
+# building-workflows guide for the current set of acted-on keys.

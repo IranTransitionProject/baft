@@ -53,13 +53,12 @@ def _common_options(f: Any) -> Any:
         type=click.Path(),
         help="Override RAG DuckDB path (default: ~/.heddle/itp_rag.duckdb).",
     )(f)
-    f = click.option(
+    return click.option(
         "--registry",
         default=None,
         type=click.Path(),
         help="Override channel registry YAML path.",
     )(f)
-    return f
 
 
 def _resolve_cfg(
@@ -363,7 +362,8 @@ def stop(
     registry: str | None,
 ) -> None:
     """Send SIGTERM to the running service (graceful drain)."""
-    from .pid_manager import remove_pid, status as pid_status
+    from .pid_manager import remove_pid
+    from .pid_manager import status as pid_status
 
     cfg = _resolve_cfg(lm_studio_url, db_path, registry)
     s = pid_status(cfg.pid_path)
@@ -562,6 +562,7 @@ def daemon_start(
     """
     import subprocess
     import sys
+
     from .pid_manager import status as pid_status
 
     cfg = _resolve_cfg(lm_studio_url, db_path, registry)
@@ -747,7 +748,7 @@ def daemon_status(
                 click.echo(click.style(
                     f"  last error: {data['last_error']}", fg="yellow",
                 ))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             click.echo(click.style(f"  mcp:        unreachable ({exc})", fg="yellow"))
     else:
         click.echo("  mcp:        (not running)")

@@ -12,12 +12,6 @@ from pydantic import BaseModel
 # ---------------------------------------------------------------------------
 
 
-class SessionMonitorRequest(BaseModel):
-    """SA input: ``session_monitor_request`` wrapper."""
-
-    session_monitor_request: SessionMonitorRequestInner
-
-
 class SessionMonitorRequestInner(BaseModel):
     """Inner payload of SA session monitor request."""
 
@@ -29,7 +23,10 @@ class SessionMonitorRequestInner(BaseModel):
     operation_count: int | None = None
 
 
-SessionMonitorRequest.model_rebuild()
+class SessionMonitorRequest(BaseModel):
+    """SA input: ``session_monitor_request`` wrapper."""
+
+    session_monitor_request: SessionMonitorRequestInner
 
 
 class FlagSeverity(StrEnum):
