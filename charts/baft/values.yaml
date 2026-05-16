@@ -31,7 +31,10 @@ anthropic:
 ollama:
   enabled: true
   model: "llama3.2:3b"
-  image: ollama/ollama:latest
+  # Pinned to the 0.24 minor track for reproducibility (Ollama's
+  # API surface evolves; `:latest` could land breaking changes
+  # without a chart bump). Bump deliberately after smoke-test.
+  image: ollama/ollama:0.24
   gpu:
     enabled: false
     type: nvidia                  # nvidia or amd
@@ -112,7 +115,13 @@ mcp:
 # -- Observability
 jaeger:
   enabled: false
-  image: jaegertracing/jaeger:latest
+  # Pinned to the 2.0 minor track. The `jaegertracing/jaeger` image
+  # namespace is Jaeger v2-only (v1 lives at
+  # `jaegertracing/all-in-one`); under v2, OTLP is enabled by
+  # default so the `COLLECTOR_OTLP_ENABLED=true` env var in
+  # templates/jaeger.yaml is a redundant-but-harmless v1 legacy.
+  # Bump to a newer 2.x minor deliberately after smoke-test.
+  image: jaegertracing/jaeger:2.0
 
 # -- Environment (injected into all pods)
 env:
